@@ -1,6 +1,6 @@
 # Native Linux backend
 
-Experimental source installation. A complete native deployment and migration rehearsal have not yet passed; retain the Docker deployment and comparison assets.
+Experimental source installation. An isolated Ubuntu deployment passed API, CPU ML, search, playback and backup/restore checks. Codec parity and an existing-library migration rehearsal remain release gates; retain the Docker deployment and comparison assets. See the [Ubuntu validation record](../../server/test/benchmarks/NATIVE-UBUNTU-VALIDATION.md).
 
 Run the production Node server and CPU machine learning service directly on Linux. PostgreSQL and Redis remain required services. This path builds the existing web client without changing its source.
 
@@ -110,4 +110,4 @@ curl --fail http://127.0.0.1:2283/api/server/ping
 curl --fail http://127.0.0.1:3003/ping
 ```
 
-The CLI self-check uses temporary state and a mock Node executable. It checks configuration permissions, overwrite refusal, dispatch, native path defaults and credential-file precedence. `doctor` checks runtime artifacts, authenticates to PostgreSQL and Redis using the server configuration, checks database and vector extension versions, executes a vector operation, checks matching Ubuntu PostgreSQL backup/restore executables, round-trips JPEG/PNG/WebP with Sharp, and encodes/probes a tiny H.264 video with FFmpeg. It reports HEIC/RAW capability flags but does not prove HEIC/RAW/HDR parity, exercise uploads or measure power. A full native deployment and migration rehearsal remain required before removing the container deployment files.
+The CLI self-check uses temporary state and a mock Node executable. It checks configuration permissions, overwrite refusal, dispatch, native path defaults and credential-file precedence. `doctor` checks runtime artifacts, authenticates to PostgreSQL and Redis using the server configuration, checks database and vector extension versions, executes a vector operation, checks matching Ubuntu PostgreSQL backup/restore executables, round-trips JPEG/PNG/WebP with Sharp, and encodes/probes a tiny H.264 video with FFmpeg. It reports HEIC/RAW capability flags but does not prove HEIC/RAW/HDR parity, exercise uploads or measure power. Representative codec parity and an existing-library migration rehearsal remain required before removing the container deployment files.
