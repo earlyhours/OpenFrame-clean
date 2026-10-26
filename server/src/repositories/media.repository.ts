@@ -153,7 +153,36 @@ export class MediaRepository {
   }
 
   async decodeImage(input: string | Buffer, options: DecodeToBufferOptions): Promise<Bitmap> {
-    const decoded = await this.getImageDecodingPipeline(input, options).raw().toBuffer({ resolveWithObject: true });
+    const pipeline = this.getImageDecodingPipeline(input, options);
+    if (
+      typeof input === 'string' &&
+      options.size !== undefined &&
+      options.size > 0 &&
+      options.colorspace === Colorspace.Srgb &&
+      process.env.IMMICH_SRGB_JPEG_LINEAR_FUSION !== 'false'
+    ) {
+      const metadata = await pipeline.metadata();
+      if (
+        metadata.format === 'jpeg' &&
+        metadata.space === 'srgb' &&
+        metadata.depth === 'uchar' &&
+        metadata.channels === 3 &&
+        !metadata.isProgressive &&
+        !metadata.hasProfile &&
+        !metadata.gainMap &&
+        !metadata.xmp &&
+        Math.min(metadata.width, metadata.height) > options.size
+      ) {
+        // Retain linear-light sampling; materialising full-resolution RGB pixels adds a copy for unprofiled SDR JPEGs.
+        return pipeline
+          .pipelineColorspace('scrgb')
+          .resize(options.size, options.size, { fit: 'outside', withoutEnlargement: true })
+          .raw()
+          .toBuffer({ resolveWithObject: true });
+      }
+    }
+
+    const decoded = await pipeline.raw().toBuffer({ resolveWithObject: true });
     return await this.transform(decoded, options);
   }
 
