@@ -94,7 +94,7 @@ These steps deliberately target this dated disposable directory. The initializer
 
    The pinned `watchfiles==0.21.0` required a Rust source build for Python 3.13. In the recorded run its build backend also created `~/.cache/puccinialin` for an isolated Rust toolchain with `--no-modify-path`; no shell configuration changed. `XDG_CACHE_HOME` above keeps that download inside the validation directory for a fresh run.
 
-6. Copy `native-ubuntu/initialize.py`, `make-baseline.py`, `backup-check.py`, and `run-pairs.py` to the validation root. Run `python3 initialize.py` once. Set `OPENFRAME_CONFIG` to the generated absolute `env` path and `OPENFRAME_STATE` to `state`; run `app/scripts/native/openframe resources`. Place web/plugin artifacts in the normal `state/build` locations. Run `source ./run-env`, then `app/scripts/native/openframe doctor`. Start `openframe ml` and `openframe start` in separate processes, retaining their PIDs and private logs. The paired runner expects the server PID in `server.pid`.
+6. Copy `native-ubuntu/initialize.py`, `make-baseline.py`, `backup-check.py`, and `run-pairs.py` to the validation root. Run `python3 initialize.py` once. Set `OPENFRAME_CONFIG` to the generated absolute `env` path and `OPENFRAME_STATE` to `state`; run `app/scripts/native/openframe resources`. Place web/plugin artifacts in the normal `state/build` locations. Run `source ./run-env`, then `app/scripts/native/openframe doctor`. Start `openframe ml` and `openframe start` in separate processes, retaining their PIDs and private logs.
 7. Run the HTTP warmup, backup check, and comparison:
 
    ```sh
@@ -102,9 +102,14 @@ These steps deliberately target this dated disposable directory. The initializer
      http://127.0.0.1:2287 "$PWD/fixtures" candidate-ml-warmup "$PWD/logs/native-http.jsonl"
    python3 backup-check.py
    python3 make-baseline.py
+   # Stop the warmup server with Ctrl+C in its terminal before comparing.
    python3 run-pairs.py
    ```
 
-   The baseline copies the same built server and reverts only the upload buffer, video read buffer and unchanged-size image transform. Both variants retain authenticated services, normal workers, ML, fsync, codec/quality settings and database schema. The runner alternates three baseline/candidate pairs, uses a fresh user for each run to prevent duplicate-upload shortcuts, waits for ML/queues to settle, and stops only its own recorded runtime between runs. It leaves PostgreSQL, Redis and ML running until explicitly stopped. All samples, including warmups, remain in the JSONL output.
+   The baseline copies the same built server and reverts only the upload buffer, video read buffer and unchanged-size image transform. Both variants retain authenticated services, normal workers, ML, fsync, codec/quality settings and database schema. The runner alternates three baseline/candidate pairs, uses a fresh user for each run to prevent duplicate-upload shortcuts, waits for ML/queues to settle, and stops its own process group between runs. It refuses to start while another application is listening on the test port. It leaves PostgreSQL, Redis and ML running until explicitly stopped. All samples, including warmups, remain in the JSONL output.
 
-Initial failures remain in private logs: a missing ML README in the transfer, a timed-out Binaryen download resumed with `curl -C -`, missing contrib files at first startup, an HTTP attempt before the listener started, two accidentally overlapping harness startups causing duplicate admin signup, the conditional-fetch cache behavior, and the existing invalid-range 404. These are not omitted from the deployment record or counted as successful parity checks.
+Initial failures remain in private logs: a missing ML README in the transfer, a timed-out Binaryen download resumed with `curl -C -`, missing contrib files at first startup, an HTTP attempt before the listener started, two accidentally overlapping harness startups causing duplicate admin signup, the conditional-fetch cache behavior, and the existing invalid-range 404, and an initial comparison lifecycle error where signaling only the supervisor left its API child listening. The comparison runner now creates and stops an isolated process group. These are not omitted from the deployment record or counted as successful parity checks.
+
+## Rejected image decode/resize fusion
+
+A development-host experiment fused the full-resolution decode and linear resize into one Sharp pipeline. `image-fusion-experiment.mjs` compares the actual encoded previews and their decoded pixels. The first diagnostic JPEG output was identical, but the HDR AVIF changed 4,165,126 of 9,452,160 channel samples, with a maximum difference of 16 and PSNR 47.72 dB. The intermediate color conversion/quantization is therefore observable. This optimization was rejected and no production media code changed. `results/image-fusion-rejected.json` retains a repeat using the HTTP fixture and HDR sample. Its single baseline-first timings are diagnostic only and establish no speed gain.
