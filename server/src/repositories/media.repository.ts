@@ -62,6 +62,8 @@ export type ExtractResult = {
   format: RawExtractedFormat;
 };
 
+type ThumbnailOutput = { path: string; options: TranscodeCommand };
+
 @Injectable()
 export class MediaRepository {
   constructor(private logger: LoggingRepository) {
@@ -396,6 +398,21 @@ export class MediaRepository {
         });
       });
     });
+  }
+
+  transcodeThumbnails(input: string, [first, ...rest]: [ThumbnailOutput, ...ThumbnailOutput[]]): Promise<void> {
+    const command = this.configureFfmpegCall(input, first.path, first.options);
+    // Keep each output's filters and automatic stream selection, but decode the input only once.
+    for (const { path, options } of rest) {
+      command.output(path).outputOptions(options.outputOptions);
+    }
+
+    return new Promise((resolve, reject) =>
+      command
+        .on('error', reject)
+        .on('end', () => resolve())
+        .run(),
+    );
   }
 
   transcode(input: string, output: string | Writable, options: TranscodeCommand): Promise<void> {
