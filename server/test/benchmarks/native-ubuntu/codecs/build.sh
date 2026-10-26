@@ -31,6 +31,10 @@ done
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$root/prefix" -DCMAKE_INSTALL_LIBDIR=lib -DBUILD_TESTING=OFF -DJPEGLI_ENABLE_DOXYGEN=OFF -DJPEGLI_ENABLE_MANPAGES=OFF -DJPEGLI_ENABLE_BENCHMARK=OFF -DJPEGLI_ENABLE_TOOLS=OFF -DJPEGLI_ENABLE_DEVTOOLS=OFF -DJPEGLI_ENABLE_FUZZERS=OFF -DJPEGLI_ENABLE_JNI=OFF -DJPEGLI_ENABLE_OPENEXR=OFF -DJPEGLI_ENABLE_SJPEG=OFF -DJPEGLI_ENABLE_SKCMS=OFF -DJPEGLI_FORCE_SYSTEM_LCMS2=ON -DJPEGLI_ENABLE_JPEGLI_LIBJPEG=ON -DJPEGLI_INSTALL_JPEGLI_LIBJPEG=ON -DJPEGLI_ENABLE_HWY_AVX3=ON -DJPEGLI_ENABLE_HWY_AVX3_ZEN4=ON -DJPEGLI_ENABLE_HWY_SVE=OFF -DJPEGLI_ENABLE_HWY_SVE2=OFF -DJPEGLI_ENABLE_HWY_SVE2_128=ON -DJPEGLI_LIBJPEG_LIBRARY_SOVERSION=62 -DJPEGLI_LIBJPEG_LIBRARY_VERSION=62.3.0 -DLIBJPEG_TURBO_VERSION_NUMBER=2001005
 cmake --build build -j2
 cmake --install build
+# Jpegli's bundled Highway installs an empty pkg-config version from its parent project.
+sed -i 's/^Version: $/Version: 1.3.0/' "$root/prefix/lib/pkgconfig/"libhwy*.pc
+# Use the bundled Highway headers with its matching static library.
+rm -rf -- "$root/sysroot/usr/include/hwy"
 mkdir -p "$root/prefix/lib/pkgconfig"
 cat > "$root/prefix/lib/pkgconfig/libjpeg.pc" <<EOF
 prefix=$root/prefix
@@ -47,6 +51,6 @@ patchfile="$root/libvips-patches/0001-put-other-loaders-ahead-of-dcrawload.patch
 if git apply --check "$patchfile"; then git apply "$patchfile"; else git apply --reverse --check "$patchfile"; fi
 export CFLAGS="$CPPFLAGS"
 export CXXFLAGS="$CPPFLAGS"
-meson setup build --buildtype=release --prefix="$root/prefix" --libdir=lib -Dintrospection=disabled -Dtiff=disabled
+meson setup --reconfigure build --buildtype=release --prefix="$root/prefix" --libdir=lib -Dintrospection=disabled -Dtiff=disabled
 ninja -C build -j2
 ninja -C build install

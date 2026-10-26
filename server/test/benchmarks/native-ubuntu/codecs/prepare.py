@@ -9,15 +9,18 @@ import tarfile
 import urllib.request
 from pathlib import Path
 
-assert platform.machine() == "x86_64", "Only the recorded Ubuntu x86-64 build is supported"
+if platform.machine() != "x86_64":
+    raise SystemExit("Only the recorded Ubuntu x86-64 build is supported")
 root = Path.home() / "openframe-native-validation-20261026/codec-build"
 manifest = json.loads(Path(__file__).with_name("manifest.json").read_text())
 verify_only = sys.argv[1:] == ["--verify"]
-assert not sys.argv[1:] or verify_only, "Usage: prepare.py [--verify]"
+if sys.argv[1:] and not verify_only:
+    raise SystemExit("Usage: prepare.py [--verify]")
 
 
 def verify(path, expected):
-    assert hashlib.sha256(path.read_bytes()).hexdigest() == expected, f"SHA256 mismatch: {path}"
+    if hashlib.sha256(path.read_bytes()).hexdigest() != expected:
+        raise ValueError(f"SHA256 mismatch: {path}")
 
 
 def fetch(url, path, expected):

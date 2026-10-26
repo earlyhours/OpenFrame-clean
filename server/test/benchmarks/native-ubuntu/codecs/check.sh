@@ -14,4 +14,5 @@ node app/server/test/benchmarks/native-codecs.mjs logs/codecs-source-build.json 
   samples/IMG_2682.heic samples/EOS_30D.CR2 samples/10bit-HDR-P3-nclx.avif || status=$?
 app/scripts/native/openframe doctor || status=1
 ldd "$root/prefix/lib/libvips.so" > logs/codecs-source-build-libraries.txt
+python3 "$root/smoke.py" || status=1
 exit "$status"

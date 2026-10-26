@@ -4,7 +4,7 @@ This is a source-build reproduction for the fixed `~/openframe-native-validation
 
 The host must already have Python 3.12 or newer, apt-get, dpkg-deb, a C/C++ compiler, make, CMake, Git, autoconf, automake and libtool. No sudo or system package installation is used. `prepare.py` downloads exact Ubuntu package versions and extracts them under this directory. Missing archived package versions cause failure rather than substitution. Locally recorded SHA256 values pin the downloaded source archives, upstream patches and Ubuntu packages. The source revisions and patches follow the cached Docker reference's build lock; Ubuntu system libraries can still differ from that image.
 
-Copy `prepare.py`, `manifest.json`, `build.sh`, `sharp.sh` and `check.sh` into the fixed codec directory. From a fresh codec directory:
+Copy `prepare.py`, `manifest.json`, `build.sh`, `sharp.sh`, `check.sh` and `smoke.py` into the fixed codec directory. From a fresh codec directory:
 
 ```sh
 python3 prepare.py
@@ -14,6 +14,6 @@ python3 prepare.py --verify
 bash check.sh > ../logs/codec-check.log 2>&1
 ```
 
-The Sharp step copies the isolated application's existing Sharp source package, reuses its installed build dependencies, and builds a separate package in `sharp-native`. Node 24.13.1, node-gyp 13.1.0 and node-addon-api 8.9.2 must already be in the recorded deployment. It does not switch the application to that package. `check.sh` temporarily selects it, supplies `LD_LIBRARY_PATH`, runs the repository sample checks and doctor, then restores the original Sharp symlink through an exit trap. The three upstream fixtures and normal private deployment configuration must already exist as described in the Ubuntu validation record. Stop the isolated API before changing its dependency link.
+The Sharp step copies the isolated application's existing Sharp source package, reuses its installed build dependencies, and builds a separate package in `sharp-native`. Node 24.13.1, node-gyp 13.1.0 and node-addon-api 8.9.2 must already be in the recorded deployment. It does not switch the application to that package. `check.sh` temporarily selects it, supplies `LD_LIBRARY_PATH`, runs the repository sample checks, doctor and one normal API/worker HTTP/ML smoke check, then restores the original Sharp symlink through an exit trap. The three upstream fixtures and normal private deployment configuration must already exist as described in the Ubuntu validation record. PostgreSQL, Redis and ML must remain available. Stop the isolated API before changing its dependency link. The smoke runner starts and stops its own process group. Its single-run timings establish no speed gain.
 
 Build logs, source trees, package archives and output libraries stay in the disposable directory for inspection. Reuse of an already configured build tree is not a fresh-install test. Read `../../NATIVE-UBUNTU-VALIDATION.md` for measured outcomes, codec comparisons and remaining gates.
