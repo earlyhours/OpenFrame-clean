@@ -1,4 +1,4 @@
-"""Run one normal HTTP smoke test with the codec package selected by check.sh."""
+"""Run one normal HTTP smoke test with the codec package selected through the native runtime preload."""
 
 import os
 import signal
@@ -14,7 +14,7 @@ try:
         raise RuntimeError("Stop the isolated API before changing its codec package")
 except ConnectionRefusedError:
     pass
-log_path = root / "logs/server-source-codecs.log"
+log_path = root / "logs/server-runtime-codecs.log"
 with log_path.open("wb") as log:
     process = subprocess.Popen(
         ["bash", "-c", "source ./run-env; exec app/scripts/native/openframe start"],
@@ -28,15 +28,15 @@ with log_path.open("wb") as log:
             if process.poll() is not None or time.monotonic() >= deadline:
                 raise RuntimeError("Source-codec runtime did not start; inspect its private log")
             time.sleep(0.5)
-        with (root / "logs/http-source-codecs.log").open("wb") as output:
+        with (root / "logs/http-runtime-codecs.log").open("wb") as output:
             subprocess.run(
                 [
                     root / "local/node-v24.13.1-linux-x64/bin/node",
                     root / "app/server/test/benchmarks/native-http.mjs",
                     "http://127.0.0.1:2287",
                     root / "fixtures",
-                    "candidate-source-codecs",
-                    root / "logs/native-http-source-codecs.jsonl",
+                    "candidate-runtime-codecs",
+                    root / "logs/native-http-runtime-codecs.jsonl",
                 ],
                 stdout=output,
                 stderr=output,

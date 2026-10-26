@@ -3,6 +3,7 @@
 import fcntl
 import hashlib
 import json
+import os
 import platform
 import subprocess
 import sys
@@ -12,7 +13,7 @@ from pathlib import Path
 
 if platform.machine() != "x86_64":
     raise SystemExit("Only the recorded Ubuntu x86-64 build is supported")
-root = Path.home() / "openframe-native-validation-20261026/codec-build"
+root = Path(os.environ.get("OPENFRAME_CODECS", Path.home() / "openframe-native-validation-20261026/codec-build"))
 manifest = json.loads(Path(__file__).with_name("manifest.json").read_text())
 verify_only = sys.argv[1:] == ["--verify"]
 if sys.argv[1:] and not verify_only:
@@ -65,6 +66,7 @@ for source in manifest["sources"]:
         "libde265": "libde265-1.1.3",
         "libjpeg-turbo": "jpegli/third_party/libjpeg-turbo",
         "highway": "jpegli/third_party/highway",
+        "skcms": "libjxl/third_party/skcms",
     }.get(source["name"], source["name"])
     target = root / "sources" / destination
     if not verify_only and not any(target.glob("*")):

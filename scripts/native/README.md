@@ -1,6 +1,6 @@
 # Native Linux backend
 
-Experimental source installation. An isolated Ubuntu deployment passed API, CPU ML, search, playback and backup/restore checks. Codec parity and an existing-library migration rehearsal remain release gates; retain the Docker deployment and comparison assets. See the [Ubuntu validation record](../../server/test/benchmarks/NATIVE-UBUNTU-VALIDATION.md).
+Experimental source installation. An isolated Ubuntu deployment passed API, CPU ML, search, playback and backup/restore checks. Six representative codec previews now match Docker exactly. Broader library checks and an existing-library migration rehearsal remain release gates; retain the Docker deployment and comparison assets. See the [Ubuntu validation record](../../server/test/benchmarks/NATIVE-UBUNTU-VALIDATION.md).
 
 Run the production Node server and CPU machine learning service directly on Linux. PostgreSQL and Redis remain required services. This path builds the existing web client without changing its source.
 
@@ -21,7 +21,7 @@ Install the pgvector extension package matching your PostgreSQL major version, f
 
 For a user-local PostgreSQL installation, set `DB_BIN_DIRECTORY` to its absolute `bin` directory in the environment file. Backup and restore use this directory for `pg_dump`, `pg_dumpall`, and `psql`. The doctor requires all three executables to match the database server's major version. Without this setting, the existing `/usr/lib/postgresql/<major>/bin` path is used.
 
-Install `uv`, Python 3.13, and Jellyfin FFmpeg 7.1.3-6 using your normal package/tool manager. Generic distribution FFmpeg packages may lack Immich's required codecs or hardware acceleration. Native Sharp uses its packaged libvips; codec support can differ from the container's custom libvips build. Check RAW, HEIC and HDR samples from your own library before migration.
+Install `uv`, Python 3.13, and Jellyfin FFmpeg 7.1.3-6 using your normal package/tool manager. Generic distribution FFmpeg packages may lack Immich's required codecs or hardware acceleration. Native runtime commands require the source-built codec package below. They fail if it is missing and do not fall back to packaged Sharp. Check representative RAW, HEIC, HDR, SVG and JPEG XL samples from your own library before migration.
 
 Create a dedicated database role and database, using a password you choose:
 
@@ -47,6 +47,7 @@ Run as a dedicated unprivileged account. The checkout must remain at the same pa
 scripts/native/openframe init
 # Edit ~/.config/openframe/env with your database credentials.
 scripts/native/openframe build
+scripts/native/openframe codecs
 scripts/native/openframe resources
 scripts/native/openframe doctor
 scripts/native/openframe ml
@@ -57,6 +58,10 @@ Start the backend in another terminal:
 ```sh
 scripts/native/openframe start
 ```
+
+`codecs` reuses the pinned [Ubuntu source recipes](../../server/test/benchmarks/native-ubuntu/codecs/README.md). It requires Ubuntu 24.04 x86-64, Python 3.12+, apt-get, dpkg-deb, a C/C++ compiler, make, CMake, Git, autoconf, automake, libtool and flock. It downloads checksum-pinned source archives and Ubuntu development/runtime packages without sudo. Missing pinned archives or package versions fail the build. Run it after `build`, with the backend stopped. Retain build logs and allow substantial build time on small CPUs.
+
+The default codec directory is `${XDG_DATA_HOME:-$HOME/.local/share}/openframe/codecs`. Set `OPENFRAME_CODECS=/absolute/path/codecs` in the private configuration to build or select another directory. The directory includes source-built libraries, extracted Ubuntu libraries, ImageMagick's pinned upstream security policy and a separately built Sharp package. `doctor`, `start` and `admin` select that package through a Node preload and set library/policy paths for child processes and workers. The checkout's Sharp dependency link remains unchanged. Keep the codec directory and checkout at their build paths. Stop services before rebuilding either dependencies or codecs.
 
 The server binds to `127.0.0.1:2283`. Use an authenticated TLS reverse proxy for remote access, or explicitly set `IMMICH_HOST` for a trusted LAN. The server performs its normal database migrations at startup. Stop it with Ctrl+C. `scripts/native/openframe admin --help` exposes the existing administration commands.
 
@@ -110,4 +115,4 @@ curl --fail http://127.0.0.1:2283/api/server/ping
 curl --fail http://127.0.0.1:3003/ping
 ```
 
-The CLI self-check uses temporary state and a mock Node executable. It checks configuration permissions, overwrite refusal, dispatch, native path defaults and credential-file precedence. `doctor` checks runtime artifacts, authenticates to PostgreSQL and Redis using the server configuration, checks database and vector extension versions, executes a vector operation, checks matching Ubuntu PostgreSQL backup/restore executables, round-trips JPEG/PNG/WebP with Sharp, and encodes/probes a tiny H.264 video with FFmpeg. It reports HEIC/RAW capability flags but does not prove HEIC/RAW/HDR parity, exercise uploads or measure power. Representative codec parity and an existing-library migration rehearsal remain required before removing the container deployment files.
+The CLI self-check uses temporary state, mock command dispatch and real Node import/worker checks. It checks configuration permissions, overwrite refusal, dispatch, native path defaults and credential-file precedence. `doctor` checks runtime artifacts, authenticates to PostgreSQL and Redis using the server configuration, checks database and vector extension versions, executes a vector operation, checks matching Ubuntu PostgreSQL backup/restore executables, round-trips JPEG/PNG/WebP/JPEG XL with Sharp, decodes SVG, requires HEIF and ImageMagick buffer loaders, verifies TIFF uses the source jpegli decoder, checks the pinned loaded ImageMagick policy and forbidden LABEL denial, and encodes/probes a tiny H.264 video with FFmpeg. It reports HEIC/RAW capability flags but does not prove HEIC/RAW/HDR parity, exercise uploads or measure power. Representative codec parity and an existing-library migration rehearsal remain required before removing the container deployment files.

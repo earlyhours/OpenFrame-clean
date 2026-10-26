@@ -31,8 +31,16 @@ load_env() {
   export DB_HOSTNAME="${DB_HOSTNAME:-127.0.0.1}"
   export REDIS_HOSTNAME="${REDIS_HOSTNAME:-127.0.0.1}"
   export PATH="$ROOT/server/bin:$PATH"
+  if [[ "$action" == doctor || "$action" == start || "$action" == admin ]]; then
+    export OPENFRAME_CODECS="${OPENFRAME_CODECS:-${XDG_DATA_HOME:-$HOME/.local/share}/openframe/codecs}"
+    [[ "$OPENFRAME_CODECS" == /* && -f "$OPENFRAME_CODECS/sharp-native/package.json" && -f "$OPENFRAME_CODECS/prefix/etc/ImageMagick-7/policy.xml" ]] || fail 'OPENFRAME_CODECS must name an absolute, built codec directory; run openframe codecs after build.'
+    export LD_LIBRARY_PATH="$OPENFRAME_CODECS/prefix/lib:$OPENFRAME_CODECS/sysroot/usr/lib/x86_64-linux-gnu${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    export MAGICK_CONFIGURE_PATH="$OPENFRAME_CODECS/prefix/etc/ImageMagick-7"
+    export NODE_OPTIONS="${NODE_OPTIONS:+$NODE_OPTIONS }--require $(NODE_OPTIONS= node -p 'JSON.stringify(process.argv[1])' "$ROOT/scripts/native/codecs.cjs")"
+  fi
 }
-case "${1:-help}" in
+action="${1:-help}"
+case "$action" in
   init)
     [[ ! -e "$OPENFRAME_CONFIG" ]] || fail "Configuration already exists: $OPENFRAME_CONFIG"
     umask 077
@@ -48,6 +56,19 @@ IMMICH_PORT=2283
 IMMICH_MACHINE_LEARNING_URL=http://127.0.0.1:3003
 ENV
     echo "Created $OPENFRAME_CONFIG. Configure PostgreSQL and Redis before starting."
+    ;;
+  codecs)
+    load_env
+    need node; need python3
+    [[ "$(node -p 'process.versions.node.split(".")[0]')" == 24 ]] || fail 'Use Node 24.'
+    export OPENFRAME_CODECS="${OPENFRAME_CODECS:-${XDG_DATA_HOME:-$HOME/.local/share}/openframe/codecs}"
+    [[ "$OPENFRAME_CODECS" == /* ]] || fail 'OPENFRAME_CODECS must be absolute.'
+    export OPENFRAME_SOURCE="$ROOT"
+    recipe="$ROOT/server/test/benchmarks/native-ubuntu/codecs"
+    python3 "$recipe/prepare.py"
+    bash "$recipe/build.sh"
+    bash "$recipe/sharp.sh"
+    echo "Codec build complete. Set OPENFRAME_CODECS='$OPENFRAME_CODECS' in $OPENFRAME_CONFIG, then run doctor and sample parity checks."
     ;;
   build)
     load_env
@@ -118,7 +139,7 @@ ENV
     exec python -m immich_ml
     ;;
   help|--help|-h)
-    echo 'Usage: scripts/native/openframe {init|build|resources|doctor|start|ml|admin}'
+    echo 'Usage: scripts/native/openframe {init|build|codecs|resources|doctor|start|ml|admin}'
     echo 'Configuration: $OPENFRAME_CONFIG or ~/.config/openframe/env'
     ;;
   *) fail "Unknown command: $1" ;;

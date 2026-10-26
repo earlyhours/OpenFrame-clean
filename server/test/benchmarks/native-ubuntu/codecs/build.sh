@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-cd "$HOME/openframe-native-validation-20261026/codec-build"
+cd "${OPENFRAME_CODECS:-$HOME/openframe-native-validation-20261026/codec-build}"
 root=$PWD
 exec 9>"$root/build.lock"
 flock -n 9 || { echo 'Another native codec operation is running' >&2; exit 1; }
@@ -72,6 +72,23 @@ Version: 2.1.5
 Libs: -L\${libdir} -ljpeg
 Cflags: -I\${includedir}
 EOF
+# TIFF must use the same JPEG decoder as vips and ImageMagick, not Ubuntu's ABI 8 decoder.
+cp -- "$root/sources/jpegli/third_party/libjpeg-turbo/jerror.h" "$root/prefix/include/"
+cd ../tiff
+tar -xf "$root/sources/tiff-debian.tar.xz"
+while read -r patchfile; do
+  if patch --dry-run --forward --batch -p1 < "debian/patches/$patchfile" >/dev/null 2>&1; then
+    patch --forward --batch -p1 < "debian/patches/$patchfile"
+  else
+    patch --dry-run --reverse --batch -p1 < "debian/patches/$patchfile" >/dev/null
+  fi
+done < debian/patches/series
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX="$root/prefix" -DCMAKE_INSTALL_LIBDIR=lib \
+  -DBUILD_SHARED_LIBS=ON -Dtiff-tools=OFF -Dtiff-tests=OFF -Dtiff-contrib=OFF -Dtiff-docs=OFF \
+  -DJPEG_INCLUDE_DIR="$root/prefix/include" -DJPEG_LIBRARY_RELEASE="$root/prefix/lib/libjpeg.so"
+cmake --build build -j2
+cmake --install build
 cd ../libraw
 if [[ -f Makefile ]]; then make clean; fi
 autoreconf --install
@@ -104,6 +121,20 @@ cmake --preset=release-noplugins -S . -B build \
   -DENABLE_PARALLEL_TILE_DECODING=ON
 cmake --build build -j2
 cmake --install build
+cd ../libjxl
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX="$root/prefix" -DCMAKE_INSTALL_LIBDIR=lib \
+  -DBUILD_TESTING=OFF -DBUILD_SHARED_LIBS=ON \
+  -DJPEGXL_ENABLE_TOOLS=OFF -DJPEGXL_ENABLE_DEVTOOLS=OFF \
+  -DJPEGXL_ENABLE_DOXYGEN=OFF -DJPEGXL_ENABLE_MANPAGES=OFF \
+  -DJPEGXL_ENABLE_BENCHMARK=OFF -DJPEGXL_ENABLE_EXAMPLES=OFF \
+  -DJPEGXL_ENABLE_JNI=OFF -DJPEGXL_ENABLE_OPENEXR=OFF \
+  -DJPEGXL_ENABLE_SJPEG=OFF -DJPEGXL_ENABLE_SKCMS=ON -DJPEGXL_ENABLE_PLUGINS=OFF \
+  -DJPEGXL_FORCE_SYSTEM_HWY=ON -DJPEGXL_FORCE_SYSTEM_LCMS2=ON -DJPEGXL_FORCE_SYSTEM_BROTLI=ON \
+  -Dhwy_DIR="$root/prefix/lib/cmake/hwy" \
+  -DCMAKE_CXX_FLAGS="$CPPFLAGS" -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS"
+cmake --build build -j2
+cmake --install build
 cd ../imagemagick
 ./configure --prefix="$root/prefix" --with-modules CPPFLAGS="$CPPFLAGS -DMAGICK_LIBRAW_VERSION_TAIL=202502"
 make -j2
@@ -114,6 +145,6 @@ patchfile="$root/libvips-patches/0001-put-other-loaders-ahead-of-dcrawload.patch
 if git apply --check "$patchfile"; then git apply "$patchfile"; else git apply --reverse --check "$patchfile"; fi
 export CFLAGS="$CPPFLAGS"
 export CXXFLAGS="$CPPFLAGS"
-meson setup --clearcache --reconfigure build --buildtype=release --prefix="$root/prefix" --libdir=lib -Dintrospection=disabled -Dtiff=disabled
+meson setup --clearcache --reconfigure build --buildtype=release --prefix="$root/prefix" --libdir=lib -Dintrospection=disabled -Dtiff=disabled -Djpeg-xl=enabled -Drsvg=enabled
 ninja -C build -j2
 ninja -C build install

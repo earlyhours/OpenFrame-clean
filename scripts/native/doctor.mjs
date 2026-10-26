@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { access } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { join } from "node:path";
 import { constants } from "node:fs";
 import { createRequire } from "node:module";
 import { ConfigRepository } from "../../server/dist/repositories/config.repository.js";
@@ -34,7 +36,73 @@ const redis = new Redis({
 });
 redis.on("error", () => {});
 try {
-  for (const format of ["jpeg", "png", "webp"]) {
+  const codecRoot = process.env.OPENFRAME_CODECS;
+  assert(
+    codecRoot,
+    "Run doctor through scripts/native/openframe with source-built codecs",
+  );
+  const manifest = JSON.parse(
+    await readFile(
+      new URL(
+        "../../server/test/benchmarks/native-ubuntu/codecs/manifest.json",
+        import.meta.url,
+      ),
+    ),
+  );
+  const policy = await readFile(
+    join(codecRoot, "prefix/etc/ImageMagick-7/policy.xml"),
+  );
+  assert.equal(
+    createHash("sha256").update(policy).digest("hex"),
+    manifest.extraFiles.find((file) => file.path === "policy.xml").sha256,
+    "ImageMagick policy differs from the pinned upstream policy",
+  );
+  const tiffLibraries = execFileSync(
+    "ldd",
+    [join(codecRoot, "prefix/lib/libtiff.so.6")],
+    { encoding: "utf8", timeout: 5000 },
+  );
+  assert(
+    tiffLibraries.includes(
+      `libjpeg.so.62 => ${join(codecRoot, "prefix/lib/libjpeg.so.62")}`,
+    ) && !tiffLibraries.includes("not found"),
+    "Native TIFF must load the source-built jpegli ABI 62 decoder and all dependencies",
+  );
+  const magick = join(codecRoot, "prefix/bin/magick");
+  const policies = execFileSync(magick, ["-list", "policy"], {
+    encoding: "utf8",
+    timeout: 5000,
+  });
+  assert(
+    policies.includes(
+      `Path: ${join(codecRoot, "prefix/etc/ImageMagick-7/policy.xml")}`,
+    ),
+    "Pinned ImageMagick policy is not loaded",
+  );
+  assert.throws(
+    () =>
+      execFileSync(magick, ["label:OpenFrame", "null:"], {
+        timeout: 5000,
+        stdio: "pipe",
+      }),
+    (error) => error.status > 0,
+    "ImageMagick must reject the forbidden LABEL coder",
+  );
+  for (const format of ["heif", "magick", "svg", "jxl"]) {
+    assert(
+      sharp.format[format]?.input.buffer,
+      `Missing ${format} buffer loader; rebuild native codecs`,
+    );
+  }
+  const svg = await sharp(
+    Buffer.from(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="2" height="2"><rect width="2" height="2" fill="red"/></svg>',
+    ),
+  )
+    .raw()
+    .toBuffer();
+  assert.deepEqual([...svg.subarray(0, 3)], [255, 0, 0]);
+  for (const format of ["jpeg", "png", "webp", "jxl"]) {
     const encoded = await sharp({
       create: { width: 2, height: 2, channels: 3, background: "red" },
     })
@@ -47,7 +115,7 @@ try {
     assert.equal(decoded.info.height, 2);
   }
   console.log(
-    `Sharp/libvips ${sharp.versions.vips}: JPEG, PNG and WebP encode/decode passed.`,
+    `Sharp/libvips ${sharp.versions.vips}: JPEG, PNG, WebP and JPEG XL encode/decode, SVG decode and pinned policy passed.`,
   );
   console.warn(
     `Codec parity UNVERIFIED: HEIC input=${Boolean(sharp.format.heif?.input.file)}. The HEIF flag does not prove HEVC decoding. Camera RAW and HDR compatibility require sample tests. Validate representative library files before migration; retain Docker.`,
