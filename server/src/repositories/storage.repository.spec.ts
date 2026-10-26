@@ -231,7 +231,8 @@ describe(StorageRepository.name, () => {
 
       await pipeline(Readable.from(chunks), output);
 
-      expect(await readFile(path)).toEqual(Buffer.concat(chunks));
+      const stored = await readFile(path);
+      expect(stored.equals(Buffer.concat(chunks))).toBe(true);
       expect(output.closed).toBe(true);
     });
 

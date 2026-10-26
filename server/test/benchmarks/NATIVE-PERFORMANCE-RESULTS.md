@@ -30,3 +30,11 @@ Sharp's bundled libvips differs from the custom Docker build. A HEIF capability 
 JPEG encoding/decoding, full-resolution linear-light processing and video transcoding still dominate relevant media workloads. Fusing decode and resize may change resampling/color behavior, so that requires separate quality evidence. Hardware transcoding is device-dependent. No lossy quality, bitrate, durability, security, concurrency, or global kernel defaults were changed to reach a target number.
 
 ZIP export already uses stored entries for compressed media. Database backups use `gzip --rsyncable`; this work retains its output and restore compatibility. Upload read buffering also reaches backup writes through the shared storage repository. Test real uploads and backup/restore under concurrent load before migration.
+
+## Validation on the development host
+
+Node 24.13.1 production server build, TypeScript check, full server ESLint, changed-file formatting, and `git diff --check` passed. The full unit suite passed 110 files with 2,446 passed tests, one expected failure and two skipped tests. A later targeted run including new grayscale/RGB/RGBA inside/outside transform-equivalence cases passed 52 tests with one opt-in benchmark skipped.
+
+The native CLI temporary-state self-check passed, including configuration mode 0600, overwrite refusal, native paths, admin dispatch and credential-file precedence. Direct doctor execution passed JPEG/PNG/WebP encode/decode and FFmpeg H.264 encode/probe, then correctly failed with `ECONNREFUSED` against loopback port 1. Successful PostgreSQL/Redis authentication, vector operations, native ML and complete startup remain untested.
+
+The first unrestricted full-suite attempt exhausted available memory and was restarted with `--maxWorkers 2`. A subsequent lint fix temporarily made the 1.4 MiB integrity assertion use Vitest deep equality, causing two repeat timeouts. The final test assigns the awaited read and uses `Buffer.equals`; the final targeted run passed without raising timeouts.
