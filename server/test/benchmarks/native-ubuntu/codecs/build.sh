@@ -46,6 +46,11 @@ Version: 2.1.5
 Libs: -L\${libdir} -ljpeg
 Cflags: -I\${includedir}
 EOF
+cd ../imagemagick
+./configure --prefix="$root/prefix" --with-modules CPPFLAGS="$CPPFLAGS -DMAGICK_LIBRAW_VERSION_TAIL=202502"
+make -j2
+make install
+cp -- "$root/policy.xml" "$root/prefix/etc/ImageMagick-7/policy.xml"
 cd ../libvips
 patchfile="$root/libvips-patches/0001-put-other-loaders-ahead-of-dcrawload.patch"
 if git apply --check "$patchfile"; then git apply "$patchfile"; else git apply --reverse --check "$patchfile"; fi

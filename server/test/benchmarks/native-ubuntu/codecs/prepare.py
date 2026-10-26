@@ -68,6 +68,8 @@ for source in manifest["sources"]:
 base = f"https://raw.githubusercontent.com/immich-app/base-images/{manifest['baseImagesCommit']}/server/sources/"
 for patch in manifest["patches"]:
     fetch(base + patch["path"], root / patch["path"], patch["sha256"])
+for extra in manifest.get("extraFiles", []):
+    fetch(extra["url"], root / extra["path"], extra["sha256"])
 if not verify_only:
     for path in (root / "sysroot").rglob("*.pc"):
         text = path.read_text()

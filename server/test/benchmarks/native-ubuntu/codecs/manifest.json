@@ -57,6 +57,15 @@
       "archive": "highway.tar.gz",
       "url": "https://codeload.github.com/google/highway/tar.gz/271a9a0ed9de1232d9117f1572c3fe28f8542ec1",
       "sha256": "c42bcfe44d100223ea0043acb3da6de703103ca44bfb1d46b577c90939177f5f"
+    },
+    {
+      "name": "imagemagick",
+      "repository": "ImageMagick/ImageMagick",
+      "version": "7.1.2-21",
+      "revision": "c86de049cefb8dd739e16f0e2fdc1ef8d2006d59",
+      "archive": "imagemagick.tar.gz",
+      "url": "https://codeload.github.com/ImageMagick/ImageMagick/tar.gz/c86de049cefb8dd739e16f0e2fdc1ef8d2006d59",
+      "sha256": "893fa015148c879755a1e4e3c9217d4225d8adc7e7f60361a213cac4bd61c055"
     }
   ],
   "ubuntuPackages": [
@@ -166,6 +175,20 @@
       "sha256": "fe0cb47397307b6fc2ac255bbf87be3b3f394e8fb64cf0b629b5aaf973b2532f"
     },
     {
+      "package": "libdeflate-dev",
+      "version": "1.19-1build1.1",
+      "architecture": "amd64",
+      "file": "libdeflate-dev_1.19-1build1.1_amd64.deb",
+      "sha256": "78eed26d8875d0e5457d08c18d1ace9ba784f6cf84665cd2d4cba30530fb11c7"
+    },
+    {
+      "package": "libdeflate0",
+      "version": "1.19-1build1.1",
+      "architecture": "amd64",
+      "file": "libdeflate0_1.19-1build1.1_amd64.deb",
+      "sha256": "8e7dfa9e63a9b5058071b84da48bb2e30dea07de169e80fbc759fe0e68639269"
+    },
+    {
       "package": "libexif-dev",
       "version": "0.6.24-1ubuntu0.24.04.1",
       "architecture": "amd64",
@@ -243,6 +266,20 @@
       "sha256": "c092b1ea155d81a5985073f867e1479c48c5c6efe4adc1bfcdde27e5d2b8b89d"
     },
     {
+      "package": "libjbig-dev",
+      "version": "2.1-6.1ubuntu2",
+      "architecture": "amd64",
+      "file": "libjbig-dev_2.1-6.1ubuntu2_amd64.deb",
+      "sha256": "26af03872b4b8b5be15bedf9658f73d4c8540a8c97228c6e016bd8c0e4f64302"
+    },
+    {
+      "package": "libjbig0",
+      "version": "2.1-6.1ubuntu2",
+      "architecture": "amd64",
+      "file": "libjbig0_2.1-6.1ubuntu2_amd64.deb",
+      "sha256": "074a760a86213a1286ad60f56394c90885cf45af070626a88c480d90b78c175a"
+    },
+    {
       "package": "libjpeg-turbo8-dev",
       "version": "2.1.5-2ubuntu2",
       "architecture": "amd64",
@@ -269,6 +306,34 @@
       "architecture": "amd64",
       "file": "liblcms2-dev_2.14-2ubuntu0.1_amd64.deb",
       "sha256": "309398dd1ccd2947b7ff623ae0826dcd6dcc5f251b86f358b45fed4acb06bd19"
+    },
+    {
+      "package": "liblerc-dev",
+      "version": "4.0.0+ds-4ubuntu2",
+      "architecture": "amd64",
+      "file": "liblerc-dev_4.0.0+ds-4ubuntu2_amd64.deb",
+      "sha256": "16d4c55707cbfbcb846640f4853e904501700e96fcdd7d8a5e58ad31a6993c50"
+    },
+    {
+      "package": "liblerc4",
+      "version": "4.0.0+ds-4ubuntu2",
+      "architecture": "amd64",
+      "file": "liblerc4_4.0.0+ds-4ubuntu2_amd64.deb",
+      "sha256": "f1b9dbfa28c56564f6b544f3757f5f3f4d549ce9962f39e897812c23b0a5d0e7"
+    },
+    {
+      "package": "liblzma-dev",
+      "version": "5.6.1+really5.4.5-1ubuntu0.4",
+      "architecture": "amd64",
+      "file": "liblzma-dev_5.6.1+really5.4.5-1ubuntu0.4_amd64.deb",
+      "sha256": "a6af1ee2bd2d5c532465734f474d03d8e08977c881f10898eda0c88b70ff2e5d"
+    },
+    {
+      "package": "liblzma5",
+      "version": "5.6.1+really5.4.5-1ubuntu0.4",
+      "architecture": "amd64",
+      "file": "liblzma5_5.6.1+really5.4.5-1ubuntu0.4_amd64.deb",
+      "sha256": "5bcf5da2339331e21d3f42a831e82c61c54c6b2f29804010e8d59abd0ae52167"
     },
     {
       "package": "libmount-dev",
@@ -411,6 +476,20 @@
       "sha256": "95c4f0476e221cc3d12c4b6a97ff7bfe8657cd5a2f28084cc260f53291275eed"
     },
     {
+      "package": "libtiff-dev",
+      "version": "4.5.1+git230720-4ubuntu2.5",
+      "architecture": "amd64",
+      "file": "libtiff-dev_4.5.1+git230720-4ubuntu2.5_amd64.deb",
+      "sha256": "7cc755c486d8014f1a7ec2229f69c35af9e8f055328a6a2b7ec032b7e5e63804"
+    },
+    {
+      "package": "libtiff6",
+      "version": "4.5.1+git230720-4ubuntu2.5",
+      "architecture": "amd64",
+      "file": "libtiff6_4.5.1+git230720-4ubuntu2.5_amd64.deb",
+      "sha256": "564cdf59dda5e1a826c51b5868ee2785fffa26ee5a7bad95bc5e8c8224c931b8"
+    },
+    {
       "package": "libtool-bin",
       "version": "2.4.7-7build1",
       "architecture": "amd64",
@@ -451,6 +530,20 @@
       "architecture": "amd64",
       "file": "libwebpmux3_1.3.2-0.4build3_amd64.deb",
       "sha256": "0dd0f2de0fbbda7239209332ddfe512f4383d0489dd3f9fb25398f58c1621724"
+    },
+    {
+      "package": "libzstd-dev",
+      "version": "1.5.5+dfsg2-2build1.1",
+      "architecture": "amd64",
+      "file": "libzstd-dev_1.5.5+dfsg2-2build1.1_amd64.deb",
+      "sha256": "6c9d2b5677a4677e9ead62f74723bb919113621a8028ed543a4d78952d54d165"
+    },
+    {
+      "package": "libzstd1",
+      "version": "1.5.5+dfsg2-2build1.1",
+      "architecture": "amd64",
+      "file": "libzstd1_1.5.5+dfsg2-2build1.1_amd64.deb",
+      "sha256": "dfcf25061e07aad7efd3f4f880ba5ad4d4d09ebe7fc8cc77ab6b8a161d6d4727"
     },
     {
       "package": "meson",
@@ -514,6 +607,13 @@
     {
       "path": "libvips-patches/0001-put-other-loaders-ahead-of-dcrawload.patch",
       "sha256": "a0eaf6d7d0b05a932f1c1cab2bc1c2d24d387239a26f94782289f1b9bcaedad3"
+    }
+  ],
+  "extraFiles": [
+    {
+      "path": "policy.xml",
+      "url": "https://raw.githubusercontent.com/immich-app/base-images/ffeb230c5ade36f0e603aecfaef62e943309640b/server/policy.xml",
+      "sha256": "c6d937dd7bdeeb1cad8f4b9e7e3eb12d61d4c73468f02509d251025fe96f7ec3"
     }
   ]
 }
