@@ -98,3 +98,7 @@ The unchanged default image policy is P3. The integrated SDR JPEG fusion require
 First stop any old gate runner and its backend services, leaving PostgreSQL, Redis and ML running. Repeat the original command with `--resume`. The build manifests and frozen client must match. Complete runs are checked for all cases, checksums, resources and parity before reuse. Incomplete or failed attempts move into an `interrupted` subdirectory and remain available for review. The series records resume timestamps and runner hashes. Paired ratios use complete runs only; interrupted attempts are never silently merged into a timed run. Pending work from an interrupted attempt drains before accounting for the next run begins.
 
 Rejected host-noise attempts are retained and rerun under the same idle threshold. Start/end cgroup CPU snapshots provide diagnostic attribution for host activity; they are not summed across the hierarchy because parent groups include child usage.
+
+## Recorded three-pair result
+
+The completed integrated series, exact source/build manifests, accepted and excluded raw runs, per-metric paired ratios and CPU/RSS measurements are in [native-e2e-a91408a](../results/native-e2e-a91408a/README.md). All 969 paired rendition comparisons passed exact bytes. The measured whole-workflow improvement did not meet the 2–5× target. Caddy/HTTP2 and added-latency testing were skipped.
