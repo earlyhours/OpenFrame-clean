@@ -61,6 +61,12 @@ Samples came from `immich-app/test-assets` commit `ec56cc6c1d76c45bc9615dc6ea232
 
 The upstream Docker recipe at `immich-app/base-images` commit `ffeb230c5ade36f0e603aecfaef62e943309640b` builds libheif with libde265, builds libraw and patches libvips loader order. Its libvips build disables TIFF. It also uses jpegli rather than bundled Sharp's mozjpeg. Relevant files are `server/Dockerfile`, `server/sources/libheif.sh`, `server/sources/libraw.sh`, `server/sources/libvips.sh`, and `server/sources/libvips-patches/0001-put-other-loaders-ahead-of-dcrawload.patch`. Reusing only its Debian binaries on Ubuntu would not establish ABI compatibility. The smallest remaining codec task is a user-local build of the matching codec stack followed by a Sharp rebuild and these same sample tests. Retain Docker installation/comparison/e2e assets.
 
+### Docker codec reference
+
+A one-shot, network-disabled, read-only invocation of the cached `openframe-bench:20261026` image successfully decoded all three samples through the repository path. Image ID is `sha256:0bb71185d49546fd049b5c6d33d3c08184ba7385bd4d4adb02229580f5689a27`. Only the sample directory and codec harness were mounted read-only; temporary previews used a 256 MiB tmpfs. No application service, database, credentials, network or existing media directory was attached. `results/native-ubuntu-codecs-docker-reference.json` retains the output.
+
+The image's `/build/build-lock.json` confirms the libvips, libraw, libheif and jpegli revisions above. All three previews match the baseline transform within that Docker codec stack. The Docker HDR JPEG SHA256 differs from the bundled native Sharp result, so baseline equality inside the bundled stack cannot substitute for Docker codec parity.
+
 ## Reproduce this isolated installation
 
 These steps deliberately target this dated disposable directory. The initializer refuses to replace its environment or initialize a populated cluster. Do not reuse these scripts for an existing deployment.
