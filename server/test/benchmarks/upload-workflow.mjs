@@ -3,13 +3,15 @@
 import assert from 'node:assert/strict';
 import { createReadStream, openAsBlob } from 'node:fs';
 import { appendFile, open, readFile } from 'node:fs/promises';
-import { randomBytes, randomUUID } from 'node:crypto';
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { dirname, resolve } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import sharp from 'sharp';
 import { monitorProcesses, runBounded, sha256 } from './upload-workflow-lib.mjs';
 
-const [origin, manifestPath, adminPath, label, output, pidList] = process.argv.slice(2);
+const [origin, manifestPath, adminPath, label, output, pidList, roundsArgument = '3'] = process.argv.slice(2);
+const rounds = Number(roundsArgument);
+assert(Number.isInteger(rounds) && rounds > 0, 'Rounds must be a positive integer');
 assert(
   origin && manifestPath && adminPath && label && output && pidList,
   'Expected URL MANIFEST.json ADMIN.json LABEL OUT.jsonl PID[,PID...]',
@@ -24,14 +26,29 @@ const fixtures = await runBounded(manifest, 1, async (item, index) => {
   const path = resolve(dirname(resolve(manifestPath)), item.path);
   const blob = await openAsBlob(path);
   assert(blob.size > 1024);
-  return { path, kind: item.kind, index, bytes: blob.size, sha256: await sha256(createReadStream(path)) };
+  const checksum = createHash('sha1');
+  const digest = createHash('sha256');
+  for await (const chunk of createReadStream(path)) {
+    checksum.update(chunk);
+    digest.update(chunk);
+  }
+  return {
+    path,
+    kind: item.kind,
+    index,
+    bytes: blob.size,
+    sha256: digest.digest('hex'),
+    checksum: checksum.digest('base64'),
+  };
 });
 assert.equal(new Set(fixtures.map((file) => file.sha256)).size, fixtures.length, 'Duplicate fixture bytes');
 const credentials = JSON.parse(await readFile(adminPath, 'utf8'));
 const request = (path, options = {}) =>
   fetch(new URL(`/api${path}`, url), {
     ...options,
-    signal: AbortSignal.timeout(120_000),
+    signal: options.signal
+      ? AbortSignal.any([options.signal, AbortSignal.timeout(120_000)])
+      : AbortSignal.timeout(120_000),
   });
 const json = async (path, body, token) => {
   const response = await request(path, {
@@ -83,11 +100,12 @@ const upload = async (fixture, token, additions = {}) => {
   const result = await response.json();
   return { ...result, httpStatus: response.status, started, responseMs: performance.now() - started };
 };
-const preview = async (asset, token) => {
+const preview = async (asset, token, signal) => {
   const deadline = performance.now() + 900_000;
   while (true) {
     const response = await request(`/assets/${asset.id}/thumbnail?size=preview`, {
       headers: { authorization: `Bearer ${token}` },
+      signal,
     });
     const bytes = Buffer.from(await response.arrayBuffer());
     if (response.status === 200) {
@@ -102,7 +120,7 @@ const preview = async (asset, token) => {
     }
     assert.equal(response.status, 404);
     assert(performance.now() < deadline, 'Preview did not become available within 15 minutes');
-    await delay(100);
+    await delay(100, undefined, { signal });
   }
 };
 const verifyOriginal = async (asset, fixture, token) => {
@@ -133,7 +151,7 @@ const workloads = [
   { workload: 'single', concurrency: 1, inputs: fixtures.slice(0, 1) },
   ...[1, 4, 8].map((concurrency) => ({ workload: 'batch', concurrency, inputs: fixtures })),
 ];
-for (let round = 0; round < 3; round++) {
+for (let round = 0; round < rounds; round++) {
   for (const { workload, concurrency, inputs } of workloads) {
     await drain();
     const token = await newUser();
@@ -141,15 +159,16 @@ for (let round = 0; round < 3; round++) {
     const clientCpu = process.cpuUsage();
     const started = performance.now();
     let metrics;
+    const previews = [];
+    const cancellation = new AbortController();
     try {
-      const previews = [];
       const assets = await runBounded(inputs, concurrency, async (fixture) => {
         const asset = await upload(fixture, token);
         assert.equal(asset.httpStatus, 201);
         assert.equal(asset.status, 'created');
         // Catch immediately so a fast failure cannot become an unhandled rejection.
         previews.push(
-          preview(asset, token).then(
+          preview(asset, token, cancellation.signal).then(
             (result) => ({ asset, fixture, result }),
             (error) => ({ error }),
           ),
@@ -202,6 +221,12 @@ for (let round = 0; round < 3; round++) {
       assert.equal(duplicate.httpStatus, 200);
       assert.equal(duplicate.status, 'duplicate');
       assert.equal(duplicate.id, assets[0].id);
+      const prechecked = await request('/assets', {
+        method: 'POST',
+        headers: { authorization: `Bearer ${token}`, 'x-immich-checksum': fixtures[0].checksum },
+      });
+      assert.equal(prechecked.status, 200);
+      assert.equal((await prechecked.json()).id, assets[0].id);
       // Malformed and empty multipart requests race a valid duplicate, outside the timed region.
       const empty = new FormData();
       empty.set('assetData', new Blob([]), 'empty.jpg');
@@ -235,12 +260,15 @@ for (let round = 0; round < 3; round++) {
         ranges: true,
         unauthenticated: true,
         duplicateIdentity: true,
+        checksumHeaderDuplicate: true,
         concurrentMultipartErrors: true,
         failedJobs: 0,
       });
     } finally {
+      cancellation.abort();
+      await Promise.all(previews);
       if (!metrics) await monitor.stop();
     }
   }
 }
-console.log(`Upload workflow ${label} passed; three rounds at 1/4/8 concurrency saved to ${output}`);
+console.log(`Upload workflow ${label} passed; ${rounds} rounds at 1/4/8 concurrency saved to ${output}`);
