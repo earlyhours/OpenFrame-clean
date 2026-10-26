@@ -109,6 +109,19 @@ try {
     );
   }
   const extensions = await db`SELECT extname, extversion FROM pg_extension`;
+  const available = await db`SELECT name FROM pg_available_extensions`;
+  for (const name of [
+    "uuid-ossp",
+    "unaccent",
+    "cube",
+    "earthdistance",
+    "pg_trgm",
+  ]) {
+    assert(
+      available.some((item) => item.name === name),
+      `Missing PostgreSQL extension files for ${name}`,
+    );
+  }
   const vector =
     env.database.vectorExtension ??
     (extensions.some((item) => item.extname === "vchord")
