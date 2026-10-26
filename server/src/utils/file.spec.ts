@@ -38,7 +38,7 @@ describe('sendFile', () => {
   let directory: string;
   let path: string;
 
-  const createApp = (handler = sendFile, filename = path) => {
+  const createApp = (handler = sendFile, filename = path, contentType = 'image/jpeg') => {
     const app = express();
     app.set('etag', 'strong');
     app.get('/', (req, res, next) => {
@@ -48,7 +48,7 @@ describe('sendFile', () => {
         () =>
           new ImmichFileResponse({
             path: filename,
-            contentType: 'image/jpeg',
+            contentType,
             cacheControl: CacheControl.PrivateWithCache,
             fileName: 'test image.jpg',
           }),
@@ -97,6 +97,24 @@ describe('sendFile', () => {
     const partial = await request(app).get('/').set('Range', 'bytes=2-5').expect(206);
     expect(partial.body).toEqual(Buffer.from('2345'));
     expect(partial.headers['content-range']).toBe('bytes 2-5/10');
+  });
+
+  it('streams video with byte ranges, conditional requests, and HEAD intact', async () => {
+    const videoPath = join(directory, 'video.mp4');
+    const video = Buffer.alloc(1024 * 1024, 37);
+    await fs.writeFile(videoPath, video);
+    const app = createApp(sendFile, videoPath, 'video/mp4');
+    const full = await request(app).get('/').responseType('blob').expect(200);
+    expect(Buffer.isBuffer(full.body)).toBe(true);
+    expect(full.body.equals(video)).toBe(true);
+    expect(full.headers['content-length']).toBe(String(video.length));
+    const partial = await request(app).get('/').responseType('blob').set('Range', 'bytes=262140-262150').expect(206);
+    expect(partial.body).toEqual(video.subarray(262_140, 262_151));
+    expect(partial.headers['content-range']).toBe(`bytes 262140-262150/${video.length}`);
+    await request(app).get('/').set('If-None-Match', full.headers.etag).expect(304);
+    const head = await request(app).head('/').expect(200);
+    expect(head.text).toBeUndefined();
+    expect(head.headers['content-length']).toBe(String(video.length));
   });
 
   it('preserves the existing not-found mapping for unsatisfiable ranges', async () => {

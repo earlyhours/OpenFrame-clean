@@ -320,6 +320,55 @@ describe(MediaRepository.name, () => {
     });
   });
 
+  describe('transform', () => {
+    it.each([1, 2, 3, 4] as const)(
+      'matches the original transform for %i channels and both resize fits',
+      async (channels) => {
+        const data = Buffer.from(Array.from({ length: 48 * 32 * channels }, (_, index) => index % 256));
+        const image = await sharp(data, { raw: { width: 48, height: 32, channels } })
+          .raw()
+          .toBuffer({ resolveWithObject: true });
+        for (const fit of ['inside', 'outside'] as const) {
+          for (const size of [16, 32, 48, 100]) {
+            const expected = await sharp(image.data, { raw: image.info })
+              .pipelineColorspace('scrgb')
+              .resize(size, size, { fit, withoutEnlargement: true })
+              .raw()
+              .toBuffer({ resolveWithObject: true });
+            const actual = await sut['transform'](image, { size, fit });
+            expect(actual.info.width).toBe(expected.info.width);
+            expect(actual.info.height).toBe(expected.info.height);
+            expect(actual.info.channels).toBe(expected.info.channels);
+            expect(actual.data).toEqual(expected.data);
+          }
+        }
+      },
+    );
+  });
+
+  describe('decodeImage', () => {
+    it.each([3, 4] as const)(
+      'preserves %i-channel pixels when resizing would not change dimensions',
+      async (channels) => {
+        const data = Buffer.from(Array.from({ length: 48 * 32 * channels }, (_, index) => index % 256));
+        const input = await sharp(data, { raw: { width: 48, height: 32, channels } })
+          .png()
+          .toBuffer();
+        const options = { colorspace: Colorspace.Srgb, processInvalidImages: false };
+        const decoded = await sut.decodeImage(input, options);
+        for (const size of [32, 100]) {
+          const result = await sut.decodeImage(input, { ...options, size });
+          expect(result.info.width).toBe(48);
+          expect(result.info.height).toBe(32);
+          expect(result.data).toEqual(decoded.data);
+        }
+        const resized = await sut.decodeImage(input, { ...options, size: 16 });
+        expect(resized.info.width).toBe(24);
+        expect(resized.info.height).toBe(16);
+      },
+    );
+  });
+
   describe('generateThumbnail', () => {
     it('should process random Authentik thumbnail image', async () => {
       const response = await fetch(

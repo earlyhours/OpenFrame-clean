@@ -216,7 +216,11 @@ export class MediaRepository {
   /* Resamples in linear light; averaging gamma-encoded values darkens the result and loses detail. `colorspace`
    * always has a sRGB transfer function and scRGB applies no primaries matrix, so linearising as sRGB is exact. */
   private transform(image: Bitmap, { size, fit = 'outside', edits = [] }: TransformOptions): Promise<Bitmap> {
-    if (!size && edits.length === 0) {
+    const dimension =
+      fit === 'inside' ? Math.max(image.info.width, image.info.height) : Math.min(image.info.width, image.info.height);
+    // Preview generation often receives an image already decoded at the requested size.
+    const isUnchangedSize = size !== undefined && dimension <= size && image.info.channels >= 3;
+    if (edits.length === 0 && (!size || isUnchangedSize)) {
       return Promise.resolve(image);
     }
 
