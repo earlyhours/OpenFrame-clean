@@ -5,21 +5,13 @@
       "file": true,
       "buffer": true,
       "stream": true,
-      "fileSuffix": [
-        ".jpg",
-        ".jpeg",
-        ".jpe",
-        ".jfif"
-      ]
+      "fileSuffix": [".jpg", ".jpeg", ".jpe", ".jfif"]
     },
     "output": {
       "file": true,
       "buffer": true,
       "stream": true,
-      "alias": [
-        "jpe",
-        "jpg"
-      ]
+      "alias": ["jpe", "jpg"]
     }
   },
   "png": {
@@ -28,9 +20,7 @@
       "file": true,
       "buffer": true,
       "stream": true,
-      "fileSuffix": [
-        ".png"
-      ]
+      "fileSuffix": [".png"]
     },
     "output": {
       "file": true,
@@ -44,9 +34,7 @@
       "file": true,
       "buffer": true,
       "stream": true,
-      "fileSuffix": [
-        ".webp"
-      ]
+      "fileSuffix": [".webp"]
     },
     "output": {
       "file": true,
@@ -65,9 +53,7 @@
       "file": false,
       "buffer": false,
       "stream": false,
-      "alias": [
-        "tif"
-      ]
+      "alias": ["tif"]
     }
   },
   "magick": {
@@ -115,13 +101,7 @@
       "file": true,
       "buffer": true,
       "stream": true,
-      "fileSuffix": [
-        ".pbm",
-        ".pgm",
-        ".ppm",
-        ".pfm",
-        ".pnm"
-      ]
+      "fileSuffix": [".pbm", ".pgm", ".ppm", ".pfm", ".pnm"]
     },
     "output": {
       "file": true,
@@ -148,9 +128,7 @@
       "file": true,
       "buffer": true,
       "stream": true,
-      "fileSuffix": [
-        ".gif"
-      ]
+      "fileSuffix": [".gif"]
     },
     "output": {
       "file": false,
@@ -177,20 +155,13 @@
       "file": true,
       "buffer": true,
       "stream": true,
-      "fileSuffix": [
-        ".heic",
-        ".heif",
-        ".avif"
-      ]
+      "fileSuffix": [".heic", ".heif", ".avif"]
     },
     "output": {
       "file": true,
       "buffer": true,
       "stream": true,
-      "alias": [
-        "avif",
-        "heic"
-      ]
+      "alias": ["avif", "heic"]
     }
   },
   "pdf": {
@@ -212,10 +183,7 @@
       "file": true,
       "buffer": false,
       "stream": false,
-      "fileSuffix": [
-        ".v",
-        ".vips"
-      ]
+      "fileSuffix": [".v", ".vips"]
     },
     "output": {
       "file": true,
@@ -229,24 +197,13 @@
       "file": true,
       "buffer": true,
       "stream": true,
-      "fileSuffix": [
-        ".j2k",
-        ".jp2",
-        ".jpt",
-        ".j2c",
-        ".jpc"
-      ]
+      "fileSuffix": [".j2k", ".jp2", ".jpt", ".j2c", ".jpc"]
     },
     "output": {
       "file": true,
       "buffer": true,
       "stream": true,
-      "alias": [
-        "j2c",
-        "j2k",
-        "jp2",
-        "jpx"
-      ]
+      "alias": ["j2c", "j2k", "jp2", "jpx"]
     }
   },
   "jxl": {
@@ -268,9 +225,7 @@
       "file": true,
       "buffer": true,
       "stream": true,
-      "fileSuffix": [
-        ".hdr"
-      ]
+      "fileSuffix": [".hdr"]
     },
     "output": {
       "file": true,

@@ -45,6 +45,18 @@ All three alternating pairs completed successfully. `results/native-ubuntu-http.
 
 Across 18 paired samples per metric, upload response improved by a paired geometric mean of 1.096x, upload-to-preview readiness by 1.019x, and video transfer by 1.167x. Candidate readiness was slower in 10 of 18 samples, and its median was 3380.86 ms versus 3366.15 ms for baseline. These results do not establish a 2–5x end-to-end gain or a Docker-to-native gain. Both variants used the same native stack. All paired encoded photo preview hashes matched, and every run passed search and queue checks. Detailed medians and unfavorable sample counts are in `NATIVE-PERFORMANCE-RESULTS.md`.
 
+### Repeat with source-built codecs
+
+After the source codec checks, the same runner completed three new alternating pairs with the source-built Sharp package selected. `results/native-ubuntu-http-source-pairs.jsonl` retains all 78 timed and parity rows. Reproduce its summary with `python3 native-ubuntu/analyze.py results/native-ubuntu-http-source-pairs.jsonl results/native-ubuntu-http-source-summary.json`.
+
+| Metric                      | Baseline median | Candidate median | Paired geometric mean speedup | Slower candidate samples |
+| --------------------------- | --------------- | ---------------- | ----------------------------- | ------------------------ |
+| Photo upload response       | 278.20 ms       | 229.29 ms        | 1.283x                        | 3/18                     |
+| Upload to available preview | 3749.32 ms      | 3552.37 ms       | 1.069x                        | 4/18                     |
+| Video transfer              | 143.54 ms       | 80.70 ms         | 1.567x                        | 5/18                     |
+
+Every paired fixture and preview hash matched. All six runs passed smart search, queue drain and zero failed jobs. These measurements compare the three optimizations within one native codec stack. They do not compare Docker performance with native performance, and do not establish RAW parity or a 2–5x end-to-end gain. The earlier bundled-codec samples remain separate and unchanged.
+
 ## Codec regression gate
 
 `native-codecs.mjs` calls the real repository decode/thumbnail path and compares encoded JPEG SHA256 with the original transform. Bundled Sharp 0.35.5/libvips 8.18.7 fails two representative upstream fixtures:
@@ -59,13 +71,37 @@ Raw errors, dimensions, dependency versions and source/output hashes are retaine
 
 Samples came from `immich-app/test-assets` commit `ec56cc6c1d76c45bc9615dc6ea232470a2b0a3a1`. Download individual files from `https://raw.githubusercontent.com/immich-app/test-assets/<commit>/<path>` and check their hashes against the result file. Large sample files are not committed here.
 
-The upstream Docker recipe at `immich-app/base-images` commit `ffeb230c5ade36f0e603aecfaef62e943309640b` builds libheif with libde265, builds libraw and patches libvips loader order. Its libvips build disables TIFF. It also uses jpegli rather than bundled Sharp's mozjpeg. Relevant files are `server/Dockerfile`, `server/sources/libheif.sh`, `server/sources/libraw.sh`, `server/sources/libvips.sh`, and `server/sources/libvips-patches/0001-put-other-loaders-ahead-of-dcrawload.patch`. Reusing only its Debian binaries on Ubuntu would not establish ABI compatibility. The smallest remaining codec task is a user-local build of the matching codec stack followed by a Sharp rebuild and these same sample tests. Retain Docker installation/comparison/e2e assets.
+The upstream Docker recipe at `immich-app/base-images` commit `ffeb230c5ade36f0e603aecfaef62e943309640b` builds libheif with libde265, builds libraw and patches libvips loader order. Its libvips build disables TIFF. It also uses jpegli rather than bundled Sharp's mozjpeg. Relevant files are `server/Dockerfile`, `server/sources/libheif.sh`, `server/sources/libraw.sh`, `server/sources/libvips.sh`, and `server/sources/libvips-patches/0001-put-other-loaders-ahead-of-dcrawload.patch`. Reusing only its Debian binaries on Ubuntu would not establish ABI compatibility. The user-local source experiment below now decodes all three fixtures. Its RAW output still differs from Docker, so retain Docker installation, comparison and e2e assets.
 
 ### Docker codec reference
 
 A one-shot, network-disabled, read-only invocation of the cached `openframe-bench:20261026` image successfully decoded all three samples through the repository path. Image ID is `sha256:0bb71185d49546fd049b5c6d33d3c08184ba7385bd4d4adb02229580f5689a27`. Only the sample directory and codec harness were mounted read-only; temporary previews used a 256 MiB tmpfs. No application service, database, credentials, network or existing media directory was attached. `results/native-ubuntu-codecs-docker-reference.json` retains the output.
 
 The image's `/build/build-lock.json` confirms the libvips, libraw, libheif and jpegli revisions above. All three previews match the baseline transform within that Docker codec stack. The Docker HDR JPEG SHA256 differs from the bundled native Sharp result, so baseline equality inside the bundled stack cannot substitute for Docker codec parity.
+
+### User-local source codec build
+
+`native-ubuntu/codecs/` reproduces the fixed Ubuntu experiment without sudo. Its manifest pins source archives, upstream patches, the ImageMagick policy and extracted Ubuntu packages by SHA256. The source trees, archives, compiler logs and libraries remain under `~/openframe-native-validation-20261026/codec-build`. This is an experiment, not a production installer or a fresh-machine installation test.
+
+The final build uses libvips 8.18.7 with the upstream loader patch and TIFF disabled, libheif 1.23.6 with the upstream `release-noplugins` preset, libde265 1.1.3, the pinned libraw revision, patched jpegli with libjpeg ABI 62, Highway 1.2.0, and ImageMagick 7.1.2-21. The libraw source identifies itself as 0.22.0 despite the upstream lock's 0.22.2-1 label. Exact revisions are in `native-ubuntu/codecs/manifest.json`. The custom codec libraries were built on this Ubuntu host. Extracted dependencies are pinned Ubuntu packages.
+
+Sharp 0.35.5 was rebuilt as a separate package. The checks temporarily select that package and restore the original application symlink on exit. The normal native CLI still uses bundled Sharp by default. No production media source or UI source changed in this experiment.
+
+| Fixture           | Source build versus original transform    | Source build versus Docker       |
+| ----------------- | ----------------------------------------- | -------------------------------- |
+| HEVC HEIC         | Encoded preview SHA256 identical          | Encoded preview SHA256 identical |
+| Canon EOS_30D.CR2 | Decodes; encoded preview SHA256 identical | Encoded preview differs          |
+| HDR AVIF          | Encoded preview SHA256 identical          | Encoded preview SHA256 identical |
+
+`results/native-ubuntu-codecs-source.json` and `results/native-ubuntu-codec-comparison.json` retain the hashes. The RAW difference begins in the initial decoded pixels, before the repository transform. It changes 524,185 of 5,971,968 channel samples, with maximum difference 6 and PSNR 58.09 dB. The decoded JPEG previews differ in 479,415 samples, with maximum difference 11 and PSNR 56.51 dB. `results/native-ubuntu-raw-pixels.json` records every stage. Matching Highway 1.2.0 and rebuilding libraw cleanly did not remove this difference. These measurements do not approve a quality tradeoff or establish RAW parity.
+
+ImageMagick is required for the buffer-based CR2 path; libraw and the libvips raw loader alone did not detect this input buffer. The failed intermediate build remains in `results/native-ubuntu-codecs-source-before-magick.json`. Earlier RAW mismatch hashes, pixel metrics and HTTP smoke samples also remain in the results directory.
+
+The source build retains the exact upstream ImageMagick security policy. The check confirms the installed policy bytes and loaded policy path, and rejects a forbidden LABEL operation. Libheif links libde265 1.1.3 and references its security-limit API. The source build passed doctor, normal API and worker startup, full HTTP integrity/range/conditional checks, smart search and queue drain with zero failed jobs. Its smoke test stops its own process group. `results/native-ubuntu-http-source-smoke.jsonl` retains that single run; its timings establish no speed gain.
+
+Dedicated SVG and JPEG XL loaders remain absent from this source build. `results/native-ubuntu-codec-formats.json` records capability flags and `results/native-ubuntu-codec-libraries.txt` records loaded libraries. Capability flags and these three samples do not establish compatibility with an entire library. RAW pixel parity, broader format coverage and an existing-library migration remain release gates. `install.sh` remains the legacy Docker installer.
+
+The retained build logs include missing development/runtime metadata, CMake search-path configuration, conflicting Highway headers, an older transitive node-addon-api, and a policy error-message assumption. A lifecycle mistake briefly overlapped two compiler builds. Both were stopped, and Highway was rebuilt from a clean build directory. The native HTTP benchmarks ran after codec compilation stopped. The final recipe pins Highway separately and builds jpegli before a clean libraw build. Preparation, builds and tests now share an exclusive lock that rejects overlapping operations.
 
 ## Reproduce this isolated installation
 
@@ -125,3 +161,9 @@ Initial failures remain in private logs: a missing ML README in the transfer, a 
 ## Rejected image decode/resize fusion
 
 A development-host experiment fused the full-resolution decode and linear resize into one Sharp pipeline. `image-fusion-experiment.mjs` compares the actual encoded previews and their decoded pixels. The first diagnostic JPEG output was identical, but the HDR AVIF changed 4,165,126 of 9,452,160 channel samples, with a maximum difference of 16 and PSNR 47.72 dB. The intermediate color conversion/quantization is therefore observable. This optimization was rejected and no production media code changed. `results/image-fusion-rejected.json` retains a repeat using the HTTP fixture and HDR sample. Its single baseline-first timings are diagnostic only and establish no speed gain.
+
+## Final checks and service state
+
+The native CLI self-check, shell syntax checks, Node 24 syntax checks, Python syntax checks, changed-file formatting and result JSON parsing passed. The pinned input verifier passed with Python optimization enabled and rejected an intentionally wrong checksum. Preparation and all four build/test commands rejected an overlapping operation while the shared lock was held. The image-fusion diagnostic reproduced the exact rejected HDR mismatch. The production TypeScript source did not change in this continuation, so the previously passing 2,446-test unit suite was not rerun.
+
+Every test API process group stopped, and the application's original bundled Sharp symlink was restored. The pre-existing isolated PostgreSQL, Redis and ML services remain on loopback ports 25432, 26379 and 3003 for review. Port 2287 is closed. About 22 GiB remains free. No existing application or database outside the isolated validation directory was changed. No push or PR was requested or created.

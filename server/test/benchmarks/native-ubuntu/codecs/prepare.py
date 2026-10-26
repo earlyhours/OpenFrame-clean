@@ -1,5 +1,6 @@
 """Fetch/verify the pinned inputs for this disposable Ubuntu codec experiment."""
 
+import fcntl
 import hashlib
 import json
 import platform
@@ -16,6 +17,15 @@ manifest = json.loads(Path(__file__).with_name("manifest.json").read_text())
 verify_only = sys.argv[1:] == ["--verify"]
 if sys.argv[1:] and not verify_only:
     raise SystemExit("Usage: prepare.py [--verify]")
+
+
+if not verify_only:
+    root.mkdir(parents=True, exist_ok=True)
+    lock = (root / "build.lock").open("a")
+    try:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        raise SystemExit("Another native codec operation is running")
 
 
 def verify(path, expected):

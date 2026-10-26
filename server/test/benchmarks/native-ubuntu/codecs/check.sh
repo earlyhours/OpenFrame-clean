@@ -2,6 +2,8 @@
 set -euo pipefail
 cd "$HOME/openframe-native-validation-20261026"
 root="$PWD/codec-build"
+exec 9>"$root/build.lock"
+flock -n 9 || { echo 'Another native codec operation is running' >&2; exit 1; }
 source ./run-env
 export LD_LIBRARY_PATH="$root/prefix/lib:$root/sysroot/usr/lib/x86_64-linux-gnu"
 export MAGICK_CONFIGURE_PATH="$root/prefix/etc/ImageMagick-7"
@@ -22,6 +24,6 @@ fi
 node app/server/test/benchmarks/native-codecs.mjs logs/codecs-source-build.json \
   samples/IMG_2682.heic samples/EOS_30D.CR2 samples/10bit-HDR-P3-nclx.avif || status=$?
 app/scripts/native/openframe doctor || status=1
-ldd "$root/prefix/lib/libvips.so" > logs/codecs-source-build-libraries.txt
+ldd "$root/prefix/lib/libvips.so" "$root/prefix/lib/vips-modules-8.18/"*.so > logs/codecs-source-build-libraries.txt
 python3 "$root/smoke.py" || status=1
 exit "$status"
