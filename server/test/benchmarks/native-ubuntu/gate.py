@@ -5,6 +5,7 @@ import fcntl
 import hashlib
 import json
 import os
+import runpy
 import resource
 import signal
 import socket
@@ -118,7 +119,8 @@ class Resources:
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--build", required=True, type=Path, help="Directory containing dist-baseline and dist-candidate under app/server")
-    parser.add_argument("--output", required=True, type=Path, help="New output directory inside the isolated deployment")
+    parser.add_argument("--output", required=True, type=Path, help="Output directory inside the isolated deployment")
+    parser.add_argument("--resume", action="store_true", help="Validate completed runs and archive interrupted attempts before continuing")
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--dry-run", action="store_true", help="One complete candidate workload; no baseline or pairs")
     mode.add_argument("--pairs", type=int, help="Number of alternating pairs")
@@ -127,7 +129,7 @@ def main():
     build = args.build.resolve()
     output = args.output.resolve()
     assert build.is_relative_to(ROOT / "app/server") and output.is_relative_to(ROOT), "Isolated deployment paths only"
-    assert not output.exists(), "Refusing to overwrite gate evidence"
+    assert args.resume == output.exists(), "Use a new output directory, or explicitly --resume an existing series"
     assert args.dry_run or args.pairs > 0
     locks = []
     for path in [ROOT / "gate.lock", ROOT / "codec-build/build.lock"]:
@@ -150,11 +152,17 @@ def main():
         if variant == "baseline":
             assert manifest["sourceCommit"] == UPSTREAM, "Only actual upstream source is an accepted baseline"
         manifests[variant] = manifest
-    output.mkdir(mode=0o700)
-    (output / "builds.json").write_text(json.dumps(manifests, indent=2) + "\n")
+    if args.resume:
+        assert json.loads((output / "builds.json").read_text()) == manifests, "Resume builds differ"
+    else:
+        output.mkdir(mode=0o700)
+        (output / "builds.json").write_text(json.dumps(manifests, indent=2) + "\n")
     client_source = ROOT / "app/server/test/benchmarks/native-gate.mjs"
     frozen_client = output / "native-gate.mjs"
-    frozen_client.write_bytes(client_source.read_bytes())
+    if args.resume:
+        assert frozen_client.read_bytes() == client_source.read_bytes(), "Resume client differs"
+    else:
+        frozen_client.write_bytes(client_source.read_bytes())
     launcher = output / "launch.sh"
     launcher.write_text('''#!/bin/bash
 set -euo pipefail
@@ -174,10 +182,31 @@ export NODE_OPTIONS="--require $PWD/app/scripts/native/codecs.cjs"
 exec node "$1/main.js"
 ''')
     runs = [("candidate", 0)] if args.dry_run else [(variant, number) for number in range(args.pairs) for variant in (["baseline", "candidate"] if number % 2 == 0 else ["candidate", "baseline"])]
-    (output / "series.json").write_text(json.dumps({"dryRun": args.dry_run, "pairs": 0 if args.dry_run else args.pairs, "runOrder": [f"{variant}-r{number}" for variant, number in runs] if not args.dry_run else ["candidate-dry-run"], "clientSha256": hashlib.sha256(frozen_client.read_bytes()).hexdigest(), "runnerSha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "rssSamplingIntervalMs": 100, "gridCacheMeaning": "HTTP cold with no validators, then warm ETag/304 on the same six keep-alive connections. Filesystem caches are not globally dropped."}, indent=2) + "\n")
+    if not args.resume:
+        (output / "series.json").write_text(json.dumps({"dryRun": args.dry_run, "pairs": 0 if args.dry_run else args.pairs, "runOrder": [f"{variant}-r{number}" for variant, number in runs] if not args.dry_run else ["candidate-dry-run"], "clientSha256": hashlib.sha256(frozen_client.read_bytes()).hexdigest(), "runnerSha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "rssSamplingIntervalMs": 100, "gridCacheMeaning": "HTTP cold with no validators, then warm ETag/304 on the same six keep-alive connections. Filesystem caches are not globally dropped."}, indent=2) + "\n")
+    analyzer = runpy.run_path(str(Path(__file__).with_name("analyze-gate.py")))
+    if args.resume:
+        series = json.loads((output / "series.json").read_text())
+        assert series["pairs"] == (0 if args.dry_run else args.pairs)
+        series.setdefault("resumes", []).append({"timeUtc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "runnerSha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()})
+        (output / "series.json").write_text(json.dumps(series, indent=2) + "\n")
     for variant, number in runs:
         label = f"{variant}-r{number}" if not args.dry_run else "candidate-dry-run"
         run = output / label
+        if run.exists():
+            try:
+                analyzer["summarize"](run)
+            except (AssertionError, KeyError, FileNotFoundError):
+                interrupted = output / "interrupted"
+                interrupted.mkdir(exist_ok=True, mode=0o700)
+                run.rename(interrupted / f"{label}-{time.time_ns()}")
+            else:
+                print(f"{label} already complete; validated", flush=True)
+                if not args.dry_run:
+                    other = output / (f"baseline-r{number}" if variant == "candidate" else f"candidate-r{number}")
+                    if (other / "artifacts.json").exists():
+                        analyzer["compare_artifacts"](output / f"baseline-r{number}", output / f"candidate-r{number}")
+                continue
         run.mkdir(mode=0o700)
         host_idle = idle_check()
         unit = f"openframe-gate-{os.getpid()}-{number}-{variant}"
@@ -201,6 +230,21 @@ exec node "$1/main.js"
                     assert time.monotonic() < deadline, "API readiness timeout"
                     time.sleep(0.5)
             cgroup = Path("/sys/fs/cgroup") / systemctl("show", unit, "-p", "ControlGroup", "--value").lstrip("/")
+            # Settle work left by an interrupted attempt before starting this run's accounting.
+            credentials = json.loads((ROOT / "fixtures/admin.json").read_text())
+            request = urllib.request.Request("http://127.0.0.1:2287/api/auth/login", data=json.dumps(credentials).encode(), headers={"content-type": "application/json"})
+            with urllib.request.urlopen(request, timeout=30) as response:
+                token = json.load(response)["accessToken"]
+            settle_deadline = time.monotonic() + 3600
+            while True:
+                request = urllib.request.Request("http://127.0.0.1:2287/api/queues", headers={"authorization": f"Bearer {token}"})
+                with urllib.request.urlopen(request, timeout=30) as response:
+                    queues = json.load(response)
+                assert all(not queue["isPaused"] and queue["statistics"]["failed"] == 0 for queue in queues), "Paused or failed jobs before workload"
+                if all(sum(queue["statistics"][key] for key in ["active", "waiting", "delayed"]) == 0 for queue in queues):
+                    break
+                assert time.monotonic() < settle_deadline, "Existing queues did not settle"
+                time.sleep(1)
             resources = Resources(cgroup)
             client = ROOT / "local/node-v24.13.1-linux-x64/bin/node"
             # The client also needs the same source codecs to inspect artifacts.
@@ -214,6 +258,10 @@ exec node "$1/main.js"
             (run / "resources.json").write_text(json.dumps({**report, "hostIdleBeforeRun": host_idle, "wallSecondsIncludingStartup": time.monotonic() - started}, indent=2) + "\n")
             assert report["hostIdleDuringRun"], "Unattributed host CPU exceeded the idle gate; evidence retained"
             print(f"{label} passed", flush=True)
+            other = output / (f"baseline-r{number}" if variant == "candidate" else f"candidate-r{number}")
+            if (other / "artifacts.json").exists():
+                analyzer["compare_artifacts"](output / f"baseline-r{number}", output / f"candidate-r{number}")
+                print(f"Round {number} exact-byte parity passed", flush=True)
         finally:
             if resources:
                 usage = resource.getrusage(resource.RUSAGE_CHILDREN)
