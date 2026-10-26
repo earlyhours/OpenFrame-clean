@@ -53,6 +53,8 @@ def summarize(directory):
     for key in ["backendCpuSeconds", "peakRssBytes", "peakStackRssBytes"]:
         assert resources[key] > 0
         values[f"resources.{key}"] = resources[key]
+    values["resources.ancillaryCpuSecondsLowerBound"] = resources["ancillaryCpuSecondsLowerBound"]
+    values["resources.stackCpuSecondsLowerBound"] = resources["backendCpuSeconds"] + resources["ancillaryCpuSecondsLowerBound"]
     assert all(value > 0 and math.isfinite(value) for value in values.values())
     return values, artifacts
 
@@ -117,7 +119,7 @@ def main():
     assert {path.name for path in directories} == set(series["runOrder"]), "Incomplete series"
     values = {path.name: summarize(path)[0] for path in directories}
     dry = list(values) == ["candidate-dry-run"]
-    result = {"mode": "candidate dry run, no speedup claim" if dry else "alternating actual-upstream/candidate pairs", "runs": values, "pairedMetrics": {}, "parity": []}
+    result = {"mode": "candidate dry run, no speedup claim" if dry else "alternating actual-upstream/candidate pairs", "runs": values, "pairedMetrics": {}, "pairedVideoSamples": {}, "parity": [], "analyzerSha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
     if not dry:
         builds = json.loads((args.directory / "builds.json").read_text())
         assert builds["baseline"]["sourceCommit"] == "256eb55dbe92ac77e02794442f9487e88ffed2b1"
@@ -126,17 +128,28 @@ def main():
         expected_order = [f"{variant}-r{number}" for number in rounds for variant in (["baseline", "candidate"] if number % 2 == 0 else ["candidate", "baseline"])]
         assert series["runOrder"] == expected_order, "Runs were not alternating pairs"
         assert set(values) == {f"{variant}-r{number}" for number in rounds for variant in ["baseline", "candidate"]}, "Incomplete paired series"
+        video_samples = {"seek.ttfbMs": [], "transfer.mibPerSecond": []}
         for number in rounds:
             before_rows = [json.loads(line) for line in (args.directory / f"baseline-r{number}/metrics.jsonl").read_text().splitlines()]
             after_rows = [json.loads(line) for line in (args.directory / f"candidate-r{number}/metrics.jsonl").read_text().splitlines()]
             assert next(row for row in before_rows if row["kind"] == "warmup")["systemConfigSha256"] == next(row for row in after_rows if row["kind"] == "warmup")["systemConfigSha256"], "Server policies differ between variants"
             assert [(row["sample"], row["offset"]) for row in before_rows if row["kind"] == "seek"] == [(row["sample"], row["offset"]) for row in after_rows if row["kind"] == "seek"]
+            for key, samples in video_samples.items():
+                kind, metric = key.split(".")
+                before = {row["sample"]: row for row in before_rows if row["kind"] == kind}
+                after = {row["sample"]: row for row in after_rows if row["kind"] == kind}
+                assert before.keys() == after.keys()
+                samples.extend((before[index][metric], after[index][metric]) for index in before)
             result["parity"].append({"round": number, "fixtures": compare_artifacts(args.directory / f"baseline-r{number}", args.directory / f"candidate-r{number}")})
         for metric in next(iter(values.values())):
             pairs = [(values[f"baseline-r{number}"][metric], values[f"candidate-r{number}"][metric]) for number in rounds]
             higher_better = metric.endswith(("requestsPerSecond", "MiBPerSecond"))
             ratios = [after / before if higher_better else before / after for before, after in pairs]
             result["pairedMetrics"][metric] = {"pairs": len(pairs), "baselineMedian": statistics.median(before for before, _ in pairs), "candidateMedian": statistics.median(after for _, after in pairs), "geometricMeanSpeedup": math.exp(statistics.mean(math.log(value) for value in ratios)), "slowerCandidatePairs": sum(value < 1 for value in ratios)}
+        for key, samples in video_samples.items():
+            higher_better = key.endswith("mibPerSecond")
+            ratios = [after / before if higher_better else before / after for before, after in samples]
+            result["pairedVideoSamples"][key] = {"pairedSamples": len(samples), "baselineMedian": statistics.median(before for before, _ in samples), "candidateMedian": statistics.median(after for _, after in samples), "geometricMeanSpeedup": math.exp(statistics.mean(math.log(value) for value in ratios)), "slowerCandidateSamples": sum(value < 1 for value in ratios)}
     (args.directory / "summary.json").write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps({"mode": result["mode"], "runs": values, "pairedMetrics": result["pairedMetrics"]}, indent=2))
 
