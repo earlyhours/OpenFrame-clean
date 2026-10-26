@@ -39,6 +39,12 @@ Unsatisfiable ranges currently return 404 because the existing shared sendFile e
 
 The application's backup job produced a 18,918,683-byte gzip file containing 53,248,711 bytes of SQL. It restored successfully into a second isolated database, `ofv_restore`, inside one transaction. All nine asset IDs matched and a vector query passed after restore. See `results/native-ubuntu-backup-restore.json`. This does not exercise the interactive maintenance restore flow, an existing-library migration, or a restore to another host.
 
+## Paired HTTP measurements
+
+All three alternating pairs completed successfully. `results/native-ubuntu-http.jsonl` retains warmups and every timed sample. Run `python3 native-ubuntu/analyze.py results/native-ubuntu-http.jsonl results/native-ubuntu-http-summary.json` from this directory to reproduce the analysis.
+
+Across 18 paired samples per metric, upload response improved by a paired geometric mean of 1.096x, upload-to-preview readiness by 1.019x, and video transfer by 1.167x. Candidate readiness was slower in 10 of 18 samples, and its median was 3380.86 ms versus 3366.15 ms for baseline. These results do not establish a 2–5x end-to-end gain or a Docker-to-native gain. Both variants used the same native stack. All paired encoded photo preview hashes matched, and every run passed search and queue checks. Detailed medians and unfavorable sample counts are in `NATIVE-PERFORMANCE-RESULTS.md`.
+
 ## Codec regression gate
 
 `native-codecs.mjs` calls the real repository decode/thumbnail path and compares encoded JPEG SHA256 with the original transform. Bundled Sharp 0.35.5/libvips 8.18.7 fails two representative upstream fixtures:

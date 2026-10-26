@@ -2,11 +2,11 @@
 
 These are component measurements on the development host using Node 24.13.1, not an Ubuntu deployment benchmark or an end-to-end Immich speed claim. The requested 2–5x gain remains unmet. Shared-host noise, warmed filesystem caches and synthetic media limit what these results predict.
 
-| Path | Measurement | Integrity and tradeoff |
-| --- | --- | --- |
-| Upload file writes | 1.446x geometric mean of six paired 256 MiB writes; 25.9% less paired process CPU | SHA1 checked on input and reread stored file; `flush: true` retained. Write buffer grows from 64 KiB to 1 MiB per active write. One pair was slower. |
-| Video transfers | 1.65x ratio of median times; 24.5% less median process CPU | Six alternating pairs, eight sequential 32 MiB loopback transfers each; warmup SHA256 and timed byte counts. Read buffer grows from 64 KiB to 256 KiB per active video. |
-| Image previews | 1.106x geometric mean of six paired 12 MP JPEG-to-1440-preview runs; 10.5% less paired process CPU | Exact encoded SHA256 matches against original transform. Skips an unchanged-size RGB/RGBA transform, preserves grayscale expansion and linear-light resizing. One pair was slower. |
+| Path               | Measurement                                                                                        | Integrity and tradeoff                                                                                                                                                             |
+| ------------------ | -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Upload file writes | 1.446x geometric mean of six paired 256 MiB writes; 25.9% less paired process CPU                  | SHA1 checked on input and reread stored file; `flush: true` retained. Write buffer grows from 64 KiB to 1 MiB per active write. One pair was slower.                               |
+| Video transfers    | 1.65x ratio of median times; 24.5% less median process CPU                                         | Six alternating pairs, eight sequential 32 MiB loopback transfers each; warmup SHA256 and timed byte counts. Read buffer grows from 64 KiB to 256 KiB per active video.            |
+| Image previews     | 1.106x geometric mean of six paired 12 MP JPEG-to-1440-preview runs; 10.5% less paired process CPU | Exact encoded SHA256 matches against original transform. Skips an unchanged-size RGB/RGBA transform, preserves grayscale expansion and linear-light resizing. One pair was slower. |
 
 Raw results are in `results/upload-write-native.jsonl`, `results/image-preview-local.jsonl`, and `results/video-stream-node24-transfer.json`. Earlier video runs, including less favorable results, remain available and are described in `VIDEO-STREAM-RESULTS.md`. Process CPU includes client work in the HTTP experiment and is not energy consumption.
 
@@ -23,9 +23,19 @@ The upload benchmark calls the built repository and compares it with the origina
 
 ## Remaining bottlenecks and limits
 
-A native runtime is available in `scripts/native`, but is experimental. On 2026-10-26, the Linux box at `yvm@192.168.1.9` had Node 22.23.3, no `psql`, Redis server, `uv`, or Extism compiler, no noninteractive sudo, and about 30 GiB free. Its existing `~/openframe-bench-20261026` baseline was left untouched. PostgreSQL/Redis authentication and vector extension checks are implemented but have not passed against a complete isolated native deployment.
+A native runtime is available in `scripts/native`. An isolated Ubuntu deployment passed authenticated PostgreSQL/Redis and vector operations, normal API/worker startup, CPU ML, uploads, search, original/range/conditional downloads, video playback and a transactional backup restore. See `NATIVE-UBUNTU-VALIDATION.md`. This is not an existing-library migration rehearsal.
 
-Sharp's bundled libvips differs from the custom Docker build. A HEIF capability flag does not prove HEVC-backed HEIC decoding; camera RAW and HDR require representative samples. No such samples are present in this checkout. Keep the Docker install and comparison/e2e assets until upload, processing, search/ML, playback and migration tests pass on the native target.
+The three alternating full HTTP pairs on that same native stack measured the following. Each metric has 18 paired samples. Baseline reverts only the three optimizations; this does not compare Docker with native execution.
+
+| HTTP metric                 | Baseline median | Candidate median | Paired geometric mean speedup | Slower candidate samples |
+| --------------------------- | --------------- | ---------------- | ----------------------------- | ------------------------ |
+| Photo upload response       | 283.26 ms       | 255.74 ms        | 1.096x                        | 5/18                     |
+| Upload to available preview | 3366.15 ms      | 3380.86 ms       | 1.019x                        | 10/18                    |
+| Video transfer              | 100.11 ms       | 75.39 ms         | 1.167x                        | 6/18                     |
+
+All paired fixture hashes and encoded photo previews matched. Every run passed smart search, queue drain and zero failed jobs. Upload-to-preview timing excludes later ML completion. Warm caches, loopback networking, six synthetic photos and one compatible H.264 video limit these results. Readiness median slightly worsened despite the paired geometric mean improving. Raw warmup and timed samples, including unfavorable samples, are in `results/native-ubuntu-http.jsonl`; `results/native-ubuntu-http-summary.json` contains the analysis. The 2–5x end-to-end target remains unmet.
+
+Bundled Sharp cannot decode the representative HEVC HEIC or Canon CR2 fixtures on Ubuntu. HDR AVIF previews match the baseline using the same reduced native codec stack. Docker codec parity remains a release gate. Keep Docker installation, comparison and e2e assets until codec and migration tests pass.
 
 JPEG encoding/decoding, full-resolution linear-light processing and video transcoding still dominate relevant media workloads. Fusing decode and resize may change resampling/color behavior, so that requires separate quality evidence. Hardware transcoding is device-dependent. No lossy quality, bitrate, durability, security, concurrency, or global kernel defaults were changed to reach a target number.
 
@@ -35,6 +45,6 @@ ZIP export already uses stored entries for compressed media. Database backups us
 
 Node 24.13.1 production server build, TypeScript check, full server ESLint, changed-file formatting, and `git diff --check` passed. The full unit suite passed 110 files with 2,446 passed tests, one expected failure and two skipped tests. A later targeted run including new grayscale/RGB/RGBA inside/outside transform-equivalence cases passed 52 tests with one opt-in benchmark skipped.
 
-The native CLI temporary-state self-check passed, including configuration mode 0600, overwrite refusal, native paths, admin dispatch and credential-file precedence. Direct doctor execution passed JPEG/PNG/WebP encode/decode and FFmpeg H.264 encode/probe, then correctly failed with `ECONNREFUSED` against loopback port 1. Successful PostgreSQL/Redis authentication, vector operations, native ML and complete startup remain untested.
+The native CLI temporary-state self-check passed, including configuration mode 0600, overwrite refusal, native paths, admin dispatch and credential-file precedence. Direct doctor execution passed JPEG/PNG/WebP encode/decode and FFmpeg H.264 encode/probe, then correctly failed with `ECONNREFUSED` against loopback port 1. Those service checks subsequently passed on isolated Ubuntu; the full record and remaining codec gate are in `NATIVE-UBUNTU-VALIDATION.md`.
 
 The first unrestricted full-suite attempt exhausted available memory and was restarted with `--maxWorkers 2`. A subsequent lint fix temporarily made the 1.4 MiB integrity assertion use Vitest deep equality, causing two repeat timeouts. The final test assigns the awaited read and uses `Buffer.equals`; the final targeted run passed without raising timeouts.
