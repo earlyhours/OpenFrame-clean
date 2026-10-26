@@ -51,6 +51,18 @@ def descendants(roots):
     return selected
 
 
+def cgroup_cpu_snapshot():
+    result = {}
+    for path in Path("/sys/fs/cgroup").rglob("cpu.stat"):
+        try:
+            values = dict(line.split() for line in path.read_text().splitlines())
+            if "usage_usec" in values:
+                result[str(path.parent)] = int(values["usage_usec"]) / 1_000_000
+        except (FileNotFoundError, PermissionError):
+            pass
+    return result
+
+
 def host_cpu():
     return [int(value) for value in Path("/proc/stat").read_text().splitlines()[0].split()[1:9]]
 
@@ -74,6 +86,7 @@ class Resources:
         self.last = {(pid, stat["start"]): stat["cpu"] for pid, stat in self.initial.items()}
         self.ancillary_ticks = 0
         self.peak_rss = self.peak_stack_rss = 0
+        self.cgroup_start = cgroup_cpu_snapshot()
         self.cpu_start = self.cpu()
         self.host_start = host_cpu()
         usage = resource.getrusage(resource.RUSAGE_SELF)
@@ -106,6 +119,9 @@ class Resources:
     def finish(self, client_cpu=0):
         self.stop_event.set()
         self.thread.join()
+        cgroups = cgroup_cpu_snapshot()
+        cgroup_deltas = {name: value - self.cgroup_start.get(name, 0) for name, value in cgroups.items()}
+        cgroup_deltas = {name: value for name, value in cgroup_deltas.items() if value >= 0.05}
         cpu = self.cpu() - self.cpu_start
         delta = [b - a for a, b in zip(self.host_start, host_cpu())]
         host_busy = (sum(delta) - delta[3] - delta[4]) / self.ticks
@@ -113,7 +129,7 @@ class Resources:
         runner_cpu = usage.ru_utime + usage.ru_stime - self.runner_start
         unaccounted = max(0, host_busy - cpu - self.ancillary_ticks / self.ticks - client_cpu - runner_cpu)
         quiet = unaccounted <= max(5, host_busy * 0.05)
-        return {"backendCpuSeconds": cpu, "hostIdleDuringRun": quiet, "hostBusyCpuSeconds": host_busy, "unattributedCpuSecondsUpperBound": unaccounted, "clientCpuSeconds": client_cpu, "samplerCpuSeconds": runner_cpu, "ancillaryCpuSecondsLowerBound": self.ancillary_ticks / self.ticks, "peakRssBytes": self.peak_rss, "peakStackRssBytes": self.peak_stack_rss, "backendCgroupMemoryPeakBytes": int((self.cgroup / "memory.peak").read_text()), "rssSamplingIntervalMs": 100, "scope": "Backend CPU is exact cgroup accounting including exited children. RSS is sampled aggregate process RSS, shared pages counted per process. Stack adds existing ML/PostgreSQL/Redis descendants. Ancillary CPU is a sampled lower bound; short-lived DB children may be missed. Includes untimed fixture uploads, warmup and queue drain, excludes source/fixture generation and service startup. Cgroup memory.peak includes startup and file cache. Unattributed CPU includes sampling gaps; reject runs above max(5 CPU seconds, 5% of host busy CPU)."}
+        return {"hostCgroupCpuDeltaSeconds": cgroup_deltas, "backendCpuSeconds": cpu, "hostIdleDuringRun": quiet, "hostBusyCpuSeconds": host_busy, "unattributedCpuSecondsUpperBound": unaccounted, "clientCpuSeconds": client_cpu, "samplerCpuSeconds": runner_cpu, "ancillaryCpuSecondsLowerBound": self.ancillary_ticks / self.ticks, "peakRssBytes": self.peak_rss, "peakStackRssBytes": self.peak_stack_rss, "backendCgroupMemoryPeakBytes": int((self.cgroup / "memory.peak").read_text()), "rssSamplingIntervalMs": 100, "scope": "Backend CPU is exact cgroup accounting including exited children. RSS is sampled aggregate process RSS, shared pages counted per process. Stack adds existing ML/PostgreSQL/Redis descendants. Ancillary CPU is a sampled lower bound; short-lived DB children may be missed. Includes untimed fixture uploads, warmup and queue drain, excludes source/fixture generation and service startup. Cgroup memory.peak includes startup and file cache. Unattributed CPU includes sampling gaps; reject runs above max(5 CPU seconds, 5% of host busy CPU)."}
 
 
 def main():
@@ -196,7 +212,7 @@ exec node "$1/main.js"
         if run.exists():
             try:
                 analyzer["summarize"](run)
-            except (AssertionError, KeyError, FileNotFoundError):
+            except (AssertionError, KeyError, FileNotFoundError, json.JSONDecodeError):
                 interrupted = output / "interrupted"
                 interrupted.mkdir(exist_ok=True, mode=0o700)
                 run.rename(interrupted / f"{label}-{time.time_ns()}")
