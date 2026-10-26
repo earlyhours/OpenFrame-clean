@@ -19,6 +19,8 @@ sudo apt install postgresql postgresql-contrib redis-server libgomp1 curl unzip 
 
 Install the pgvector extension package matching your PostgreSQL major version, for example `postgresql-16-pgvector` on Ubuntu 24.04 with PostgreSQL 16. Package availability depends on your configured PostgreSQL repositories. Use PostgreSQL 14 or newer and Redis 6.2 or newer. Bind both services to loopback and retain authentication. Do not expose their ports to the Internet.
 
+For a user-local PostgreSQL installation, set `DB_BIN_DIRECTORY` to its absolute `bin` directory in the environment file. Backup and restore use this directory for `pg_dump`, `pg_dumpall`, and `psql`. The doctor requires all three executables to match the database server's major version. Without this setting, the existing `/usr/lib/postgresql/<major>/bin` path is used.
+
 Install `uv`, Python 3.13, and Jellyfin FFmpeg 7.1.3-6 using your normal package/tool manager. Generic distribution FFmpeg packages may lack Immich's required codecs or hardware acceleration. Native Sharp uses its packaged libvips; codec support can differ from the container's custom libvips build. Check RAW, HEIC and HDR samples from your own library before migration.
 
 Create a dedicated database role and database, using a password you choose:

@@ -93,8 +93,20 @@ try {
     "Unsupported PostgreSQL version",
   );
   const major = semver.coerce(version.server_version).major;
-  for (const binary of ["pg_dump", "psql"]) {
-    await access(`/usr/lib/postgresql/${major}/bin/${binary}`, constants.X_OK);
+  const binDirectory =
+    env.database.binDirectory ?? `/usr/lib/postgresql/${major}/bin`;
+  for (const binary of ["pg_dump", "pg_dumpall", "psql"]) {
+    const path = `${binDirectory}/${binary}`;
+    await access(path, constants.X_OK);
+    const output = execFileSync(path, ["--version"], {
+      encoding: "utf8",
+      timeout: 5000,
+    });
+    assert.equal(
+      semver.coerce(output)?.major,
+      major,
+      `${binary} must match PostgreSQL major ${major}`,
+    );
   }
   const extensions = await db`SELECT extname, extversion FROM pg_extension`;
   const vector =
