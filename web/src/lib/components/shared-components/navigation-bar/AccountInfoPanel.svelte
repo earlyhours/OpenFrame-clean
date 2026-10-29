@@ -27,12 +27,10 @@
   in:fade={{ duration: 100 }}
   out:fade={{ duration: 100 }}
   id="account-info-panel"
-  class="absolute inset-e-6 top-19 z-1 w-[min(360px,100vw-50px)] rounded-3xl bg-gray-200 shadow-lg dark:border dark:border-immich-dark-gray dark:bg-immich-dark-gray"
+  class="absolute inset-e-6 top-19 z-1 w-[min(360px,100vw-50px)] rounded-xl border bg-subtle"
   use:focusTrap
 >
-  <div
-    class="mx-4 mt-4 flex flex-col items-center justify-center gap-4 rounded-t-3xl bg-white p-4 dark:bg-immich-dark-primary/10"
-  >
+  <div class="mx-4 mt-4 flex flex-col items-center justify-center gap-4 rounded-lg bg-light-100 p-4">
     <div class="relative">
       <UserAvatar user={authManager.user} size="xl" />
       <div class="absolute inset-e-0 bottom-0 size-6 rounded-full">
@@ -53,7 +51,7 @@
       <p class="text-center text-lg font-medium text-primary">
         {authManager.user.name}
       </p>
-      <p class="text-sm text-gray-500 dark:text-immich-dark-fg">{authManager.user.email}</p>
+      <p class="font-mono text-xs text-muted">{authManager.user.email}</p>
     </div>
 
     <div class="flex flex-col gap-1">
@@ -93,7 +91,7 @@
 
   <div class="mb-4 flex flex-col">
     <Button
-      class="m-1 mx-4 rounded-none rounded-b-3xl bg-white p-3 dark:bg-immich-dark-primary/10"
+      class="m-1 mx-4 rounded-lg bg-transparent p-3"
       href={Route.logout()}
       leadingIcon={mdiLogout}
       variant="ghost"

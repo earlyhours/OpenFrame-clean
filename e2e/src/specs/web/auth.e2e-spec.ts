@@ -32,14 +32,19 @@ test.describe('Registration', () => {
 
     // onboarding
     await expect(page).toHaveURL('/auth/onboarding');
-    await page.getByRole('button', { name: 'Theme' }).click();
-    await page.getByRole('button', { name: 'Language' }).click();
-    await page.getByRole('button', { name: 'Server Privacy' }).click();
-    await page.getByRole('button', { name: 'User Privacy' }).click();
-    await page.getByRole('button', { name: 'Storage Template' }).click();
-    await page.getByRole('button', { name: 'Backups' }).click();
-    await page.getByRole('button', { name: 'Mobile App' }).click();
-    await page.getByRole('button', { name: 'Done' }).click();
+    for (const step of [
+      'Theme',
+      'Language',
+      'Server Privacy',
+      'User Privacy',
+      'Storage Template',
+      'Backups',
+      'Mobile App',
+    ]) {
+      await page.getByRole('button', { name: 'Continue' }).click();
+      await expect(page.getByRole('heading', { name: step, exact: true })).toBeVisible();
+    }
+    await page.getByRole('button', { name: 'Finish setup' }).click();
 
     // success
     await expect(page).toHaveURL('/photos');
@@ -84,11 +89,11 @@ test.describe('Registration', () => {
 
     // onboarding
     await expect(page).toHaveURL('/auth/onboarding');
-    await page.getByRole('button', { name: 'Theme' }).click();
-    await page.getByRole('button', { name: 'Language' }).click();
-    await page.getByRole('button', { name: 'User Privacy' }).click();
-    await page.getByRole('button', { name: 'Mobile App' }).click();
-    await page.getByRole('button', { name: 'Done' }).click();
+    for (const step of ['Theme', 'Language', 'User Privacy', 'Mobile App']) {
+      await page.getByRole('button', { name: 'Continue' }).click();
+      await expect(page.getByRole('heading', { name: step, exact: true })).toBeVisible();
+    }
+    await page.getByRole('button', { name: 'Finish setup' }).click();
 
     // success
     await expect(page).toHaveURL(/\/photos/);

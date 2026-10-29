@@ -43,7 +43,9 @@ class UserCircleAvatar extends StatelessWidget {
     );
 
     final textIcon = DefaultTextStyle(
-      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: textColor),
+      style: Theme.of(
+        context,
+      ).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.w500, fontSize: 12, color: textColor),
       child: Text(user.name[0].toUpperCase()),
     );
 

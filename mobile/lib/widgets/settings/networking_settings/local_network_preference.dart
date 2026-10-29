@@ -172,7 +172,7 @@ class LocalNetworkPreference extends HookConsumerWidget {
                               style: context.textTheme.labelLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: enabled ? context.primaryColor : context.colorScheme.onSurface.withAlpha(100),
-                                fontFamily: 'GoogleSansCode',
+                                fontFamily: 'GeistMono',
                               ),
                             ),
                       trailing: IconButton(
@@ -191,7 +191,7 @@ class LocalNetworkPreference extends HookConsumerWidget {
                               localEndpointText.value,
                               style: context.textTheme.labelLarge?.copyWith(
                                 color: enabled ? context.primaryColor : context.colorScheme.onSurface.withAlpha(100),
-                                fontFamily: 'GoogleSansCode',
+                                fontFamily: 'GeistMono',
                               ),
                             ),
                       trailing: IconButton(

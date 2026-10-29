@@ -2,6 +2,10 @@
 
 The Immich mobile app is a Flutter-based solution leveraging the Isar Database for local storage and Riverpod for state management. This structure optimizes functionality and maintainability, allowing for efficient development and robust performance.
 
+## Installing OpenFrame on Android
+
+OpenFrame uses the Android package ID `in.yash0.openframe`, so it can be installed alongside Immich. Earlier OpenFrame APKs used Immich's package ID and could fail to install when the signing keys differed. The separate app keeps its own settings and requires a new sign-in. Keep the existing app installed to preserve its local data and backup settings.
+
 ## Setup
 
 See [setup](https://docs.immich.app/developer/setup) for how to set up the mobile build environment.

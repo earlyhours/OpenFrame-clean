@@ -25,6 +25,22 @@ The project site is **[immich.yash0.in](https://immich.yash0.in)**.
 > [!WARNING]
 > ⚠️ Always follow [3-2-1](https://www.backblaze.com/blog/the-3-2-1-backup-strategy/) backup plan for your precious photos and videos!
 
+## Set up an instance
+
+On Arch/Omarchy or Ubuntu 24.04 x86-64, run:
+
+```sh
+bash install.sh
+```
+
+For native mode on Arch/Omarchy, setup installs missing native packages through pacman and selects the pinned build tools through mise. Sudo may ask for your password. For native mode on Ubuntu, install the [native prerequisites](scripts/native/README.md#prerequisites) first.
+
+The installer offers Docker when Docker and Compose v2+ are usable. Published OpenFrame images usually take a few minutes to download and start. Use `bash install.sh --docker --yes` for this mode, or `--native` to build from source and run systemd user services. With `--yes` alone, Docker is selected when available. If pinned images are not published or cannot be downloaded, setup builds them locally; that takes longer and still needs Internet access for build dependencies.
+
+Open the printed LAN address to create your account and complete onboarding, including phone QR setup. For unattended setup use `bash install.sh --yes --dir "$HOME/openframe" --port 2283`. Existing folders and OpenFrame services are never overwritten. Native builds need Internet access, several GB of disk space and time to compile.
+
+The web port is accessible on your LAN. Use a TLS reverse proxy for Internet access and back up the media and database. See the [setup guide](docs/docs/install/script.md) for management and recovery.
+
 ## Goals
 
 These are what OpenFrame is aiming for. They are **goals, not delivered features**: the next section lists what has actually shipped and been measured.

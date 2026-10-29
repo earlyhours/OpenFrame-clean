@@ -63,9 +63,19 @@ class TimelineHeader extends HookWidget {
                 children: [
                   Text(
                     toBeginningOfSentenceCase(_formatMonth(date)),
-                    style: context.textTheme.labelLarge?.copyWith(fontSize: 24),
+                    style: context.textTheme.labelLarge?.copyWith(
+                      fontSize: 18,
+                      color: context.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                   const Spacer(),
+                  if (header == HeaderType.month) ...[
+                    Text(
+                      '${bucket.assetCount}',
+                      style: context.textTheme.labelSmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
                   if (header != HeaderType.monthAndDay) _BulkSelectIconButton(bucket: bucket, assetOffset: assetOffset),
                 ],
               ),
@@ -74,9 +84,17 @@ class TimelineHeader extends HookWidget {
                 children: [
                   Text(
                     toBeginningOfSentenceCase(_formatDay(date)),
-                    style: context.textTheme.labelLarge?.copyWith(fontSize: 15),
+                    style: context.textTheme.labelLarge?.copyWith(
+                      fontSize: 12,
+                      color: context.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                   const Spacer(),
+                  Text(
+                    '${bucket.assetCount}',
+                    style: context.textTheme.labelSmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
+                  ),
+                  const SizedBox(width: 8),
                   _BulkSelectIconButton(bucket: bucket, assetOffset: assetOffset),
                 ],
               ),

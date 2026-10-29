@@ -5,7 +5,7 @@
   import { authManager } from '$lib/managers/auth-manager.svelte';
   import { Route } from '$lib/route';
   import { recentAlbumsDropdown } from '$lib/stores/preferences.store';
-  import { NavbarGroup, NavbarItem } from '@immich/ui';
+  import { NavbarItem } from '@immich/ui';
   import {
     mdiAccount,
     mdiAccountMultiple,
@@ -44,6 +44,7 @@
 </script>
 
 <Sidebar ariaLabel={$t('primary')}>
+  <div class="of-eyebrow mb-3 ps-5">{$t('photos_and_videos')}</div>
   <NavbarItem title={$t('photos')} href={Route.photos()} icon={mdiImageMultipleOutline} activeIcon={mdiImageMultiple} />
 
   <NavbarItem title={$t('explore')} href={Route.explore()} icon={mdiMagnify} />
@@ -71,7 +72,7 @@
     activeIcon={mdiAccountMultiple}
   />
 
-  <NavbarGroup title={$t('library')} size="tiny" />
+  <div class="of-eyebrow mt-5 mb-2 ps-5">{$t('library')}</div>
 
   <NavbarItem title={$t('favorites')} href={Route.favorites()} icon={mdiHeartOutline} activeIcon={mdiHeart} />
 

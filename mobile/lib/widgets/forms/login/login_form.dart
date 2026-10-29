@@ -29,7 +29,6 @@ import 'package:immich_mobile/utils/provider_utils.dart';
 import 'package:immich_mobile/utils/semver.dart';
 import 'package:immich_mobile/utils/url_helper.dart';
 import 'package:immich_mobile/utils/version_compatibility.dart';
-import 'package:immich_mobile/widgets/common/immich_logo.dart';
 import 'package:immich_mobile/widgets/common/immich_title_text.dart';
 import 'package:immich_mobile/widgets/common/immich_toast.dart';
 import 'package:immich_ui/immich_ui.dart';
@@ -70,8 +69,6 @@ class LoginForm extends HookConsumerWidget {
     final isOauthEnable = useState<bool>(false);
     final isPasswordLoginEnable = useState<bool>(false);
     final oAuthButtonLabel = useState<String>('OAuth');
-    final logoAnimationController = useAnimationController(duration: const Duration(seconds: 60));
-    unawaited(logoAnimationController.repeat());
     final serverInfo = ref.watch(serverInfoProvider);
     final warningMessage = useState<String?>(null);
     final loginFormKey = GlobalKey<FormState>();
@@ -541,28 +538,62 @@ class LoginForm extends HookConsumerWidget {
         return SingleChildScrollView(
           child: Center(
             child: Container(
-              constraints: const BoxConstraints(maxWidth: 300),
+              constraints: const BoxConstraints(maxWidth: 380),
+              padding: const EdgeInsets.symmetric(horizontal: 28),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(height: constraints.maxHeight / 5),
+                  SizedBox(height: constraints.maxHeight * .24),
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       GestureDetector(
                         onDoubleTap: () => populateTestLoginInfo(),
                         onLongPress: () => populateTestLoginInfo1(),
-                        child: RotationTransition(turns: logoAnimationController, child: const ImmichLogo()),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 7,
+                              height: 7,
+                              decoration: BoxDecoration(
+                                color: context.primaryColor,
+                                borderRadius: BorderRadius.circular(2),
+                                boxShadow: [
+                                  BoxShadow(color: context.primaryColor.withValues(alpha: .16), spreadRadius: 3),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Flexible(
+                              child: Text(
+                                (serverEndpoint.value == null ? context.t.login_form_endpoint_url : context.t.login)
+                                    .toUpperCase(),
+                                style: context.textTheme.labelSmall?.copyWith(
+                                  color: context.colorScheme.onSurfaceVariant,
+                                  letterSpacing: .8,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      const Padding(padding: EdgeInsets.only(top: 8.0, bottom: 16), child: ImmichTitleText()),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 20, bottom: 32),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: ImmichTitleText(fontSize: 48),
+                        ),
+                      ),
                     ],
                   ),
 
                   // Note: This used to have an AnimatedSwitcher, but was removed
                   // because of https://github.com/flutter/flutter/issues/120874
                   Form(key: loginFormKey, child: serverSelectionOrLogin),
+                  const SizedBox(height: 32),
                 ],
               ),
             ),

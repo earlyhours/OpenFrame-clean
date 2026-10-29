@@ -6,6 +6,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/extensions/theme_extensions.dart';
 import 'package:immich_mobile/routing/router.dart';
+import 'package:immich_mobile/widgets/forms/login/login_backdrop.dart';
 import 'package:immich_mobile/widgets/forms/login/login_form.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -28,7 +29,7 @@ class LoginPage extends HookWidget {
     });
 
     return Scaffold(
-      body: LoginForm(),
+      body: LoginBackdrop(child: SafeArea(child: LoginForm())),
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(bottom: 16.0),
@@ -41,19 +42,15 @@ class LoginPage extends HookWidget {
                   'v${appVersion.value}',
                   style: TextStyle(
                     color: context.colorScheme.onSurfaceSecondary,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: "GoogleSansCode",
+                    fontWeight: FontWeight.w400,
+                    fontFamily: "GeistMono",
                   ),
                 ),
                 const Text(' '),
                 GestureDetector(
                   child: Text(
                     'Logs',
-                    style: TextStyle(
-                      color: context.primaryColor,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: "GoogleSansCode",
-                    ),
+                    style: TextStyle(color: context.primaryColor, fontWeight: FontWeight.w400, fontFamily: "GeistMono"),
                   ),
                   onTap: () {
                     unawaited(context.pushRoute(const AppLogRoute()));

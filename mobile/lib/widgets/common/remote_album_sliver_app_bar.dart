@@ -96,12 +96,7 @@ class _MesmerizingSliverAppBarState extends ConsumerState<RemoteAlbumSliverAppBa
 
           return AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
-            child: scrollProgress > 0.95
-                ? Text(
-                    currentAlbum.name,
-                    style: TextStyle(color: context.primaryColor, fontWeight: FontWeight.w600, fontSize: 18),
-                  )
-                : null,
+            child: scrollProgress > 0.95 ? Text(currentAlbum.name, style: context.textTheme.headlineSmall) : null,
           );
         },
       ),
@@ -225,7 +220,9 @@ class _ExpandedBackgroundState extends ConsumerState<_ExpandedBackground> with S
                           dateRange.value!.$2.toLocal(),
                         ),
                         style: const TextStyle(
-                          color: Colors.white,
+                          fontFamily: 'GeistMono',
+                          fontSize: 12,
+                          color: Color(0xFFF2F1EC),
                           shadows: [Shadow(offset: Offset(0, 2), blurRadius: 12, color: Colors.black87)],
                         ),
                       ),
@@ -240,7 +237,9 @@ class _ExpandedBackgroundState extends ConsumerState<_ExpandedBackground> with S
                       duration: const Duration(milliseconds: 300),
                       child: const ItemCountText(
                         style: TextStyle(
-                          color: Colors.white,
+                          fontFamily: 'GeistMono',
+                          fontSize: 12,
+                          color: Color(0xFFF2F1EC),
                           shadows: [Shadow(offset: Offset(0, 2), blurRadius: 12, color: Colors.black87)],
                         ),
                       ),
@@ -288,9 +287,10 @@ class _DynamicText extends StatelessWidget {
   const _DynamicText({required this.text, required this.maxWidth});
 
   static const _baseTextStyle = TextStyle(
-    color: Colors.white,
-    fontWeight: FontWeight.bold,
-    letterSpacing: 0.5,
+    color: Color(0xFFF2F1EC),
+    fontFamily: 'GeistPixel',
+    fontWeight: FontWeight.w400,
+    letterSpacing: -0.5,
     shadows: [Shadow(offset: Offset(0, 2), blurRadius: 12, color: Colors.black54)],
     overflow: TextOverflow.ellipsis,
   );

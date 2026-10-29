@@ -55,9 +55,7 @@
 </script>
 
 <div
-  class="mt-4 rounded-2xl border-2 border-primary/20 px-6 py-4 transition-all {isOpen
-    ? 'border-primary/60 shadow-md'
-    : ''}"
+  class="mt-4 rounded-xl border bg-subtle px-6 py-4 transition-all {isOpen ? 'border-primary/60' : ''}"
   bind:this={accordionElement}
 >
   <button
@@ -69,15 +67,15 @@
     <div>
       <div class="flex place-items-center gap-2">
         {#if icon}
-          <Icon {icon} class="text-primary" size="24" aria-hidden />
+          <Icon {icon} class="text-muted" size="20" aria-hidden />
         {/if}
-        <h2 class="font-medium text-primary">
+        <h2 class="font-medium text-dark">
           {title}
         </h2>
       </div>
 
       {#if subtitleSnippet}{@render subtitleSnippet()}{:else}
-        <p class="mt-1 text-sm dark:text-immich-dark-fg">{subtitle}</p>
+        <p class="mt-1 text-sm text-muted">{subtitle}</p>
       {/if}
     </div>
 

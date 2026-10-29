@@ -79,7 +79,7 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: false, title: Text(context.t.settings)),
+      appBar: AppBar(centerTitle: false, title: Text(context.t.settings, style: context.textTheme.headlineSmall)),
       body: context.isMobile ? const _MobileLayout() : const _TabletLayout(),
     );
   }

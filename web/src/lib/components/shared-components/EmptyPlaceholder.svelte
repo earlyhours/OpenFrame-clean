@@ -23,12 +23,12 @@
 <svelte:element
   this={onClick ? 'button' : 'div'}
   onclick={onClick}
-  class="{width} {className} flex flex-col place-content-center place-items-center rounded-3xl bg-gray-50 p-5 dark:bg-immich-dark-gray {hoverClasses}"
+  class="{width} {className} flex flex-col place-content-center place-items-center rounded-xl border bg-subtle p-8 {hoverClasses}"
 >
-  <img {src} alt="" width="500" draggable="false" />
+  <img {src} alt="" class="max-h-60 opacity-60" width="360" draggable="false" />
 
   {#if title}
-    <h2 class="my-4 text-xl font-medium">{title}</h2>
+    <h2 class="my-4 font-display text-3xl">{title}</h2>
   {/if}
-  <p class="text-immich-text-gray-500 text-center font-light dark:text-immich-dark-fg">{text}</p>
+  <p class="text-center text-dark {title ? 'text-sm' : 'font-display text-2xl'}">{text}</p>
 </svelte:element>

@@ -9,6 +9,7 @@ import 'package:immich_mobile/domain/models/timeline.model.dart';
 import 'package:immich_mobile/domain/utils/event_stream.dart';
 import 'package:immich_mobile/extensions/asyncvalue_extensions.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
+import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/presentation/widgets/action_buttons/download_status_floating_button.widget.dart';
 import 'package:immich_mobile/presentation/widgets/bottom_sheet/general_bottom_sheet.widget.dart';
 import 'package:immich_mobile/presentation/widgets/timeline/constants.dart';
@@ -387,6 +388,27 @@ class _SliverTimelineState extends ConsumerState<_SliverTimeline> with WidgetsBi
                           else if (widget.appBar != null)
                             widget.appBar!,
                           if (widget.topSliverWidget != null) widget.topSliverWidget!,
+                          if (segments.isEmpty)
+                            SliverFillRemaining(
+                              hasScrollBody: false,
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(32),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.photo_library_outlined, size: 40, color: context.primaryColor),
+                                      const SizedBox(height: 20),
+                                      Text(
+                                        context.t.no_assets_to_show,
+                                        textAlign: TextAlign.center,
+                                        style: context.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w400),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
                           SliverSegmentedList(
                             segments: segments,
                             delegate: SliverChildBuilderDelegate(

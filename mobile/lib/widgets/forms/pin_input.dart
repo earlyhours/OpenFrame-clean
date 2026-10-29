@@ -43,7 +43,7 @@ class PinInput extends StatelessWidget {
     final defaultPinTheme = PinTheme(
       width: getPinSize().width,
       height: getPinSize().height,
-      textStyle: TextStyle(fontSize: 24, color: context.colorScheme.onSurface, fontFamily: 'GoogleSansCode'),
+      textStyle: TextStyle(fontSize: 24, color: context.colorScheme.onSurface, fontFamily: 'GeistMono'),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(19)),
         border: Border.all(color: context.colorScheme.surfaceBright),

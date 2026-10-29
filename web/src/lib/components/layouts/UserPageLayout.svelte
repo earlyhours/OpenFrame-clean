@@ -70,10 +70,10 @@
     </div>
 
     {#if title || buttons}
-      <div class="absolute flex h-16 w-full place-items-center justify-between border-b p-2 text-dark">
+      <div class="absolute flex h-16 w-full place-items-center justify-between border-b px-6 py-2 text-dark">
         <div class="flex items-center gap-2">
           {#if title}
-            <div class="pe-8 outline-none" tabindex="-1" id={headerId}>{title}</div>
+            <div class="pe-4 font-display text-2xl outline-none" tabindex="-1" id={headerId}>{title}</div>
           {/if}
           {#if description}
             <p class="text-sm text-gray-400 dark:text-gray-600">{description}</p>

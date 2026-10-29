@@ -71,7 +71,7 @@
   {#if hasPeople}
     <div class="mt-2 mb-6">
       <div class="flex justify-between">
-        <p class="mb-4 font-medium dark:text-immich-dark-fg">{$t('people')}</p>
+        <p class="of-eyebrow mb-4">{$t('people')}</p>
         <a
           href={Route.people()}
           class="pe-4 text-sm font-medium hover:text-immich-primary dark:text-immich-dark-fg dark:hover:text-immich-dark-primary"
@@ -83,13 +83,7 @@
           {#each people.slice(0, itemCount) as person (person.id)}
             <a href={Route.viewPerson(person)} class="text-center">
               <div class="@container relative">
-                <ImageThumbnail
-                  circle
-                  shadow
-                  url={getPeopleThumbnailUrl(person)}
-                  altText={person.name}
-                  widthStyle="100%"
-                />
+                <ImageThumbnail circle url={getPeopleThumbnailUrl(person)} altText={person.name} widthStyle="100%" />
                 <PersonIndicator {person} />
               </div>
               <p class="mt-2 text-sm font-medium text-ellipsis dark:text-white">{person.name}</p>
@@ -103,7 +97,7 @@
   {#if places.length > 0}
     <div class="mt-2 mb-6">
       <div class="flex justify-between">
-        <p class="mb-4 font-medium dark:text-immich-dark-fg">{$t('places')}</p>
+        <p class="of-eyebrow mb-4">{$t('places')}</p>
         <a
           href={Route.places()}
           class="pe-4 text-sm font-medium hover:text-immich-primary dark:text-immich-dark-fg dark:hover:text-immich-dark-primary"
@@ -136,7 +130,7 @@
   {#if memories.length > 0}
     <div class="mt-2 mb-6">
       <div class="flex justify-between">
-        <p class="mb-4 font-medium dark:text-immich-dark-fg">{$t('memories')}</p>
+        <p class="of-eyebrow mb-4">{$t('memories')}</p>
         <a
           href={Route.memories()}
           class="pe-4 text-sm font-medium hover:text-immich-primary dark:text-immich-dark-fg dark:hover:text-immich-dark-primary"
@@ -154,7 +148,7 @@
   {#if recents.length > 0}
     <div class="mt-2 mb-6">
       <div class="flex justify-between">
-        <p class="mb-4 font-medium dark:text-immich-dark-fg">{$t('recently_added')}</p>
+        <p class="of-eyebrow mb-4">{$t('recently_added')}</p>
         <a
           href={Route.recentlyAdded()}
           class="pe-4 text-sm font-medium hover:text-immich-primary dark:text-immich-dark-fg dark:hover:text-immich-dark-primary"

@@ -103,7 +103,7 @@ class AppLogPage extends HookWidget {
             minLeadingWidth: 10,
             title: Text(
               truncateLogMessage(logMessage.message, 4),
-              style: TextStyle(fontSize: 14.0, color: context.colorScheme.onSurface, fontFamily: "GoogleSansCode"),
+              style: TextStyle(fontSize: 14.0, color: context.colorScheme.onSurface, fontFamily: "GeistMono"),
             ),
             subtitle: Text(
               "at ${DateFormat("HH:mm:ss.SSS", resolvedDateTimeLocale()).format(logMessage.createdAt)} in ${logMessage.logger}",

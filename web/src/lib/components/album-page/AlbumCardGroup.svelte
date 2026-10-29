@@ -55,8 +55,10 @@
       aria-expanded={!isCollapsed}
     >
       <Icon icon={mdiChevronRight} size="24" class="-mt-2.5 inline-block transition-all duration-250 {iconRotation}" />
-      <span class="text-3xl font-bold text-black dark:text-white">{group.name}</span>
-      <span class="ms-1.5">({$t('albums_count', { values: { count: albums.length } })})</span>
+      <span class="font-mono text-xl text-dark">{group.name}</span>
+      <span class="ms-1.5 font-mono text-xs text-muted"
+        >({$t('albums_count', { values: { count: albums.length } })})</span
+      >
     </button>
     <hr class="dark:border-immich-dark-gray" />
   </div>
@@ -64,7 +66,7 @@
 
 <div class="mt-4">
   {#if !isCollapsed}
-    <div class="grid grid-auto-fill-56 gap-y-4" transition:slide={{ duration: 300 }}>
+    <div class="grid grid-auto-fill-56 gap-4" transition:slide={{ duration: 300 }}>
       {#each albums as album, index (album.id)}
         {@const { Edit, Share, Download, Leave, Delete } = getAlbumActions($t, album)}
         {@const items = [Edit, Share, Download, Leave, Delete]}

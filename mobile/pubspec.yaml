@@ -129,6 +129,29 @@ flutter:
     - assets/
     - assets/feature_message/
   fonts:
+    - family: Geist
+      fonts:
+        - asset: fonts/Geist/Geist.ttf
+          weight: 400
+        - asset: fonts/Geist/Geist.ttf
+          weight: 500
+        - asset: fonts/Geist/Geist.ttf
+          weight: 600
+        - asset: fonts/Geist/Geist.ttf
+          weight: 700
+        - asset: fonts/Geist/Geist-Italic.ttf
+          style: italic
+    - family: GeistMono
+      fonts:
+        - asset: fonts/GeistMono/GeistMono.ttf
+          weight: 400
+        - asset: fonts/GeistMono/GeistMono.ttf
+          weight: 500
+        - asset: fonts/GeistMono/GeistMono.ttf
+          weight: 600
+    - family: GeistPixel
+      fonts:
+        - asset: fonts/GeistPixel/GeistPixel-Square.ttf
     - family: GoogleSans
       fonts:
         - asset: fonts/GoogleSans/GoogleSans-Regular.ttf

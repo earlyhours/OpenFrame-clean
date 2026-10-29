@@ -114,8 +114,8 @@ class _ActionButton extends StatelessWidget {
           backgroundColor: context.colorScheme.surfaceContainerLow,
           alignment: Alignment.centerLeft,
           shape: RoundedRectangleBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(25)),
-            side: BorderSide(color: context.colorScheme.onSurface.withAlpha(10), width: 1),
+            borderRadius: const BorderRadius.all(Radius.circular(12)),
+            side: BorderSide(color: context.colorScheme.outlineVariant, width: 1),
           ),
         ),
         icon: Icon(icon, color: context.primaryColor),
@@ -169,7 +169,7 @@ class _PeopleCollectionCard extends ConsumerWidget {
                 height: size,
                 width: size,
                 decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(20)),
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
                   gradient: LinearGradient(
                     colors: [context.colorScheme.primary.withAlpha(30), context.colorScheme.primary.withAlpha(25)],
                     begin: Alignment.topCenter,
@@ -235,7 +235,7 @@ class _PlacesCollectionCard extends StatelessWidget {
                 width: size,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(20)),
+                    borderRadius: const BorderRadius.all(Radius.circular(12)),
                     color: context.colorScheme.secondaryContainer.withAlpha(100),
                   ),
                   child: IgnorePointer(
@@ -289,7 +289,7 @@ class _LocalAlbumsCollectionCard extends ConsumerWidget {
                 width: size,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(20)),
+                    borderRadius: const BorderRadius.all(Radius.circular(12)),
                     gradient: LinearGradient(
                       colors: [context.colorScheme.primary.withAlpha(30), context.colorScheme.primary.withAlpha(25)],
                       begin: Alignment.topCenter,
@@ -358,7 +358,7 @@ class _MemoriesCollectionCard extends ConsumerWidget {
                 height: size,
                 width: size,
                 decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(20)),
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
                   gradient: LinearGradient(
                     colors: [context.colorScheme.primary.withAlpha(30), context.colorScheme.primary.withAlpha(25)],
                     begin: Alignment.topCenter,
@@ -429,7 +429,7 @@ class _QuickAccessItem {
 class _QuickAccessButtonList extends ConsumerWidget {
   const _QuickAccessButtonList();
 
-  static const _tileRadius = 20.0;
+  static const _tileRadius = 12.0;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -466,7 +466,7 @@ class _QuickAccessButtonList extends ConsumerWidget {
       sliver: SliverToBoxAdapter(
         child: DecoratedBox(
           decoration: BoxDecoration(
-            border: Border.all(color: context.colorScheme.onSurface.withAlpha(10), width: 1),
+            border: Border.all(color: context.colorScheme.outlineVariant, width: 1),
             borderRadius: const BorderRadius.all(Radius.circular(_tileRadius)),
             gradient: LinearGradient(
               colors: [

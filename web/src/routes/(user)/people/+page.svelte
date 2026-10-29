@@ -334,14 +334,12 @@
   {#if countVisiblePeople > 0}
     <PeopleInfiniteScroll people={visiblePeople} hasNextPage={!!nextPage && !searchName} {loadNextPage}>
       {#snippet children({ person })}
-        <div
-          class="rounded-xl border-2 border-transparent p-2 transition-all hover:border-immich-primary/50 hover:bg-gray-200 hover:shadow-sm hover:dark:border-immich-dark-primary/25 dark:hover:bg-immich-dark-primary/20"
-        >
+        <div class="rounded-xl border bg-subtle p-3 transition-all hover:border-primary/50">
           <PeopleCard {person} onMergePeople={() => handleMergePeople(person)} />
 
           <input
             type="text"
-            class="mt-2 w-full rounded-2xl border-gray-100 bg-white py-2 text-center text-sm text-primary placeholder-gray-400 dark:border-gray-900 dark:bg-immich-dark-gray"
+            class="mt-2 w-full rounded-md bg-transparent py-2 text-center font-mono text-xs text-dark placeholder-gray-500"
             value={person.name}
             placeholder={$t('add_a_name')}
             use:shortcut={{ shortcut: { key: 'Enter' }, onShortcut: (e) => e.currentTarget.blur() }}
@@ -356,7 +354,7 @@
     <div class="flex min-h-[calc(66vh-11rem)] w-full place-content-center items-center dark:text-white">
       <div class="flex flex-col content-center items-center text-center">
         <Icon icon={mdiAccountOff} size="3.5em" />
-        <p class="mt-5 line-clamp-2 max-w-lg overflow-hidden text-3xl font-medium">
+        <p class="mt-5 line-clamp-2 max-w-lg overflow-hidden font-display text-3xl">
           {$t(searchName ? 'search_no_people_named' : 'search_no_people', { values: { name: searchName } })}
         </p>
       </div>

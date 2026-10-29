@@ -50,7 +50,10 @@ class _ImmichColumnButtonState extends State<ImmichColumnButton> {
 
   @override
   Widget build(BuildContext context) {
-    final foreground = context.colorOverride ?? Theme.of(context).colorScheme.onSurface;
+    final theme = Theme.of(context);
+    final foreground = context.colorOverride ?? theme.colorScheme.onSurface;
+    // Column labels sit in a tight row, so swap the wide mono button face for the body face.
+    final labelFamily = theme.textTheme.labelLarge?.fontFamily == 'GeistMono' ? 'Geist' : null;
 
     return TextButton(
       onPressed: _onPressed,
@@ -78,7 +81,7 @@ class _ImmichColumnButtonState extends State<ImmichColumnButton> {
               maxLines: 2,
               textAlign: .center,
               overflow: .ellipsis,
-              style: const .new(fontSize: ImmichTextSize.body, fontWeight: .w500),
+              style: .new(fontSize: ImmichTextSize.body, fontWeight: .w500, fontFamily: labelFamily),
             ),
           ],
         ),

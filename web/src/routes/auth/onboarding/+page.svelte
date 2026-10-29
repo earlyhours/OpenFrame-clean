@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AuthPageLayout from '$lib/components/layouts/AuthPageLayout.svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import OnboardingBackup from './OnboardingBackup.svelte';
@@ -152,27 +153,56 @@
   };
 
   const OnboardingStep = $derived(onboardingSteps[index].component);
+  const activeSteps = $derived(onboardingSteps.filter((step) => shouldRunStep(step.role, userRole)));
+  const plan = $derived(activeSteps.flatMap(({ title, icon }) => (title && icon ? [{ title, icon }] : [])));
 </script>
 
-<section id="onboarding-page" class="flex min-h-dvh min-w-dvw p-4">
-  <div class="flex w-full flex-col">
-    <div class="h-2 rounded-md bg-gray-300 dark:bg-gray-600">
-      <div
-        class="progress-bar h-2 rounded-md bg-primary transition-all duration-200 ease-out"
-        style="width: {(onboardingProgress / onboardingStepCount) * 100}%"
-      ></div>
+<AuthPageLayout withHeader={false}>
+  <section id="onboarding-page" class="flex w-full">
+    <div class="flex w-full flex-col">
+      <div class="mb-3 flex items-baseline justify-between gap-4 font-mono text-xs text-muted">
+        <span
+          >{$t('onboarding_step_of', { values: { current: onboardingProgress + 1, total: onboardingStepCount } })}</span
+        >
+        {#if onboardingSteps[index].title}
+          <span class="truncate">{onboardingSteps[index].title}</span>
+        {/if}
+      </div>
+      <ol class="flex gap-1.5" aria-label={$t('steps')}>
+        {#each activeSteps as step, i (step.name)}
+          <li class="flex-1">
+            <button
+              type="button"
+              class="block h-1.5 w-full rounded-full transition-colors duration-300 {i <= onboardingProgress
+                ? 'bg-primary'
+                : 'bg-light-200'} {i < onboardingProgress ? 'cursor-pointer hover:opacity-70' : 'cursor-default'}"
+              aria-label={step.title ?? $t('onboarding')}
+              aria-current={i === onboardingProgress ? 'step' : undefined}
+              disabled={i >= onboardingProgress}
+              onclick={() => goto(Route.onboarding({ step: step.name }))}
+            ></button>
+          </li>
+        {/each}
+      </ol>
+      <div class="m-auto flex w-full place-content-center place-items-center pt-10">
+        {#key index}
+          <OnboardingCard
+            title={onboardingSteps[index].title}
+            icon={onboardingSteps[index].icon}
+            onNext={handleNextClicked}
+            onPrevious={handlePrevious}
+            previousTitle={onboardingSteps[previousStepIndex]?.title ??
+              (previousStepIndex === -1 ? undefined : $t('back'))}
+            nextTitle={onboardingSteps[nextStepIndex]?.title}
+          >
+            {#if index === 0}
+              <OnboardingHello {plan} />
+            {:else}
+              <OnboardingStep />
+            {/if}
+          </OnboardingCard>
+        {/key}
+      </div>
     </div>
-    <div class="m-auto flex w-[min(100%,800px)] place-content-center place-items-center py-8">
-      <OnboardingCard
-        title={onboardingSteps[index].title}
-        icon={onboardingSteps[index].icon}
-        onNext={handleNextClicked}
-        onPrevious={handlePrevious}
-        previousTitle={onboardingSteps[previousStepIndex]?.title}
-        nextTitle={onboardingSteps[nextStepIndex]?.title}
-      >
-        <OnboardingStep />
-      </OnboardingCard>
-    </div>
-  </div>
-</section>
+  </section>
+</AuthPageLayout>

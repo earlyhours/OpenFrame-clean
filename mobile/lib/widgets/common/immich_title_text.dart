@@ -10,7 +10,13 @@ class ImmichTitleText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       'OpenFrame',
-      style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w600, color: context.primaryColor),
+      style: TextStyle(
+        fontSize: fontSize,
+        fontFamily: 'GeistPixel',
+        fontWeight: FontWeight.w400,
+        letterSpacing: -1,
+        color: context.colorScheme.onSurface,
+      ),
     );
   }
 }

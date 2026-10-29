@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/domain/models/album/album.model.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
-import 'package:immich_mobile/extensions/theme_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/pages/common/large_leading_tile.dart';
 import 'package:immich_mobile/presentation/widgets/images/thumbnail.widget.dart';
@@ -29,7 +28,7 @@ class AlbumTile extends ConsumerWidget {
       subtitle: Text(
         '${context.t.items_count(count: album.assetCount)} • ${isOwner ? context.t.owned : context.t.shared_by_user(user: album.ownerName)}',
         overflow: TextOverflow.ellipsis,
-        style: context.textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceSecondary),
+        style: context.textTheme.labelSmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
       ),
       onTap: () => onAlbumSelected?.call(album),
       leadingPadding: const EdgeInsets.only(right: 16),
@@ -38,7 +37,7 @@ class AlbumTile extends ConsumerWidget {
         builder: (context, snapshot) {
           return snapshot.hasData && snapshot.data != null
               ? ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(15)),
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
                   child: SizedBox(
                     width: 80,
                     height: 80,
@@ -54,8 +53,8 @@ class AlbumTile extends ConsumerWidget {
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       color: context.colorScheme.surfaceContainer,
-                      borderRadius: const BorderRadius.all(Radius.circular(16)),
-                      border: Border.all(color: context.colorScheme.outline.withAlpha(50), width: 1),
+                      borderRadius: const BorderRadius.all(Radius.circular(12)),
+                      border: Border.all(color: context.colorScheme.outlineVariant, width: 1),
                     ),
                     child: const Icon(Icons.photo_album_rounded, size: 24, color: Colors.grey),
                   ),

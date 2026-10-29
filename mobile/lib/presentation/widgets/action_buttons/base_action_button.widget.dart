@@ -35,6 +35,8 @@ class BaseActionButton extends StatelessWidget {
     final iconTheme = IconTheme.of(context);
     final iconSize = iconTheme.size ?? 24.0;
     final textColor = context.themeData.textTheme.labelLarge?.color;
+    // Labels sit in a tight row, so swap the wide mono button face for the body face.
+    final labelFamily = context.themeData.textTheme.labelLarge?.fontFamily == 'GeistMono' ? 'Geist' : null;
 
     if (iconOnly) {
       final iconColor = this.iconColor ?? iconTheme.color ?? context.themeData.iconTheme.color;
@@ -86,7 +88,12 @@ class BaseActionButton extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               label,
-              style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w500,
+                fontFamily: labelFamily,
+                letterSpacing: 0,
+              ),
               maxLines: 3,
               textAlign: TextAlign.center,
               softWrap: true,

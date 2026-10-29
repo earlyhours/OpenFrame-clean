@@ -173,10 +173,15 @@ class _BottomNavigationBarState extends ConsumerState<_BottomNavigationBar> {
       return const SizedBox.shrink();
     }
 
-    return NavigationBar(
-      selectedIndex: widget.tabsRouter.activeIndex,
-      onDestinationSelected: (index) => _onNavigationSelected(widget.tabsRouter, index, ref),
-      destinations: widget.destinations,
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: context.colorScheme.outlineVariant)),
+      ),
+      child: NavigationBar(
+        selectedIndex: widget.tabsRouter.activeIndex,
+        onDestinationSelected: (index) => _onNavigationSelected(widget.tabsRouter, index, ref),
+        destinations: widget.destinations,
+      ),
     );
   }
 }

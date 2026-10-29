@@ -63,8 +63,14 @@ class _ImmichTextButtonState extends State<ImmichTextButton> {
         : null;
 
     final label = Text(
-      widget.labelText,
-      style: const .new(fontSize: ImmichTextSize.body, fontWeight: .bold),
+      widget.variant == ImmichVariant.filled ? widget.labelText.toUpperCase() : widget.labelText,
+      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+        letterSpacing: .8,
+        fontWeight: FontWeight.w600,
+        color: widget.variant == ImmichVariant.filled
+            ? Theme.of(context).colorScheme.onPrimary
+            : Theme.of(context).colorScheme.primary,
+      ),
     );
     final style = ElevatedButton.styleFrom(padding: const .symmetric(vertical: ImmichSpacing.md));
 

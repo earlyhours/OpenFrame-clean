@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
-import 'package:immich_mobile/extensions/theme_extensions.dart';
 import 'package:immich_mobile/presentation/widgets/timeline/timeline.state.dart';
 
 class BaseBottomSheet extends ConsumerStatefulWidget {
@@ -76,8 +75,11 @@ class _BaseDraggableScrollableSheetState extends ConsumerState<BaseBottomSheet> 
       builder: (BuildContext context, ScrollController scrollController) {
         return Card(
           color: widget.backgroundColor ?? context.colorScheme.surfaceContainer,
-          elevation: 3.0,
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(18))),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+            side: BorderSide(color: context.colorScheme.outlineVariant),
+          ),
           margin: EdgeInsets.zero,
           child: Column(
             children: [
@@ -126,7 +128,7 @@ class _DragHandle extends StatelessWidget {
           child: DecoratedBox(
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.all(Radius.circular(20)),
-              color: context.themeData.dividerColor.lighten(amount: 0.6),
+              color: context.colorScheme.outline,
             ),
           ),
         ),

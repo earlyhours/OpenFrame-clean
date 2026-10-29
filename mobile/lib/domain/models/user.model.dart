@@ -21,7 +21,7 @@ enum AvatarColor {
   const AvatarColor(this.value);
 
   Color toColor({bool isDarkTheme = false}) => switch (this) {
-    AvatarColor.primary => isDarkTheme ? const Color(0xFFABCBFA) : const Color(0xFF4250AF),
+    AvatarColor.primary => isDarkTheme ? const Color(0xFFEF5A00) : const Color(0xFFD94F00),
     AvatarColor.pink => const Color.fromARGB(255, 244, 114, 182),
     AvatarColor.red => const Color.fromARGB(255, 239, 68, 68),
     AvatarColor.yellow => const Color.fromARGB(255, 234, 179, 8),

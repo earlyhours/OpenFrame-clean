@@ -54,9 +54,9 @@ class ImmichAppBarDialog extends HookConsumerWidget {
               onPressed: () => ContextHelper(context).pop(),
               icon: Icon(Icons.close, size: 20, color: context.colorScheme.onSurfaceVariant),
             ),
-            Align(
+            const Align(
               alignment: Alignment.center,
-              child: Padding(padding: const EdgeInsets.only(bottom: 4), child: const ImmichTitleText(fontSize: 16)),
+              child: Padding(padding: EdgeInsets.only(bottom: 4), child: ImmichTitleText(fontSize: 16)),
             ),
           ],
         ),

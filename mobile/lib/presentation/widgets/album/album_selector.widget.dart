@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/constants/enums.dart';
 import 'package:immich_mobile/domain/models/album/album.model.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
-import 'package:immich_mobile/extensions/theme_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/models/albums/album_search.model.dart';
 import 'package:immich_mobile/presentation/widgets/album/album_tile.dart';
@@ -392,18 +390,9 @@ class _SearchBar extends StatelessWidget {
       sliver: SliverToBoxAdapter(
         child: DecoratedBox(
           decoration: BoxDecoration(
-            border: Border.all(color: context.colorScheme.onSurface.withAlpha(0), width: 0),
-            borderRadius: const BorderRadius.all(Radius.circular(24)),
-            gradient: LinearGradient(
-              colors: [
-                context.colorScheme.primary.withValues(alpha: 0.075),
-                context.colorScheme.primary.withValues(alpha: 0.09),
-                context.colorScheme.primary.withValues(alpha: 0.075),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              transform: const GradientRotation(0.5 * pi),
-            ),
+            border: Border.all(color: context.colorScheme.outlineVariant),
+            borderRadius: const BorderRadius.all(Radius.circular(8)),
+            color: context.colorScheme.surfaceContainer,
           ),
           child: SearchField(
             autofocus: false,
@@ -489,20 +478,19 @@ class _QuickFilterButton extends StatelessWidget {
     return TextButton(
       onPressed: onTap,
       style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(isSelected ? context.colorScheme.primary : Colors.transparent),
+        backgroundColor: WidgetStateProperty.all(
+          isSelected ? context.colorScheme.primaryContainer : Colors.transparent,
+        ),
         shape: WidgetStateProperty.all(
           RoundedRectangleBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(20)),
-            side: BorderSide(color: context.colorScheme.onSurface.withAlpha(25), width: 1),
+            borderRadius: const BorderRadius.all(Radius.circular(8)),
+            side: BorderSide(color: context.colorScheme.outlineVariant, width: 1),
           ),
         ),
       ),
       child: Text(
         label,
-        style: TextStyle(
-          color: isSelected ? context.colorScheme.onPrimary : context.colorScheme.onSurface,
-          fontSize: 14,
-        ),
+        style: TextStyle(color: isSelected ? context.primaryColor : context.colorScheme.onSurface, fontSize: 14),
       ),
     );
   }
@@ -670,10 +658,10 @@ class _GridAlbumCard extends ConsumerWidget {
       onTap: () => onAlbumSelected(album),
       child: Card(
         elevation: 0,
-        color: context.colorScheme.surfaceBright,
+        color: context.colorScheme.surfaceContainer,
         shape: RoundedRectangleBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(16)),
-          side: BorderSide(color: context.colorScheme.onSurface.withAlpha(25), width: 1),
+          borderRadius: const BorderRadius.all(Radius.circular(12)),
+          side: BorderSide(color: context.colorScheme.outlineVariant, width: 1),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -681,7 +669,7 @@ class _GridAlbumCard extends ConsumerWidget {
             Expanded(
               flex: 2,
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
                 child: SizedBox(
                   width: double.infinity,
                   child: FutureBuilder(
@@ -703,28 +691,26 @@ class _GridAlbumCard extends ConsumerWidget {
                 ),
               ),
             ),
-            Expanded(
-              flex: 1,
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(
-                      album.name,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-                    ),
-                    Text(
-                      '${context.t.items_count(count: album.assetCount)} • ${album.ownerId != userId ? context.t.shared_by_user(user: album.ownerName) : context.t.owned}',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.textTheme.labelMedium?.copyWith(color: context.colorScheme.onSurfaceSecondary),
-                    ),
-                  ],
-                ),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    album.name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${context.t.items_count(count: album.assetCount)} • ${album.ownerId != userId ? context.t.shared_by_user(user: album.ownerName) : context.t.owned}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.textTheme.labelSmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
+                  ),
+                ],
               ),
             ),
           ],

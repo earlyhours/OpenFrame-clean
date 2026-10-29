@@ -10,10 +10,7 @@ class SettingsSubTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 20),
-      child: Text(
-        title,
-        style: context.textTheme.bodyLarge?.copyWith(color: context.primaryColor, fontWeight: FontWeight.w700),
-      ),
+      child: Text(title, style: context.textTheme.labelMedium?.copyWith(color: context.colorScheme.onSurfaceVariant)),
     );
   }
 }

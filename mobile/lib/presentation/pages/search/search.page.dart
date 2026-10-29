@@ -516,7 +516,7 @@ class SearchPage extends HookConsumerWidget {
               style: MenuStyle(
                 elevation: const WidgetStatePropertyAll(1),
                 shape: WidgetStateProperty.all(
-                  const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(24))),
+                  const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
                 ),
                 padding: const WidgetStatePropertyAll(EdgeInsets.all(4)),
               ),
@@ -618,17 +618,8 @@ class SearchPage extends HookConsumerWidget {
         ],
         title: DecoratedBox(
           decoration: BoxDecoration(
-            border: Border.all(color: context.colorScheme.onSurface.withAlpha(0), width: 0),
-            borderRadius: const BorderRadius.all(Radius.circular(24)),
-            gradient: LinearGradient(
-              colors: [
-                context.colorScheme.primary.withValues(alpha: 0.075),
-                context.colorScheme.primary.withValues(alpha: 0.09),
-                context.colorScheme.primary.withValues(alpha: 0.075),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            borderRadius: const BorderRadius.all(Radius.circular(8)),
+            color: context.colorScheme.surfaceContainer,
           ),
           child: SearchField(
             hintText: searchHintText.value,
@@ -851,12 +842,7 @@ class _SearchSuggestions extends StatelessWidget {
         shrinkWrap: true,
         children: [
           const SizedBox(height: 40),
-          Center(
-            child: Image.asset(
-              context.isDarkTheme ? 'assets/polaroid-dark.png' : 'assets/polaroid-light.png',
-              height: 125,
-            ),
-          ),
+          Center(child: Icon(Icons.search_rounded, size: 64, color: context.colorScheme.onSurfaceVariant)),
           const SizedBox(height: 16),
           Center(child: Text(context.t.search_page_search_photos_videos, style: context.textTheme.labelLarge)),
           const SizedBox(height: 32),
@@ -872,20 +858,13 @@ class _QuickLinkList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(20)),
-        border: Border.all(color: context.colorScheme.outline.withAlpha(10), width: 1),
-        gradient: LinearGradient(
-          colors: [
-            context.colorScheme.primary.withAlpha(10),
-            context.colorScheme.primary.withAlpha(15),
-            context.colorScheme.primary.withAlpha(20),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
+    return Material(
+      color: context.colorScheme.surfaceContainer,
+      shape: RoundedRectangleBorder(
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
+        side: BorderSide(color: context.colorScheme.outlineVariant),
       ),
+      clipBehavior: Clip.antiAlias,
       child: ListView(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -936,10 +915,10 @@ class _QuickLink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderRadius = BorderRadius.only(
-      topLeft: Radius.circular(isTop ? 20 : 0),
-      topRight: Radius.circular(isTop ? 20 : 0),
-      bottomLeft: Radius.circular(isBottom ? 20 : 0),
-      bottomRight: Radius.circular(isBottom ? 20 : 0),
+      topLeft: Radius.circular(isTop ? 12 : 0),
+      topRight: Radius.circular(isTop ? 12 : 0),
+      bottomLeft: Radius.circular(isBottom ? 12 : 0),
+      bottomRight: Radius.circular(isBottom ? 12 : 0),
     );
 
     return ListTile(

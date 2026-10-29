@@ -72,7 +72,7 @@
   >
     <!-- Day title -->
     <div
-      class="flex h-6 place-items-center pt-7 pb-5 text-xs font-medium text-immich-fg max-md:pt-5 max-md:pb-3 md:text-sm dark:text-immich-dark-fg"
+      class="flex h-6 place-items-center pt-7 pb-5 font-mono text-xs font-medium text-immich-fg max-md:pt-5 max-md:pb-3 md:text-xs dark:text-immich-dark-fg"
       style:width={timelineDay.width + 'px'}
     >
       {#if !singleSelect}
@@ -91,9 +91,10 @@
         </div>
       {/if}
 
-      <span class="w-full truncate first-letter:capitalize" title={getTimelineDayFullDate(timelineDay)}>
+      <span class="truncate first-letter:capitalize" title={getTimelineDayFullDate(timelineDay)}>
         {timelineDay.groupTitle}
       </span>
+      <span class="ms-3 font-mono text-[10px] text-muted">{timelineDay.viewerAssets.length}</span>
     </div>
 
     <AssetLayout

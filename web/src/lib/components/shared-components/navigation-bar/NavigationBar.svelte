@@ -74,7 +74,7 @@
       </a>
     </div>
     <div class="flex justify-between gap-4 pe-6 lg:gap-8">
-      <div class="hidden w-full max-w-5xl flex-1 sm:block tall:ps-0">
+      <div class="hidden w-full max-w-3xl flex-1 sm:block tall:ps-0">
         <SearchBar grayTheme={true} />
       </div>
 

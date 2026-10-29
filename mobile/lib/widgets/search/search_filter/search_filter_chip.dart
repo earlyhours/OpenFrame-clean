@@ -17,7 +17,10 @@ class SearchFilterChip extends StatelessWidget {
         child: Card(
           elevation: 0,
           color: context.colorScheme.secondaryContainer,
-          shape: StadiumBorder(side: BorderSide(color: context.colorScheme.secondaryContainer)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: BorderSide(color: context.colorScheme.outline),
+          ),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 14.0),
             child: Row(children: [Icon(icon, size: 18), const SizedBox(width: 4.0), currentFilter!]),
@@ -29,14 +32,17 @@ class SearchFilterChip extends StatelessWidget {
       onTap: onTap,
       child: Card(
         elevation: 0,
-        shape: StadiumBorder(side: BorderSide(color: context.colorScheme.outline.withAlpha(15))),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(color: context.colorScheme.outlineVariant),
+        ),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 14.0),
           child: Row(
             children: [
               Icon(icon, size: 18),
               const SizedBox(width: 4.0),
-              Text(label, style: TextStyle(color: context.colorScheme.onSecondaryContainer)),
+              Text(label, style: context.textTheme.labelMedium?.copyWith(color: context.colorScheme.onSurfaceVariant)),
             ],
           ),
         ),

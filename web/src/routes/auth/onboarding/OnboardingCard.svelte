@@ -4,7 +4,7 @@
   import { mdiArrowLeft, mdiArrowRight, mdiCheck } from '@mdi/js';
   import type { Snippet } from 'svelte';
   import { t } from 'svelte-i18n';
-  import { fade } from 'svelte/transition';
+  import { fly } from 'svelte/transition';
 
   interface Props {
     title?: string | undefined;
@@ -12,8 +12,8 @@
     children?: Snippet;
     previousTitle?: string | undefined;
     nextTitle?: string | undefined;
-    onNext?: () => void;
-    onPrevious?: () => void;
+    onNext?: () => void | Promise<void>;
+    onPrevious?: () => void | Promise<void>;
     onLeave?: () => void;
   }
 
@@ -27,57 +27,62 @@
     onNext,
     onPrevious,
   }: Props = $props();
+
+  let busy = $state(false);
+
+  const navigate = async (action?: () => void | Promise<void>) => {
+    if (busy) {
+      return;
+    }
+    busy = true;
+    try {
+      onLeave?.();
+      await action?.();
+    } finally {
+      busy = false;
+    }
+  };
 </script>
 
-<div
-  id="onboarding-card"
-  class="flex w-full max-w-4xl flex-col gap-4 rounded-3xl border-2 border-gray-500 bg-gray-50 p-8 text-black dark:border-gray-700 dark:bg-immich-dark-gray dark:text-immich-dark-fg"
-  in:fade={{ duration: 250 }}
->
+<div id="onboarding-card" class="flex w-full flex-col gap-5 text-dark" in:fly={{ y: 8, duration: 250 }}>
   {#if title || icon}
-    <div class="flex w-fit items-center justify-center gap-2">
+    <div class="flex items-center gap-3">
       {#if icon}
-        <Icon {icon} size="30" class="text-primary" />
+        <span class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+          <Icon {icon} size="24" />
+        </span>
       {/if}
       {#if title}
-        <p class="text-xl font-medium text-primary">
-          {title}
-        </p>
+        <h1 class="font-display text-3xl text-dark">{title}</h1>
       {/if}
     </div>
   {/if}
   {@render children?.()}
 
-  <div class="flex pt-4">
+  <div class="mt-4 flex items-center gap-3 border-t border-light-200 pt-6">
     {#if previousTitle}
-      <div class="flex w-full place-content-start">
-        <Button
-          shape="round"
-          leadingIcon={languageManager.rtl ? mdiArrowRight : mdiArrowLeft}
-          class="flex place-content-center gap-2"
-          onclick={() => {
-            onLeave?.();
-            onPrevious?.();
-          }}
-        >
-          <p>{previousTitle}</p>
-        </Button>
-      </div>
+      <Button
+        shape="semi-round"
+        color="secondary"
+        variant="ghost"
+        leadingIcon={languageManager.rtl ? mdiArrowRight : mdiArrowLeft}
+        disabled={busy}
+        title={previousTitle}
+        onclick={() => navigate(onPrevious)}
+      >
+        {$t('back')}
+      </Button>
     {/if}
 
-    <div class="flex w-full place-content-end">
-      <Button
-        shape="round"
-        trailingIcon={nextTitle ? (languageManager.rtl ? mdiArrowLeft : mdiArrowRight) : mdiCheck}
-        onclick={() => {
-          onLeave?.();
-          onNext?.();
-        }}
-      >
-        <span class="flex place-content-center place-items-center gap-2">
-          {nextTitle ?? $t('done')}
-        </span>
-      </Button>
-    </div>
+    <Button
+      class="ms-auto"
+      shape="round"
+      loading={busy}
+      trailingIcon={nextTitle ? (languageManager.rtl ? mdiArrowLeft : mdiArrowRight) : mdiCheck}
+      title={nextTitle}
+      onclick={() => navigate(onNext)}
+    >
+      {nextTitle ? $t('continue') : $t('onboarding_finish')}
+    </Button>
   </div>
 </div>

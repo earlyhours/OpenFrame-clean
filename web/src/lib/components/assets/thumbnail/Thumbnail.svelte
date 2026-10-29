@@ -404,7 +404,7 @@
         {#if disabled}
           <Icon data-icon-select icon={mdiCheckCircle} size="24" class="text-zinc-800" />
         {:else if selected}
-          <div class="rounded-full bg-[#D9DCEF] dark:bg-[#232932]">
+          <div class="rounded-full bg-light">
             <Icon data-icon-select icon={mdiCheckCircle} size="24" class="text-primary" />
           </div>
         {:else}

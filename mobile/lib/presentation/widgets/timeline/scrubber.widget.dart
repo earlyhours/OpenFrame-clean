@@ -425,7 +425,7 @@ class _SegmentWidget extends StatelessWidget {
             alignment: Alignment.center,
             child: Text(
               _segment.date.year.toString(),
-              style: context.textTheme.labelMedium?.copyWith(fontFamily: "GoogleSansCode", fontWeight: FontWeight.w600),
+              style: context.textTheme.labelMedium?.copyWith(fontFamily: "GeistMono", fontWeight: FontWeight.w600),
             ),
           ),
         ),

@@ -14,9 +14,7 @@
   const id = `group-tab-${generateId()}`;
 </script>
 
-<fieldset
-  class="flex h-full rounded-2xl bg-gray-200 ring-gray-400 has-focus-visible:ring dark:bg-immich-dark-gray dark:ring-gray-600"
->
+<fieldset class="of-segments flex h-full rounded-lg border bg-subtle p-1 has-focus-visible:ring">
   <legend class="sr-only">{label}</legend>
   {#each filters as filter, index (`${id}-${index}`)}
     <div class="group">
@@ -31,10 +29,22 @@
       />
       <label
         for="{id}-{index}"
-        class="flex h-full cursor-pointer items-center px-4 text-sm group-first-of-type:rounded-s-2xl group-last-of-type:rounded-e-2xl peer-checked:bg-gray-300 hover:bg-gray-300 peer-checked:dark:bg-gray-700 dark:hover:bg-gray-800"
+        class="relative flex h-full cursor-pointer items-center rounded-md px-3 font-mono text-xs text-muted peer-checked:bg-light-200 peer-checked:text-dark hover:bg-light-200"
       >
         {labels?.[index] ?? filter}
       </label>
     </div>
   {/each}
 </fieldset>
+
+<style>
+  input:checked + label::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: calc(50% - 8px);
+    width: 16px;
+    height: 2px;
+    background: var(--of-accent);
+  }
+</style>

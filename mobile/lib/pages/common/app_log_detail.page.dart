@@ -65,7 +65,7 @@ class AppLogDetailPage extends HookWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: SelectableText(
                   text,
-                  style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold, fontFamily: "GoogleSansCode"),
+                  style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold, fontFamily: "GeistMono"),
                 ),
               ),
             ),
@@ -96,7 +96,7 @@ class AppLogDetailPage extends HookWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: SelectableText(
                   logger,
-                  style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold, fontFamily: "GoogleSansCode"),
+                  style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold, fontFamily: "GeistMono"),
                 ),
               ),
             ),
