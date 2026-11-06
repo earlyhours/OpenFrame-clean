@@ -1,0 +1,300 @@
+//
+// AUTO-GENERATED FILE, DO NOT MODIFY!
+//
+// @dart=2.18
+
+// ignore_for_file: unused_element, unused_import
+// ignore_for_file: always_put_required_named_parameters_first
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: lines_longer_than_80_chars
+
+part of openapi.api;
+
+class AdminConfigOAuthDto {
+  /// Returns a new [AdminConfigOAuthDto] instance.
+  AdminConfigOAuthDto({
+    this.accountManagementUrl = const Optional.present(''),
+    required this.allowInsecureRequests,
+    required this.autoLaunch,
+    required this.autoRegister,
+    required this.buttonText,
+    required this.clientId,
+    required this.clientSecret,
+    required this.defaultStorageQuota,
+    required this.enabled,
+    required this.endSessionEndpoint,
+    required this.issuerUrl,
+    required this.mobileOverrideEnabled,
+    required this.mobileRedirectUri,
+    required this.profileSigningAlgorithm,
+    required this.prompt,
+    required this.roleClaim,
+    required this.scope,
+    required this.signingAlgorithm,
+    required this.storageLabelClaim,
+    required this.storageQuotaClaim,
+    required this.timeout,
+    required this.tokenEndpointAuthMethod,
+  });
+
+  /// Account management URL
+  Optional<String?> accountManagementUrl;
+
+  /// Allow insecure requests
+  bool allowInsecureRequests;
+
+  /// Auto launch
+  bool autoLaunch;
+
+  /// Auto register
+  bool autoRegister;
+
+  /// Button text
+  String buttonText;
+
+  /// Client ID
+  String clientId;
+
+  /// Client secret
+  String clientSecret;
+
+  /// Default storage quota
+  ///
+  /// Minimum value: 0
+  /// Maximum value: 9007199254740991
+  int? defaultStorageQuota;
+
+  /// Enabled
+  bool enabled;
+
+  /// End session endpoint
+  String endSessionEndpoint;
+
+  /// Issuer URL
+  String issuerUrl;
+
+  /// Mobile override enabled
+  bool mobileOverrideEnabled;
+
+  /// Mobile redirect URI (set to empty string to disable)
+  String mobileRedirectUri;
+
+  /// Profile signing algorithm
+  String profileSigningAlgorithm;
+
+  /// OAuth prompt parameter (e.g. select_account, login, consent)
+  String prompt;
+
+  /// Role claim
+  String roleClaim;
+
+  /// Scope
+  String scope;
+
+  /// Signing algorithm
+  String signingAlgorithm;
+
+  /// Storage label claim
+  String storageLabelClaim;
+
+  /// Storage quota claim
+  String storageQuotaClaim;
+
+  /// Timeout
+  ///
+  /// Minimum value: 1
+  /// Maximum value: 9007199254740991
+  int timeout;
+
+  OAuthTokenEndpointAuthMethod tokenEndpointAuthMethod;
+
+  @override
+  bool operator ==(Object other) => identical(this, other) || other is AdminConfigOAuthDto &&
+    other.accountManagementUrl == accountManagementUrl &&
+    other.allowInsecureRequests == allowInsecureRequests &&
+    other.autoLaunch == autoLaunch &&
+    other.autoRegister == autoRegister &&
+    other.buttonText == buttonText &&
+    other.clientId == clientId &&
+    other.clientSecret == clientSecret &&
+    other.defaultStorageQuota == defaultStorageQuota &&
+    other.enabled == enabled &&
+    other.endSessionEndpoint == endSessionEndpoint &&
+    other.issuerUrl == issuerUrl &&
+    other.mobileOverrideEnabled == mobileOverrideEnabled &&
+    other.mobileRedirectUri == mobileRedirectUri &&
+    other.profileSigningAlgorithm == profileSigningAlgorithm &&
+    other.prompt == prompt &&
+    other.roleClaim == roleClaim &&
+    other.scope == scope &&
+    other.signingAlgorithm == signingAlgorithm &&
+    other.storageLabelClaim == storageLabelClaim &&
+    other.storageQuotaClaim == storageQuotaClaim &&
+    other.timeout == timeout &&
+    other.tokenEndpointAuthMethod == tokenEndpointAuthMethod;
+
+  @override
+  int get hashCode =>
+    // ignore: unnecessary_parenthesis
+    (accountManagementUrl.hashCode) +
+    (allowInsecureRequests.hashCode) +
+    (autoLaunch.hashCode) +
+    (autoRegister.hashCode) +
+    (buttonText.hashCode) +
+    (clientId.hashCode) +
+    (clientSecret.hashCode) +
+    (defaultStorageQuota == null ? 0 : defaultStorageQuota!.hashCode) +
+    (enabled.hashCode) +
+    (endSessionEndpoint.hashCode) +
+    (issuerUrl.hashCode) +
+    (mobileOverrideEnabled.hashCode) +
+    (mobileRedirectUri.hashCode) +
+    (profileSigningAlgorithm.hashCode) +
+    (prompt.hashCode) +
+    (roleClaim.hashCode) +
+    (scope.hashCode) +
+    (signingAlgorithm.hashCode) +
+    (storageLabelClaim.hashCode) +
+    (storageQuotaClaim.hashCode) +
+    (timeout.hashCode) +
+    (tokenEndpointAuthMethod.hashCode);
+
+  @override
+  String toString() => 'AdminConfigOAuthDto[accountManagementUrl=$accountManagementUrl, allowInsecureRequests=$allowInsecureRequests, autoLaunch=$autoLaunch, autoRegister=$autoRegister, buttonText=$buttonText, clientId=$clientId, clientSecret=$clientSecret, defaultStorageQuota=$defaultStorageQuota, enabled=$enabled, endSessionEndpoint=$endSessionEndpoint, issuerUrl=$issuerUrl, mobileOverrideEnabled=$mobileOverrideEnabled, mobileRedirectUri=$mobileRedirectUri, profileSigningAlgorithm=$profileSigningAlgorithm, prompt=$prompt, roleClaim=$roleClaim, scope=$scope, signingAlgorithm=$signingAlgorithm, storageLabelClaim=$storageLabelClaim, storageQuotaClaim=$storageQuotaClaim, timeout=$timeout, tokenEndpointAuthMethod=$tokenEndpointAuthMethod]';
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (this.accountManagementUrl.isPresent) {
+      final value = this.accountManagementUrl.value;
+      json[r'accountManagementUrl'] = value;
+    }
+      json[r'allowInsecureRequests'] = this.allowInsecureRequests;
+      json[r'autoLaunch'] = this.autoLaunch;
+      json[r'autoRegister'] = this.autoRegister;
+      json[r'buttonText'] = this.buttonText;
+      json[r'clientId'] = this.clientId;
+      json[r'clientSecret'] = this.clientSecret;
+    if (this.defaultStorageQuota != null) {
+      json[r'defaultStorageQuota'] = this.defaultStorageQuota;
+    } else {
+      json[r'defaultStorageQuota'] = null;
+    }
+      json[r'enabled'] = this.enabled;
+      json[r'endSessionEndpoint'] = this.endSessionEndpoint;
+      json[r'issuerUrl'] = this.issuerUrl;
+      json[r'mobileOverrideEnabled'] = this.mobileOverrideEnabled;
+      json[r'mobileRedirectUri'] = this.mobileRedirectUri;
+      json[r'profileSigningAlgorithm'] = this.profileSigningAlgorithm;
+      json[r'prompt'] = this.prompt;
+      json[r'roleClaim'] = this.roleClaim;
+      json[r'scope'] = this.scope;
+      json[r'signingAlgorithm'] = this.signingAlgorithm;
+      json[r'storageLabelClaim'] = this.storageLabelClaim;
+      json[r'storageQuotaClaim'] = this.storageQuotaClaim;
+      json[r'timeout'] = this.timeout;
+      json[r'tokenEndpointAuthMethod'] = this.tokenEndpointAuthMethod;
+    return json;
+  }
+
+  /// Returns a new [AdminConfigOAuthDto] instance and imports its values from
+  /// [value] if it's a [Map], null otherwise.
+  // ignore: prefer_constructors_over_static_methods
+  static AdminConfigOAuthDto? fromJson(dynamic value) {
+    upgradeDto(value, "AdminConfigOAuthDto");
+    if (value is Map) {
+      final json = value.cast<String, dynamic>();
+
+      return AdminConfigOAuthDto(
+        accountManagementUrl: json.containsKey(r'accountManagementUrl') ? Optional.present(mapValueOfType<String>(json, r'accountManagementUrl')) : const Optional.absent(),
+        allowInsecureRequests: mapValueOfType<bool>(json, r'allowInsecureRequests')!,
+        autoLaunch: mapValueOfType<bool>(json, r'autoLaunch')!,
+        autoRegister: mapValueOfType<bool>(json, r'autoRegister')!,
+        buttonText: mapValueOfType<String>(json, r'buttonText')!,
+        clientId: mapValueOfType<String>(json, r'clientId')!,
+        clientSecret: mapValueOfType<String>(json, r'clientSecret')!,
+        defaultStorageQuota: mapValueOfType<int>(json, r'defaultStorageQuota'),
+        enabled: mapValueOfType<bool>(json, r'enabled')!,
+        endSessionEndpoint: mapValueOfType<String>(json, r'endSessionEndpoint')!,
+        issuerUrl: mapValueOfType<String>(json, r'issuerUrl')!,
+        mobileOverrideEnabled: mapValueOfType<bool>(json, r'mobileOverrideEnabled')!,
+        mobileRedirectUri: mapValueOfType<String>(json, r'mobileRedirectUri')!,
+        profileSigningAlgorithm: mapValueOfType<String>(json, r'profileSigningAlgorithm')!,
+        prompt: mapValueOfType<String>(json, r'prompt')!,
+        roleClaim: mapValueOfType<String>(json, r'roleClaim')!,
+        scope: mapValueOfType<String>(json, r'scope')!,
+        signingAlgorithm: mapValueOfType<String>(json, r'signingAlgorithm')!,
+        storageLabelClaim: mapValueOfType<String>(json, r'storageLabelClaim')!,
+        storageQuotaClaim: mapValueOfType<String>(json, r'storageQuotaClaim')!,
+        timeout: mapValueOfType<int>(json, r'timeout')!,
+        tokenEndpointAuthMethod: OAuthTokenEndpointAuthMethod.fromJson(json[r'tokenEndpointAuthMethod'])!,
+      );
+    }
+    return null;
+  }
+
+  static List<AdminConfigOAuthDto> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <AdminConfigOAuthDto>[];
+    if (json is List && json.isNotEmpty) {
+      for (final row in json) {
+        final value = AdminConfigOAuthDto.fromJson(row);
+        if (value != null) {
+          result.add(value);
+        }
+      }
+    }
+    return result.toList(growable: growable);
+  }
+
+  static Map<String, AdminConfigOAuthDto> mapFromJson(dynamic json) {
+    final map = <String, AdminConfigOAuthDto>{};
+    if (json is Map && json.isNotEmpty) {
+      json = json.cast<String, dynamic>(); // ignore: parameter_assignments
+      for (final entry in json.entries) {
+        final value = AdminConfigOAuthDto.fromJson(entry.value);
+        if (value != null) {
+          map[entry.key] = value;
+        }
+      }
+    }
+    return map;
+  }
+
+  // maps a json object with a list of AdminConfigOAuthDto-objects as value to a dart map
+  static Map<String, List<AdminConfigOAuthDto>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<AdminConfigOAuthDto>>{};
+    if (json is Map && json.isNotEmpty) {
+      // ignore: parameter_assignments
+      json = json.cast<String, dynamic>();
+      for (final entry in json.entries) {
+        map[entry.key] = AdminConfigOAuthDto.listFromJson(entry.value, growable: growable,);
+      }
+    }
+    return map;
+  }
+
+  /// The list of required keys that must be present in a JSON.
+  static const requiredKeys = <String>{
+    'allowInsecureRequests',
+    'autoLaunch',
+    'autoRegister',
+    'buttonText',
+    'clientId',
+    'clientSecret',
+    'defaultStorageQuota',
+    'enabled',
+    'endSessionEndpoint',
+    'issuerUrl',
+    'mobileOverrideEnabled',
+    'mobileRedirectUri',
+    'profileSigningAlgorithm',
+    'prompt',
+    'roleClaim',
+    'scope',
+    'signingAlgorithm',
+    'storageLabelClaim',
+    'storageQuotaClaim',
+    'timeout',
+    'tokenEndpointAuthMethod',
+  };
+}
+
