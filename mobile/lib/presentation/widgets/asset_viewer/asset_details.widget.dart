@@ -29,14 +29,7 @@ class AssetDetails extends ConsumerWidget {
       decoration: BoxDecoration(
         color: context.colorScheme.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            offset: const Offset(0, -3),
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.12), offset: const Offset(0, -2), blurRadius: 12)],
       ),
       child: SafeArea(
         top: false,

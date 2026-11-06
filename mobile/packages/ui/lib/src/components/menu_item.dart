@@ -26,18 +26,29 @@ class ImmichMenu extends StatefulWidget {
 
 class _ImmichMenuState extends State<ImmichMenu> {
   final _controller = MenuController();
+  bool _isOpen = false;
 
   @override
   Widget build(BuildContext context) {
-    return _ImmichMenuScope(
-      controller: _controller,
-      child: MenuAnchor(
+    return PopScope(
+      canPop: !_isOpen,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && _isOpen) {
+          _controller.close();
+        }
+      },
+      child: _ImmichMenuScope(
         controller: _controller,
-        style: widget.style,
-        consumeOutsideTap: widget.consumeOutsideTap,
-        menuChildren: widget.children,
-        builder: widget.builder,
-        child: widget.child,
+        child: MenuAnchor(
+          onOpen: () => setState(() => _isOpen = true),
+          onClose: () => setState(() => _isOpen = false),
+          controller: _controller,
+          style: widget.style,
+          consumeOutsideTap: widget.consumeOutsideTap,
+          menuChildren: widget.children,
+          builder: widget.builder,
+          child: widget.child,
+        ),
       ),
     );
   }

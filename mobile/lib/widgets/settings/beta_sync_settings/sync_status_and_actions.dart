@@ -46,7 +46,7 @@ class SyncStatusAndActions extends HookConsumerWidget {
             return;
           }
 
-          context.scaffoldMessenger.showSnackBar(const SnackBar(content: Text('Database file not found')));
+          context.showSnackBar(const SnackBar(content: Text('Database file not found')));
           return;
         }
 
@@ -76,13 +76,13 @@ class SyncStatusAndActions extends HookConsumerWidget {
           return;
         }
 
-        context.scaffoldMessenger.showSnackBar(const SnackBar(content: Text('Database exported successfully')));
+        context.showSnackBar(const SnackBar(content: Text('Database exported successfully')));
       } catch (e) {
         if (!context.mounted) {
           return;
         }
 
-        context.scaffoldMessenger.showSnackBar(SnackBar(content: Text('Failed to export database: $e')));
+        context.showSnackBar(SnackBar(content: Text('Failed to export database: $e')));
       }
     }
 
@@ -94,7 +94,7 @@ class SyncStatusAndActions extends HookConsumerWidget {
           return;
         }
 
-        context.scaffoldMessenger.showSnackBar(
+        context.showSnackBar(
           SnackBar(
             duration: const Duration(seconds: 2),
             content: Text(
@@ -108,7 +108,7 @@ class SyncStatusAndActions extends HookConsumerWidget {
           return;
         }
 
-        context.scaffoldMessenger.showSnackBar(
+        context.showSnackBar(
           SnackBar(
             duration: const Duration(seconds: 2),
             content: Text(
@@ -121,7 +121,7 @@ class SyncStatusAndActions extends HookConsumerWidget {
     }
 
     Future<void> resetSqliteDb(BuildContext context) {
-      return showDialog(
+      return showAppDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
@@ -138,7 +138,7 @@ class SyncStatusAndActions extends HookConsumerWidget {
 
                   context.pop();
                   unawaited(
-                    showDialog<void>(
+                    showAppDialog<void>(
                       context: context,
                       barrierDismissible: false,
                       builder: (ctx) => AlertDialog(
@@ -157,72 +157,78 @@ class SyncStatusAndActions extends HookConsumerWidget {
       );
     }
 
+    final syncStatus = ref.watch(syncStatusProvider);
+
     return ListView(
-      padding: const EdgeInsets.only(top: 16, bottom: 96),
+      padding: EdgeInsets.only(top: 8, bottom: 32 + MediaQuery.paddingOf(context).bottom),
       children: [
         const _SyncStatsCounts(),
-        const Divider(height: 10),
-        const SizedBox(height: 16),
-        SettingGroupTitle(title: context.t.jobs),
-        SettingListTile(
-          title: context.t.sync_local,
-          subtitle: context.t.tap_to_run_job,
-          leading: const Icon(Icons.sync),
-          trailing: _SyncStatusIcon(status: ref.watch(syncStatusProvider).localSyncStatus),
-          onTap: () {
-            unawaited(ref.read(backgroundSyncProvider).syncLocal(full: true));
-          },
+        SettingsSection(
+          title: context.t.jobs,
+          hasLeadingBadges: true,
+          children: [
+            SettingsTile(
+              icon: AppIcons.refreshCw,
+              title: context.t.sync_local,
+              subtitle: context.t.tap_to_run_job,
+              showChevron: false,
+              trailing: _SyncStatusIcon(status: syncStatus.localSyncStatus),
+              onTap: () {
+                unawaited(ref.read(backgroundSyncProvider).syncLocal(full: true));
+              },
+            ),
+            SettingsTile(
+              icon: AppIcons.cloudSync,
+              title: context.t.sync_remote,
+              subtitle: context.t.tap_to_run_job,
+              showChevron: false,
+              trailing: _SyncStatusIcon(status: syncStatus.remoteSyncStatus),
+              onTap: () {
+                unawaited(ref.read(backgroundSyncProvider).syncRemote());
+              },
+            ),
+            if (CurrentPlatform.isIOS && serverVersion.supports(.cloudIdMetadata))
+              SettingsTile(
+                icon: AppIcons.cloud,
+                title: 'Sync Cloud Ids',
+                subtitle: context.t.tap_to_run_job,
+                showChevron: false,
+                trailing: _SyncStatusIcon(status: syncStatus.cloudIdSyncStatus),
+                onTap: ref.watch(backgroundSyncProvider).syncCloudIds,
+              ),
+            SettingsTile(
+              icon: AppIcons.tag,
+              title: context.t.hash_asset,
+              subtitle: context.t.tap_to_run_job,
+              showChevron: false,
+              trailing: _SyncStatusIcon(status: syncStatus.hashJobStatus),
+              onTap: () {
+                unawaited(ref.read(backgroundSyncProvider).hashAssets());
+              },
+            ),
+          ],
         ),
-        SettingListTile(
-          title: context.t.sync_remote,
-          subtitle: context.t.tap_to_run_job,
-          leading: const Icon(Icons.cloud_sync),
-          trailing: _SyncStatusIcon(status: ref.watch(syncStatusProvider).remoteSyncStatus),
-          onTap: () {
-            unawaited(ref.read(backgroundSyncProvider).syncRemote());
-          },
-        ),
-        if (CurrentPlatform.isIOS && serverVersion.supports(.cloudIdMetadata))
-          SettingListTile(
-            title: 'Sync Cloud Ids',
-            leading: const Icon(Icons.cloud_circle_rounded),
-            subtitle: context.t.tap_to_run_job,
-            trailing: _SyncStatusIcon(status: ref.watch(syncStatusProvider).cloudIdSyncStatus),
-            onTap: ref.watch(backgroundSyncProvider).syncCloudIds,
-          ),
-        SettingListTile(
-          title: context.t.hash_asset,
-          leading: const Icon(Icons.tag),
-          subtitle: context.t.tap_to_run_job,
-          trailing: _SyncStatusIcon(status: ref.watch(syncStatusProvider).hashJobStatus),
-          onTap: () {
-            unawaited(ref.read(backgroundSyncProvider).hashAssets());
-          },
-        ),
-        const Divider(height: 1),
-        const SizedBox(height: 16),
-        SettingGroupTitle(title: context.t.actions),
-        ListTile(
-          title: Text(context.t.clear_file_cache, style: const TextStyle(fontWeight: FontWeight.w500)),
-          leading: const Icon(Icons.playlist_remove_rounded),
-          onTap: clearFileCache,
-        ),
-        if (!kReleaseMode)
-          ListTile(
-            title: Text(context.t.export_database, style: const TextStyle(fontWeight: FontWeight.w500)),
-            subtitle: Text(context.t.export_database_description),
-            leading: const Icon(Icons.download),
-            onTap: exportDatabase,
-          ),
-        ListTile(
-          title: Text(
-            context.t.reset_sqlite,
-            style: TextStyle(color: context.colorScheme.error, fontWeight: FontWeight.w500),
-          ),
-          leading: Icon(Icons.settings_backup_restore_rounded, color: context.colorScheme.error),
-          onTap: () async {
-            await resetSqliteDb(context);
-          },
+        SettingsSection(
+          title: context.t.actions,
+          hasLeadingBadges: true,
+          children: [
+            SettingsTile(icon: AppIcons.listX, title: context.t.clear_file_cache, onTap: clearFileCache),
+            if (!kReleaseMode)
+              SettingsTile(
+                icon: AppIcons.download,
+                title: context.t.export_database,
+                subtitle: context.t.export_database_description,
+                onTap: exportDatabase,
+              ),
+            SettingsTile(
+              icon: AppIcons.history,
+              title: context.t.reset_sqlite,
+              destructive: true,
+              onTap: () async {
+                await resetSqliteDb(context);
+              },
+            ),
+          ],
         ),
       ],
     );
@@ -239,8 +245,8 @@ class _SyncStatusIcon extends StatelessWidget {
     return switch (status) {
       SyncStatus.idle => const SizedBox.shrink(),
       SyncStatus.syncing => const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2)),
-      SyncStatus.success => const Icon(Icons.check_circle_outline, color: Colors.green),
-      SyncStatus.error => Icon(Icons.error_outline, color: context.colorScheme.error),
+      SyncStatus.success => const Icon(AppIcons.circleCheck, color: Colors.green),
+      SyncStatus.error => Icon(AppIcons.circleAlert, color: context.colorScheme.error),
     };
   }
 }
@@ -296,111 +302,74 @@ class _SyncStatsCounts extends ConsumerWidget {
         final localHashedCount = snapshot.data![4]! as int;
 
         return Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SettingGroupTitle(title: context.t.assets),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              // 1. Wrap in IntrinsicHeight
-              child: IntrinsicHeight(
-                child: Flex(
-                  direction: Axis.horizontal,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  // 2. Stretch children vertically to fill the IntrinsicHeight
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  spacing: 8.0,
-                  children: [
-                    Expanded(
-                      child: EntityCountTile(label: context.t.local, count: localAssetCount, icon: Icons.smartphone),
-                    ),
-                    Expanded(
-                      child: EntityCountTile(label: context.t.remote, count: remoteAssetCount, icon: Icons.cloud),
-                    ),
-                  ],
-                ),
-              ),
+            _CountsSection(
+              title: context.t.assets,
+              left: EntityCountTile(label: context.t.local, count: localAssetCount, icon: AppIcons.smartphone),
+              right: EntityCountTile(label: context.t.remote, count: remoteAssetCount, icon: AppIcons.cloud),
             ),
-            SettingGroupTitle(title: context.t.albums),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: IntrinsicHeight(
-                child: Flex(
-                  direction: Axis.horizontal,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.stretch, // Added
-                  spacing: 8.0,
-                  children: [
-                    Expanded(
-                      child: EntityCountTile(label: context.t.local, count: localAlbumCount, icon: Icons.smartphone),
-                    ),
-                    Expanded(
-                      child: EntityCountTile(label: context.t.remote, count: remoteAlbumCount, icon: Icons.cloud),
-                    ),
-                  ],
-                ),
-              ),
+            _CountsSection(
+              title: context.t.albums,
+              left: EntityCountTile(label: context.t.local, count: localAlbumCount, icon: AppIcons.smartphone),
+              right: EntityCountTile(label: context.t.remote, count: remoteAlbumCount, icon: AppIcons.cloud),
             ),
-            SettingGroupTitle(title: context.t.other),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: IntrinsicHeight(
-                child: Flex(
-                  direction: Axis.horizontal,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.stretch, // Added
-                  spacing: 8.0,
-                  children: [
-                    Expanded(
-                      child: EntityCountTile(label: context.t.memories, count: memoryCount, icon: Icons.calendar_today),
-                    ),
-                    Expanded(
-                      child: EntityCountTile(label: context.t.hashed_assets, count: localHashedCount, icon: Icons.tag),
-                    ),
-                  ],
-                ),
-              ),
+            _CountsSection(
+              title: context.t.other,
+              left: EntityCountTile(label: context.t.memories, count: memoryCount, icon: AppIcons.calendar),
+              right: EntityCountTile(label: context.t.hashed_assets, count: localHashedCount, icon: AppIcons.tag),
             ),
             // To be removed once the experimental feature is stable
             if (CurrentPlatform.isAndroid &&
-                appSettingsService.getSetting<bool>(AppSettingsEnum.manageLocalMediaAndroid)) ...[
-              SettingGroupTitle(title: context.t.trash),
+                appSettingsService.getSetting<bool>(AppSettingsEnum.manageLocalMediaAndroid))
               Consumer(
                 builder: (context, ref, _) {
                   final counts = ref.watch(trashedAssetsCountProvider);
                   return counts.when(
-                    data: (c) => Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                      child: IntrinsicHeight(
-                        child: Flex(
-                          direction: Axis.horizontal,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.stretch, // Added
-                          spacing: 8.0,
-                          children: [
-                            Expanded(
-                              child: EntityCountTile(
-                                label: context.t.local,
-                                count: c.total,
-                                icon: Icons.delete_outline,
-                              ),
-                            ),
-                            Expanded(
-                              child: EntityCountTile(label: context.t.hashed_assets, count: c.hashed, icon: Icons.tag),
-                            ),
-                          ],
-                        ),
-                      ),
+                    data: (c) => _CountsSection(
+                      title: context.t.trash,
+                      left: EntityCountTile(label: context.t.local, count: c.total, icon: AppIcons.trash2),
+                      right: EntityCountTile(label: context.t.hashed_assets, count: c.hashed, icon: AppIcons.tag),
                     ),
-                    loading: () => const CircularProgressIndicator(),
-                    error: (e, st) => Text('Error: $e'),
+                    loading: () => const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                    error: (e, st) => Padding(padding: const EdgeInsets.all(16), child: Text('Error: $e')),
                   );
                 },
               ),
-            ],
           ],
         );
       },
+    );
+  }
+}
+
+/// Two count cells side by side in one grouped card.
+class _CountsSection extends StatelessWidget {
+  const _CountsSection({required this.title, required this.left, required this.right});
+
+  final String title;
+  final Widget left;
+  final Widget right;
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsSection(
+      title: title,
+      children: [
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(child: left),
+              VerticalDivider(width: .5, thickness: .5, color: context.colorScheme.outlineVariant),
+              Expanded(child: right),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

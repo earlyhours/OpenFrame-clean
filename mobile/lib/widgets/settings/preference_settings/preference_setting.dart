@@ -11,6 +11,6 @@ class PreferenceSetting extends StatelessWidget {
   Widget build(BuildContext context) {
     const preferenceSettings = [ThemeSetting(), HapticSetting(), ShareSetting()];
 
-    return const SettingsSubPageScaffold(settings: preferenceSettings, showDivider: true);
+    return const SettingsSubPageScaffold(settings: preferenceSettings);
   }
 }

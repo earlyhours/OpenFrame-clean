@@ -46,10 +46,12 @@ class _ImmichTextButtonState extends State<ImmichTextButton> {
     }
   }
 
-  VoidCallback? get _onPressed => _isDisabled ? null : () => _runAction(widget.onPressed);
+  VoidCallback? get _onPressed =>
+      _isDisabled ? null : () => _runAction(widget.onPressed);
 
-  VoidCallback? get _onLongPress =>
-      _isDisabled || widget.onLongPress == null ? null : () => _runAction(widget.onLongPress!);
+  VoidCallback? get _onLongPress => _isDisabled || widget.onLongPress == null
+      ? null
+      : () => _runAction(widget.onLongPress!);
 
   @override
   Widget build(BuildContext context) {
@@ -63,10 +65,20 @@ class _ImmichTextButtonState extends State<ImmichTextButton> {
         : null;
 
     final label = Text(
-      widget.labelText,
-      style: const .new(fontSize: ImmichTextSize.body, fontWeight: .bold),
+      widget.variant == ImmichVariant.filled
+          ? widget.labelText.toUpperCase()
+          : widget.labelText,
+      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+        letterSpacing: .8,
+        fontWeight: FontWeight.w600,
+        color: widget.variant == ImmichVariant.filled
+            ? Theme.of(context).colorScheme.onPrimary
+            : Theme.of(context).colorScheme.primary,
+      ),
     );
-    final style = ElevatedButton.styleFrom(padding: const .symmetric(vertical: ImmichSpacing.md));
+    final style = ElevatedButton.styleFrom(
+      padding: const .symmetric(vertical: ImmichSpacing.md),
+    );
 
     final button = switch (widget.variant) {
       ImmichVariant.filled => ElevatedButton.icon(
@@ -85,9 +97,10 @@ class _ImmichTextButtonState extends State<ImmichTextButton> {
       ),
     };
 
+    final pressable = Pressable(enabled: !_isDisabled, child: button);
     if (widget.expanded) {
-      return SizedBox(width: double.infinity, child: button);
+      return SizedBox(width: double.infinity, child: pressable);
     }
-    return button;
+    return pressable;
   }
 }

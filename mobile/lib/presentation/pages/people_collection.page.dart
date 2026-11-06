@@ -13,6 +13,7 @@ import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/utils/image_url_builder.dart';
 import 'package:immich_mobile/utils/people.utils.dart';
 import 'package:immich_mobile/widgets/common/search_field.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 @RoutePage()
 class PeopleCollectionPage extends ConsumerStatefulWidget {
@@ -56,7 +57,7 @@ class _PeopleCollectionPageState extends ConsumerState<PeopleCollectionPage> {
                 : Text(context.t.people),
             actions: [
               IconButton(
-                icon: Icon(_search != null ? Icons.close : Icons.search),
+                icon: Icon(_search != null ? AppIcons.x : AppIcons.search),
                 onPressed: () {
                   setState(() => _search = _search == null ? '' : null);
                 },

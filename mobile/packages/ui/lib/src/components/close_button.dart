@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:immich_ui/src/components/icon_button.dart';
+import 'package:immich_ui/src/icons.dart';
 import 'package:immich_ui/src/types.dart';
 
 class ImmichCloseButton extends StatelessWidget {
@@ -16,7 +17,7 @@ class ImmichCloseButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ImmichIconButton(
-    icon: Icons.close,
+    icon: AppIcons.x,
     color: color,
     variant: variant,
     onPressed: onPressed ?? () => Navigator.of(context).pop(),

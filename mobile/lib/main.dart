@@ -15,6 +15,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/constants/constants.dart';
 import 'package:immich_mobile/constants/locales.dart';
 import 'package:immich_mobile/data/store.dart';
+import 'package:immich_mobile/demo/demo_mode.dart';
 import 'package:immich_mobile/domain/services/background_worker.service.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/generated/codegen_loader.g.dart';
@@ -26,6 +27,8 @@ import 'package:immich_mobile/platform/native_sync_api.g.dart';
 import 'package:immich_mobile/platform/permission_api.g.dart';
 import 'package:immich_mobile/providers/app_life_cycle.provider.dart';
 import 'package:immich_mobile/providers/asset_viewer/share_intent_upload.provider.dart';
+import 'package:immich_mobile/providers/auth.provider.dart';
+import 'package:immich_mobile/providers/connect_link.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/platform.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/settings.provider.dart';
 import 'package:immich_mobile/providers/locale_provider.dart';
@@ -62,6 +65,8 @@ void main() async {
     unawaited(BackgroundWorkerLockService(BackgroundWorkerLockApi()).lock());
     await EasyLocalization.ensureInitialized();
     final (dataController, apiService) = await Bootstrap.initDomain();
+    // Demo build: start the in-process fake server and seed a session before the UI boots.
+    await DemoMode.bootstrap(apiService);
     await initApp();
     // Warm-up isolate pool for worker manager
     await workerManagerPatch.init(dynamicSpawning: true, isolatesCount: max(Platform.numberOfProcessors - 1, 5));
@@ -191,6 +196,20 @@ class ImmichAppState extends ConsumerState<ImmichApp> with WidgetsBindingObserve
   }
 
   Future<DeepLink> _deepLinkBuilder(PlatformDeepLink deepLink) async {
+    if (deepLink.uri.scheme == 'openframe' && deepLink.uri.host == 'connect') {
+      // A connection link must never replace an authenticated user's server.
+      if (ref.read(authProvider).isAuthenticated) {
+        return DeepLink.none;
+      }
+      ref.read(pendingConnectLinkProvider.notifier).state = deepLink.uri.toString();
+      final currentRoute = ref.read(currentRouteNameProvider);
+      if (currentRoute == LoginRoute.name) {
+        return DeepLink.none;
+      }
+      return deepLink.initial || currentRoute == null || currentRoute == SplashScreenRoute.name
+          ? DeepLink([SplashScreenRoute()])
+          : const DeepLink([LoginRoute()]);
+    }
     final deepLinkHandler = ref.read(deepLinkServiceProvider);
     final currentRouteName = ref.read(currentRouteNameProvider.notifier).state;
 
@@ -243,7 +262,9 @@ class ImmichAppState extends ConsumerState<ImmichApp> with WidgetsBindingObserve
     unawaited(initApp().then((_) => dPrint(() => "App Init Completed")));
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // needs to be delayed so that EasyLocalization is working
-      unawaited(ref.read(backgroundWorkerFgServiceProvider).enable());
+      if (!kDemoMode) {
+        unawaited(ref.read(backgroundWorkerFgServiceProvider).enable());
+      }
       if (Platform.isAndroid) {
         unawaited(
           ref

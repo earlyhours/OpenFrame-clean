@@ -28,6 +28,7 @@ import 'package:immich_mobile/theme/theme_data.dart';
 import 'package:immich_mobile/utils/fallback_localizations.dart';
 import 'package:immich_mobile/widgets/common/immich_logo.dart';
 import 'package:immich_mobile/widgets/common/immich_title_text.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:logging/logging.dart';
 import 'package:url_launcher/url_launcher.dart' show LaunchMode, launchUrl;
 
@@ -108,7 +109,7 @@ class _BottomPanelState extends State<_BottomPanel> {
   bool _cleared = false;
 
   Future<void> _clearDatabase() async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showAppDialog<bool>(
       context: context,
       builder: (dialogCtx) => AlertDialog(
         title: Text(context.t.reset_sqlite_clear_app_data),
@@ -166,12 +167,12 @@ class _BottomPanelState extends State<_BottomPanel> {
           alignment: WrapAlignment.center,
           children: [
             _ActionLink(
-              icon: Icons.chat_bubble_outline,
+              icon: AppIcons.messageCircle,
               label: context.t.discord,
               onTap: () => launchUrl(Uri.parse('https://discord.immich.app/'), mode: LaunchMode.externalApplication),
             ),
             _ActionLink(
-              icon: Icons.bug_report_outlined,
+              icon: AppIcons.bug,
               label: context.t.profile_drawer_github,
               onTap: () => launchUrl(
                 Uri.parse('https://github.com/immich-app/immich/issues'),
@@ -179,16 +180,12 @@ class _BottomPanelState extends State<_BottomPanel> {
               ),
             ),
             _ActionLink(
-              icon: Icons.share_outlined,
+              icon: AppIcons.share2,
               label: context.t.share_logs,
               onTap: () => ImmichLogger.shareLogs(context, startupError: widget.startupError),
             ),
             if (!_cleared)
-              _ActionLink(
-                icon: Icons.delete_outline,
-                label: context.t.reset_sqlite_clear_app_data,
-                onTap: _clearDatabase,
-              ),
+              _ActionLink(icon: AppIcons.trash2, label: context.t.reset_sqlite_clear_app_data, onTap: _clearDatabase),
           ],
         ),
       ],
@@ -255,7 +252,7 @@ class _ErrorCard extends StatelessWidget {
                     tooltip: context.t.copy_error,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
-                    icon: Icon(Icons.copy_outlined, size: 16, color: scheme.onError),
+                    icon: Icon(AppIcons.copy, size: 16, color: scheme.onError),
                     onPressed: () => Clipboard.setData(ClipboardData(text: '$error\n\n$stack')),
                   ),
                 ],
@@ -274,7 +271,7 @@ class _ErrorCard extends StatelessWidget {
               children: [
                 Text(context.t.stacktrace, style: textTheme.labelMedium),
                 const SizedBox(height: 4),
-                SelectableText(stack, style: textTheme.bodySmall?.copyWith(fontFamily: 'GoogleSansCode')),
+                SelectableText(stack, style: textTheme.bodySmall?.copyWith(fontFamily: 'GeistMono')),
               ],
             ),
           ),

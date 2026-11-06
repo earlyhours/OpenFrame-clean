@@ -65,7 +65,7 @@ class _PersonNameEditFormState extends ConsumerState<PersonNameEditForm> {
           onPressed: () => context.pop(null),
           child: Text(
             context.t.cancel,
-            style: TextStyle(color: Colors.red[300], fontWeight: FontWeight.bold),
+            style: TextStyle(color: context.colorScheme.error),
           ),
         ),
         TextButton(

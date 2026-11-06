@@ -145,7 +145,7 @@ class _ProfilePictureCropPageState extends ConsumerState<ProfilePictureCropPage>
             )
           else
             ImmichIconButton(
-              icon: Icons.done_rounded,
+              icon: AppIcons.check,
               color: ImmichColor.primary,
               variant: ImmichVariant.ghost,
               onPressed: _handleDone,

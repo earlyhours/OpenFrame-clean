@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class MemoryEpilogue extends StatefulWidget {
   final Function()? onStartOver;
@@ -20,7 +21,7 @@ class _MemoryEpilogueState extends State<MemoryEpilogue> with TickerProviderStat
   @override
   void initState() {
     super.initState();
-    _animation = CurvedAnimation(parent: _animationController, curve: Curves.easeIn);
+    _animation = CurvedAnimation(parent: _animationController, curve: Curves.easeInCubic);
   }
 
   @override
@@ -39,7 +40,7 @@ class _MemoryEpilogueState extends State<MemoryEpilogue> with TickerProviderStat
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.check_circle_outline_sharp,
+                  AppIcons.circleCheck,
                   color: context.isDarkTheme ? context.colorScheme.primary : context.colorScheme.inversePrimary,
                   size: 64.0,
                 ),
@@ -81,7 +82,7 @@ class _MemoryEpilogueState extends State<MemoryEpilogue> with TickerProviderStat
                       builder: (context, child) {
                         return Transform.translate(offset: Offset(0, 8 * _animationController.value), child: child);
                       },
-                      child: const Icon(size: 32, Icons.expand_less_sharp, color: Colors.white),
+                      child: const Icon(size: 32, AppIcons.chevronUp, color: Colors.white),
                     ),
                   ),
                   Text(

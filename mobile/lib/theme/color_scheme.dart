@@ -3,14 +3,39 @@ import 'package:immich_mobile/constants/colors.dart';
 import 'package:immich_mobile/theme/theme_data.dart';
 
 final Map<ImmichColorPreset, ImmichTheme> _themePresets = {
-  ImmichColorPreset.indigo: ImmichTheme(
-    light: ColorScheme.fromSeed(
-      seedColor: immichBrandColorLight,
-    ).copyWith(primary: immichBrandColorLight, onSurface: const Color.fromARGB(255, 34, 31, 32)),
-    dark: ColorScheme.fromSeed(
-      seedColor: immichBrandColorDark,
-      brightness: Brightness.dark,
-    ).copyWith(primary: immichBrandColorDark),
+  ImmichColorPreset.indigo: decolorizeSurfaces(
+    theme: ImmichTheme(
+      light: ColorScheme.fromSeed(seedColor: immichBrandColorLight).copyWith(
+        primary: immichBrandColorLight,
+        onPrimary: const Color(0xFFF6F4EF),
+        // Selected states only (chips, selected rows): a faint warm neutral,
+        // never a card fill. Accent shows through onPrimaryContainer.
+        primaryContainer: const Color(0xFFEFE7DE),
+        onPrimaryContainer: const Color(0xFF9A3A00),
+        secondary: const Color(0xFF625D55),
+        secondaryContainer: const Color(0xFFE5E1DA),
+        onSecondaryContainer: const Color(0xFF1D1C1A),
+        tertiary: const Color(0xFF625D55),
+        tertiaryContainer: const Color(0xFFE5E1DA),
+        onTertiaryContainer: const Color(0xFF1D1C1A),
+        error: const Color(0xFFB93823),
+        surfaceTint: Colors.transparent,
+      ),
+      dark: ColorScheme.fromSeed(seedColor: immichBrandColorDark, brightness: Brightness.dark).copyWith(
+        primary: immichBrandColorDark,
+        onPrimary: const Color(0xFFF2F1EC),
+        primaryContainer: const Color(0xFF2A2623),
+        onPrimaryContainer: const Color(0xFFFF8A3D),
+        secondary: const Color(0xFFD6D3CC),
+        secondaryContainer: const Color(0xFF282624),
+        onSecondaryContainer: const Color(0xFFF2F1EC),
+        tertiary: const Color(0xFFB3AEA6),
+        tertiaryContainer: const Color(0xFF282624),
+        onTertiaryContainer: const Color(0xFFF2F1EC),
+        error: const Color(0xFFFF6A4D),
+        surfaceTint: Colors.transparent,
+      ),
+    ),
   ),
   ImmichColorPreset.deepPurple: ImmichTheme(
     light: ColorScheme.fromSeed(seedColor: const Color(0xFF6F43C0)),

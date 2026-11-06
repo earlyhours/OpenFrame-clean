@@ -50,7 +50,7 @@
   };
 </script>
 
-<div class="mt-8 flex justify-between gap-2">
+<div class="mt-8 flex justify-between gap-2 border-t pt-4">
   <div class="left">
     {#if showResetToDefault}
       <Button variant="ghost" shape="round" size="small" onclick={handleResetToDefault}>

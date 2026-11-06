@@ -10,6 +10,7 @@ import 'package:immich_mobile/presentation/widgets/images/thumbnail.widget.dart'
 import 'package:immich_mobile/presentation/widgets/memory/memory_title.widget.dart';
 import 'package:immich_mobile/providers/infrastructure/memory.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 @RoutePage()
 class MemoryListPage extends ConsumerStatefulWidget {
@@ -33,7 +34,7 @@ class _MemoryListPageState extends ConsumerState<MemoryListPage> {
             title: Text(context.t.memories),
             actions: [
               IconButton(
-                icon: Icon(_onlyFavorites ? Icons.favorite : Icons.favorite_outline),
+                icon: Icon(AppIcons.heart, color: _onlyFavorites ? Theme.of(context).colorScheme.primary : null),
                 onPressed: () {
                   setState(() => _onlyFavorites = !_onlyFavorites);
                 },
@@ -86,7 +87,7 @@ class _MemoryListPageState extends ConsumerState<MemoryListPage> {
                           const Positioned(
                             top: 16,
                             right: 16,
-                            child: Icon(Icons.favorite, color: Colors.white, size: 24),
+                            child: Icon(AppIcons.heart, color: Colors.white, size: 24),
                           ),
                       ],
                     ),

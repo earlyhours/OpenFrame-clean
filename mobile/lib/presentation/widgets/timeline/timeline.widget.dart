@@ -9,6 +9,7 @@ import 'package:immich_mobile/domain/models/timeline.model.dart';
 import 'package:immich_mobile/domain/utils/event_stream.dart';
 import 'package:immich_mobile/extensions/asyncvalue_extensions.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
+import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/presentation/widgets/action_buttons/download_status_floating_button.widget.dart';
 import 'package:immich_mobile/presentation/widgets/bottom_sheet/general_bottom_sheet.widget.dart';
 import 'package:immich_mobile/presentation/widgets/timeline/constants.dart';
@@ -28,6 +29,7 @@ import 'package:immich_mobile/utils/debounce.dart';
 import 'package:immich_mobile/widgets/common/immich_sliver_app_bar.dart';
 import 'package:immich_mobile/widgets/common/mesmerizing_sliver_app_bar.dart';
 import 'package:immich_mobile/widgets/common/selection_sliver_app_bar.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class Timeline extends ConsumerWidget {
   const Timeline({
@@ -280,7 +282,7 @@ class _SliverTimelineState extends ConsumerState<_SliverTimeline> with WidgetsBi
       return;
     }
 
-    _scrollController.animateTo(0, duration: const Duration(milliseconds: 250), curve: Curves.easeInOut);
+    _scrollController.animateTo(0, duration: AppMotion.slow, curve: AppMotion.emphasized);
   }
 
   void _scrollToDate(DateTime date) {
@@ -312,8 +314,8 @@ class _SliverTimelineState extends ConsumerState<_SliverTimeline> with WidgetsBi
         final targetOffset = fallbackSegment.startOffset - 50;
         _scrollController.animateTo(
           targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
+          duration: AppMotion.slow,
+          curve: AppMotion.emphasized,
         );
       }
     });
@@ -387,6 +389,27 @@ class _SliverTimelineState extends ConsumerState<_SliverTimeline> with WidgetsBi
                           else if (widget.appBar != null)
                             widget.appBar!,
                           if (widget.topSliverWidget != null) widget.topSliverWidget!,
+                          if (segments.isEmpty)
+                            SliverFillRemaining(
+                              hasScrollBody: false,
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(32),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(AppIcons.images, size: 40, color: context.primaryColor),
+                                      const SizedBox(height: 20),
+                                      Text(
+                                        context.t.no_assets_to_show,
+                                        textAlign: TextAlign.center,
+                                        style: context.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w400),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
                           SliverSegmentedList(
                             segments: segments,
                             delegate: SliverChildBuilderDelegate(
@@ -433,14 +456,61 @@ class _SliverTimelineState extends ConsumerState<_SliverTimeline> with WidgetsBi
                           ),
                           if (isBottomWidgetVisible)
                             Positioned(
-                              top: MediaQuery.paddingOf(context).top,
-                              left: 25,
-                              child: const SizedBox(
-                                height: kToolbarHeight,
-                                child: Center(child: MultiSelectStatusButton()),
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              child: IgnorePointer(
+                                child: FrostedBar(
+                                  edge: FrostedEdge.bottom,
+                                  child: SizedBox(height: MediaQuery.paddingOf(context).top + kToolbarHeight),
+                                ),
                               ),
                             ),
-                          if (isBottomWidgetVisible) widget.bottomSheet!,
+                          Positioned(
+                            top: MediaQuery.paddingOf(context).top,
+                            left: 25,
+                            child: AnimatedSwitcher(
+                              duration: AppMotion.of(context, AppMotion.fast),
+                              switchInCurve: AppMotion.emphasized,
+                              switchOutCurve: Curves.easeInCubic,
+                              transitionBuilder: (child, animation) => FadeTransition(
+                                opacity: animation,
+                                child: ScaleTransition(
+                                  scale: Tween(begin: 0.92, end: 1.0).animate(animation),
+                                  child: child,
+                                ),
+                              ),
+                              child: isBottomWidgetVisible
+                                  ? const SizedBox(
+                                      key: ValueKey('multi-select-status'),
+                                      height: kToolbarHeight,
+                                      child: Center(child: MultiSelectStatusButton()),
+                                    )
+                                  : const SizedBox.shrink(),
+                            ),
+                          ),
+                          if (widget.bottomSheet != null)
+                            // Slide the selection sheet up/down instead of popping it in and out.
+                            Positioned.fill(
+                              child: AnimatedSwitcher(
+                                duration: AppMotion.of(context, AppMotion.base),
+                                reverseDuration: AppMotion.of(context, AppMotion.fast),
+                                switchInCurve: AppMotion.emphasized,
+                                switchOutCurve: Curves.easeInCubic,
+                                layoutBuilder: (current, previous) =>
+                                    Stack(fit: StackFit.expand, children: [...previous, ?current]),
+                                transitionBuilder: (child, animation) => SlideTransition(
+                                  position: Tween(begin: const Offset(0, 0.3), end: Offset.zero).animate(animation),
+                                  child: FadeTransition(opacity: animation, child: child),
+                                ),
+                                child: isBottomWidgetVisible
+                                    ? KeyedSubtree(
+                                        key: const ValueKey('multi-select-sheet'),
+                                        child: widget.bottomSheet!,
+                                      )
+                                    : const SizedBox.shrink(),
+                              ),
+                            ),
                         ],
                       );
                     },

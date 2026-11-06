@@ -9,6 +9,7 @@ import 'package:immich_mobile/providers/infrastructure/toast.provider.dart';
 import 'package:immich_mobile/services/toast.service.dart';
 import 'package:immich_mobile/utils/error_handler.dart';
 import 'package:immich_mobile/widgets/common/confirm_dialog.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:logging/logging.dart';
 
 typedef _State = ({bool shouldLock, List<String> assetIds, List<String> localIds});
@@ -42,7 +43,7 @@ class LockAction extends AssetActionBuilder {
     }
 
     return .new(
-      icon: shouldLock ? Icons.lock_rounded : Icons.lock_open_rounded,
+      icon: shouldLock ? AppIcons.lockKeyhole : AppIcons.lockOpen,
       label: shouldLock ? context.t.move_to_locked_folder : context.t.remove_from_locked_folder,
       onAction: () => _lock(context, ref),
     );
@@ -56,7 +57,7 @@ class LockAction extends AssetActionBuilder {
 
     final (:shouldLock, :assetIds, :localIds) = state;
     if (shouldLock && localIds.isNotEmpty) {
-      final confirmed = await showDialog<bool>(
+      final confirmed = await showAppDialog<bool>(
         context: context,
         builder: (_) => ConfirmDialog(
           title: context.t.move_to_locked_folder,

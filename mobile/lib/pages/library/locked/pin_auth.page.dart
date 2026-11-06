@@ -10,6 +10,7 @@ import 'package:immich_mobile/providers/local_auth.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/widgets/forms/pin_registration_form.dart';
 import 'package:immich_mobile/widgets/forms/pin_verification_form.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 @RoutePage()
 class PinAuthPage extends HookConsumerWidget {
@@ -41,7 +42,7 @@ class PinAuthPage extends HookConsumerWidget {
     }
 
     Future<void> enableBiometricAuth() {
-      return showDialog(
+      return showAppDialog(
         context: context,
         builder: (buildContext) {
           return SimpleDialog(
@@ -58,8 +59,8 @@ class PinAuthPage extends HookConsumerWidget {
                         unawaited(registerBiometric(pinCode));
                       },
                       autoFocus: true,
-                      icon: Icons.fingerprint_rounded,
-                      successIcon: Icons.fingerprint_rounded,
+                      icon: AppIcons.fingerprint,
+                      successIcon: AppIcons.fingerprint,
                     ),
                   ],
                 ),
@@ -94,7 +95,7 @@ class PinAuthPage extends HookConsumerWidget {
                         Padding(
                           padding: const EdgeInsets.only(right: 16.0),
                           child: TextButton.icon(
-                            icon: const Icon(Icons.fingerprint, size: 28),
+                            icon: const Icon(AppIcons.fingerprint, size: 28),
                             onPressed: () => unawaited(enableBiometricAuth()),
                             label: Text(
                               context.t.use_biometric,

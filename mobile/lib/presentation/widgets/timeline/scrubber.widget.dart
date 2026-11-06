@@ -87,7 +87,7 @@ List<_Segment> _buildSegments({required List<Segment> layoutSegments, required d
 
 class ScrubberState extends ConsumerState<Scrubber> with TickerProviderStateMixin {
   String? _lastLabel;
-  double _thumbTopOffset = 0.0;
+  final _thumbTopOffset = ValueNotifier<double>(0.0);
   bool _isDragging = false;
   List<_Segment> _segments = [];
   int _monthCount = 0;
@@ -104,7 +104,9 @@ class ScrubberState extends ConsumerState<Scrubber> with TickerProviderStateMixi
   late ScrollController _scrollController;
 
   double get _currentOffset {
-    if (_scrollController.hasClients != true) {
+    if (!_scrollController.hasClients ||
+        !_scrollController.position.hasContentDimensions ||
+        _scrollController.position.maxScrollExtent <= 0) {
       return 0.0;
     }
 
@@ -134,7 +136,10 @@ class ScrubberState extends ConsumerState<Scrubber> with TickerProviderStateMixi
   void didUpdateWidget(covariant Scrubber oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.layoutSegments.lastOrNull?.endOffset != widget.layoutSegments.lastOrNull?.endOffset) {
+    if (!identical(oldWidget.layoutSegments, widget.layoutSegments) ||
+        oldWidget.timelineHeight != widget.timelineHeight ||
+        oldWidget.topPadding != widget.topPadding ||
+        oldWidget.bottomPadding != widget.bottomPadding) {
       _segments = _buildSegments(layoutSegments: widget.layoutSegments, timelineHeight: _scrubberHeight);
       _monthCount = getMonthCount();
     }
@@ -142,6 +147,7 @@ class ScrubberState extends ConsumerState<Scrubber> with TickerProviderStateMixi
 
   @override
   void dispose() {
+    _thumbTopOffset.dispose();
     _thumbAnimationController.dispose();
     _labelAnimationController.dispose();
     _fadeOutTimer?.cancel();
@@ -161,29 +167,23 @@ class ScrubberState extends ConsumerState<Scrubber> with TickerProviderStateMixi
   }
 
   bool _onScrollNotification(ScrollNotification notification) {
-    if (_isDragging) {
-      // If the user is dragging the thumb, we don't want to update the position
+    if (notification.depth != 0 || _isDragging) {
       return false;
     }
 
-    if (notification is ScrollStartNotification || notification is ScrollUpdateNotification) {
+    if (notification is ScrollStartNotification) {
       ref.read(timelineStateProvider.notifier).setScrolling(true);
+      _fadeOutTimer?.cancel();
+      if (!_thumbAnimationController.isCompleted && _thumbAnimationController.status != AnimationStatus.forward) {
+        unawaited(_thumbAnimationController.forward());
+      }
+      unawaited(_labelAnimationController.reverse());
+    } else if (notification is ScrollUpdateNotification) {
+      _thumbTopOffset.value = _currentOffset;
     } else if (notification is ScrollEndNotification) {
       ref.read(timelineStateProvider.notifier).setScrolling(false);
-    }
-
-    setState(() {
-      if (notification is ScrollUpdateNotification) {
-        _thumbTopOffset = _currentOffset;
-        if (_labelAnimation.status != AnimationStatus.reverse) {
-          unawaited(_labelAnimationController.reverse());
-        }
-        if (_thumbAnimationController.status != AnimationStatus.forward) {
-          unawaited(_thumbAnimationController.forward());
-        }
-      }
       _resetThumbTimer();
-    });
+    }
 
     return false;
   }
@@ -224,7 +224,7 @@ class ScrubberState extends ConsumerState<Scrubber> with TickerProviderStateMixi
     if (_monthCount < kMinMonthsToEnableScrubberSnap || !widget.snapToMonth) {
       // If there are less than kMinMonthsToEnableScrubberSnap months, we don't need to snap to segments
       setState(() {
-        _thumbTopOffset = dragPosition;
+        _thumbTopOffset.value = dragPosition;
         _scrollController.jumpTo((dragPosition / _scrubberHeight) * _scrollController.position.maxScrollExtent);
       });
     } else if (nearestMonthSegment != null) {
@@ -272,26 +272,41 @@ class ScrubberState extends ConsumerState<Scrubber> with TickerProviderStateMixi
     return relativePosition.clamp(0.0, _scrubberHeight);
   }
 
-  /// Find the segment closest to the given position
-  _Segment? _findNearestMonthSegment(double position) {
-    _Segment? nearestSegment;
-    double minDistance = double.infinity;
-
-    for (final segment in _segments) {
-      final distance = (segment.startOffset - position).abs();
-      if (distance < minDistance) {
-        minDistance = distance;
-        nearestSegment = segment;
+  int _segmentIndexAtOrAfter(double offset) {
+    var low = 0;
+    var high = _segments.length;
+    while (low < high) {
+      final mid = (low + high) ~/ 2;
+      if (_segments[mid].startOffset < offset) {
+        low = mid + 1;
+      } else {
+        high = mid;
       }
     }
+    return low;
+  }
 
-    return nearestSegment;
+  /// Find the segment closest to the given position
+  _Segment? _findNearestMonthSegment(double position) {
+    if (_segments.isEmpty) {
+      return null;
+    }
+    final index = _segmentIndexAtOrAfter(position);
+    if (index == 0) {
+      return _segments.first;
+    }
+    if (index == _segments.length) {
+      return _segments.last;
+    }
+    final before = _segments[index - 1];
+    final after = _segments[index];
+    return position - before.startOffset <= after.startOffset - position ? before : after;
   }
 
   /// Snap the scrubber thumb and scroll view to the given segment
   void _snapToSegment(_Segment segment) {
     setState(() {
-      _thumbTopOffset = segment.startOffset;
+      _thumbTopOffset.value = segment.startOffset;
 
       final layoutSegmentIndex = _findLayoutSegmentIndex(segment);
 
@@ -330,21 +345,6 @@ class ScrubberState extends ConsumerState<Scrubber> with TickerProviderStateMixi
 
   @override
   Widget build(BuildContext ctx) {
-    Text? label;
-    if (_scrollController.hasClients == true) {
-      // Cache to avoid multiple calls to [_currentOffset]
-      final scrollOffset = _currentOffset;
-      final labelText =
-          _segments.lastWhereOrNull((segment) => segment.startOffset <= scrollOffset)?.scrollLabel ??
-          _segments.firstOrNull?.scrollLabel;
-      label = labelText != null
-          ? Text(
-              labelText,
-              style: ctx.textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-            )
-          : null;
-    }
-
     return NotificationListener<ScrollNotification>(
       onNotification: _onScrollNotification,
       child: Stack(
@@ -359,19 +359,43 @@ class ScrubberState extends ConsumerState<Scrubber> with TickerProviderStateMixi
               isDragging: _isDragging,
             ),
           ),
-          if (_scrollController.hasClients && _scrollController.position.maxScrollExtent > 0)
-            PositionedDirectional(
-              top: _thumbTopOffset + widget.topPadding,
-              end: 0,
-              child: RepaintBoundary(
-                child: GestureDetector(
-                  onVerticalDragStart: _onDragStart,
-                  onVerticalDragUpdate: _onDragUpdate,
-                  onVerticalDragEnd: _onDragEnd,
-                  child: _Scrubber(thumbAnimation: _thumbAnimation, labelAnimation: _labelAnimation, label: label),
+          ValueListenableBuilder<double>(
+            valueListenable: _thumbTopOffset,
+            builder: (ctx, thumbOffset, _) {
+              if (!_scrollController.hasClients ||
+                  !_scrollController.position.hasContentDimensions ||
+                  _scrollController.position.maxScrollExtent <= 0) {
+                return const SizedBox.shrink();
+              }
+              Text? label;
+              if (_scrollController.hasClients == true) {
+                // Cache to avoid multiple calls to [_currentOffset]
+                final scrollOffset = _currentOffset;
+                final next = _segmentIndexAtOrAfter(scrollOffset);
+                final index = next < _segments.length && _segments[next].startOffset == scrollOffset ? next : next - 1;
+                final labelText = index >= 0 ? _segments[index].scrollLabel : _segments.firstOrNull?.scrollLabel;
+                label = labelText != null
+                    ? Text(
+                        labelText,
+                        style: ctx.textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                      )
+                    : null;
+              }
+
+              return PositionedDirectional(
+                top: thumbOffset + widget.topPadding,
+                end: 0,
+                child: RepaintBoundary(
+                  child: GestureDetector(
+                    onVerticalDragStart: _onDragStart,
+                    onVerticalDragUpdate: _onDragUpdate,
+                    onVerticalDragEnd: _onDragEnd,
+                    child: _Scrubber(thumbAnimation: _thumbAnimation, labelAnimation: _labelAnimation, label: label),
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -425,7 +449,7 @@ class _SegmentWidget extends StatelessWidget {
             alignment: Alignment.center,
             child: Text(
               _segment.date.year.toString(),
-              style: context.textTheme.labelMedium?.copyWith(fontFamily: "GoogleSansCode", fontWeight: FontWeight.w600),
+              style: context.textTheme.labelMedium?.copyWith(fontFamily: "GeistMono", fontWeight: FontWeight.w600),
             ),
           ),
         ),

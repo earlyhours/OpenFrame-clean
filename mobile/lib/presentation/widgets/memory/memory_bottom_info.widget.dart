@@ -8,6 +8,7 @@ import 'package:immich_mobile/extensions/datetime_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/presentation/widgets/memory/memory_title.widget.dart';
 import 'package:immich_mobile/routing/router.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:intl/intl.dart';
 
 class MemoryBottomInfo extends StatelessWidget {
@@ -50,7 +51,7 @@ class MemoryBottomInfo extends StatelessWidget {
               shape: const CircleBorder(),
               color: Colors.white.withValues(alpha: 0.2),
               elevation: 0,
-              child: const Icon(Icons.open_in_new, color: Colors.white),
+              child: const Icon(AppIcons.externalLink, color: Colors.white),
             ),
           ),
         ],

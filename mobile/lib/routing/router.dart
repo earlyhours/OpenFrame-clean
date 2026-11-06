@@ -79,6 +79,7 @@ import 'package:immich_mobile/services/api.service.dart';
 import 'package:immich_mobile/services/auth.service.dart';
 import 'package:immich_mobile/services/local_auth.service.dart';
 import 'package:immich_mobile/services/secure_storage.service.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
 part 'router.gr.dart';
@@ -123,7 +124,7 @@ class AppRouter extends RootStackRouter {
       guards: [_authGuard, _duplicateGuard],
       children: [
         AutoRoute(page: MainTimelineRoute.page, guards: [_authGuard, _duplicateGuard]),
-        AutoRoute(page: SearchRoute.page, guards: [_authGuard, _duplicateGuard], maintainState: false),
+        AutoRoute(page: SearchRoute.page, guards: [_authGuard, _duplicateGuard]),
         AutoRoute(page: LibraryRoute.page, guards: [_authGuard, _duplicateGuard]),
         AutoRoute(page: AlbumsRoute.page, guards: [_authGuard, _duplicateGuard]),
       ],
@@ -137,7 +138,7 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: FolderRoute.page, guards: [_authGuard]),
     AutoRoute(page: SharedLinkRoute.page, guards: [_authGuard, _duplicateGuard]),
     AutoRoute(page: SharedLinkEditRoute.page, guards: [_authGuard, _duplicateGuard]),
-    CustomRoute(page: MapLocationPickerRoute.page, guards: [_authGuard, _duplicateGuard]),
+    AutoRoute(page: MapLocationPickerRoute.page, guards: [_authGuard, _duplicateGuard]),
     AutoRoute(page: HeaderSettingsRoute.page, guards: [_duplicateGuard]),
     AutoRoute(page: ShareIntentRoute.page, guards: [_authGuard, _duplicateGuard]),
     AutoRoute(page: PinAuthRoute.page, guards: [_authGuard, _duplicateGuard]),
@@ -155,9 +156,12 @@ class AppRouter extends RootStackRouter {
         customRouteBuilder: <T>(context, child, page) => PageRouteBuilder<T>(
           fullscreenDialog: page.fullscreenDialog,
           settings: page,
+          maintainState: page.maintainState,
+          transitionDuration: AppMotion.of(context, const Duration(milliseconds: 300)),
+          reverseTransitionDuration: AppMotion.of(context, const Duration(milliseconds: 250)),
           pageBuilder: (_, _, _) => child,
           opaque: false,
-          transitionsBuilder: TransitionsBuilders.fadeIn,
+          transitionsBuilder: _assetViewerTransition,
         ),
       ),
     ),
@@ -197,4 +201,21 @@ class AppRouter extends RootStackRouter {
     // auto_route_library#1722
     RedirectRoute(path: '*', redirectTo: '/'),
   ];
+}
+
+/// Asset viewer: a curved cross-fade under the thumbnail hero flight.
+/// Linear fades look "late" next to the hero's eased motion.
+Widget _assetViewerTransition(
+  BuildContext context,
+  Animation<double> animation,
+  Animation<double> secondaryAnimation,
+  Widget child,
+) {
+  if (AppMotion.reduced(context)) {
+    return child;
+  }
+  return FadeTransition(
+    opacity: animation.drive(CurveTween(curve: Curves.easeOutCubic)),
+    child: child,
+  );
 }

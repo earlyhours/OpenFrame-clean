@@ -9,6 +9,7 @@ import 'package:immich_mobile/extensions/duration_extensions.dart';
 import 'package:immich_mobile/presentation/actions/edit_datetime.action.dart';
 import 'package:immich_mobile/presentation/widgets/asset_viewer/sheet_tile.widget.dart';
 import 'package:immich_mobile/utils/timezone.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 const _kSeparator = '  •  ';
 
@@ -29,7 +30,7 @@ class DateTimeDetails extends ConsumerWidget {
         SheetTile(
           title: _getDateTime(context, asset, exifInfo),
           titleStyle: context.textTheme.labelLarge,
-          trailing: editDateTime == null ? null : const Icon(Icons.edit, size: 18),
+          trailing: editDateTime == null ? null : const Icon(AppIcons.pencil, size: 18),
           onTap: editDateTime?.onAction,
         ),
       ],

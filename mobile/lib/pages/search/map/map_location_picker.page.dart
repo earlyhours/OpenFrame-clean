@@ -10,6 +10,7 @@ import 'package:immich_mobile/extensions/maplibrecontroller_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/utils/map_utils.dart';
 import 'package:immich_mobile/widgets/map/map_theme_override.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
 @RoutePage()
@@ -106,7 +107,7 @@ class _AppBar extends StatelessWidget implements PreferredSizeWidget {
         child: ElevatedButton(
           onPressed: onClose,
           style: ElevatedButton.styleFrom(shape: const CircleBorder()),
-          child: const Icon(Icons.arrow_back_ios_new_rounded),
+          child: const Icon(AppIcons.chevronLeftDir),
         ),
       ),
     );
@@ -136,7 +137,7 @@ class _BottomBar extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.public, size: 18),
+                const Icon(AppIcons.globe, size: 18),
                 const SizedBox(width: 15),
                 ValueListenableBuilder(
                   valueListenable: selectedLatLng,
@@ -149,7 +150,7 @@ class _BottomBar extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(onPressed: onUseLocation, child: Text(context.t.map_location_picker_page_use_location)),
-                ElevatedButton(onPressed: onGetCurrentLocation, child: const Icon(Icons.my_location)),
+                ElevatedButton(onPressed: onGetCurrentLocation, child: const Icon(AppIcons.locateFixed)),
               ],
             ),
           ],

@@ -69,7 +69,7 @@
   });
 </script>
 
-<div class="license-status ps-4 text-sm">
+<div class="license-status mx-3 mt-3 text-sm">
   {#if authManager.isPurchased && authManager.preferences.purchase.showSupportBadge}
     <button
       onclick={() => goto(Route.userSettings({ isOpen: OpenQueryParam.PURCHASE_SETTINGS }))}
@@ -86,7 +86,7 @@
       onmouseleave={() => (hoverButton = false)}
       onfocus={onButtonHover}
       onblur={() => (hoverButton = false)}
-      class="mt-2 flex w-full min-w-52 place-content-center place-items-center justify-between rounded-lg border border-immich-primary/20 p-2 shadow-md dark:border-immich-dark-primary/10 dark:bg-immich-dark-primary/10"
+      class="mt-2 flex w-full place-content-center place-items-center justify-between rounded-xl border bg-subtle p-3"
     >
       <div class="flex w-full place-content-center place-items-center justify-between">
         <div class="flex place-content-center place-items-center gap-1">

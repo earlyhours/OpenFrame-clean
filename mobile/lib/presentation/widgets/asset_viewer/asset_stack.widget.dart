@@ -5,6 +5,7 @@ import 'package:immich_mobile/domain/services/timeline.service.dart';
 import 'package:immich_mobile/presentation/widgets/images/thumbnail.widget.dart';
 import 'package:immich_mobile/providers/asset_viewer/asset_viewer.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/timeline.provider.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class AssetStackRow extends ConsumerWidget {
   final List<RemoteAsset> stack;
@@ -78,7 +79,7 @@ class _StackItemState extends ConsumerState<_StackItem> {
   Widget build(BuildContext context) {
     const playIcon = Center(
       child: Icon(
-        Icons.play_circle_outline_rounded,
+        AppIcons.circlePlay,
         color: Colors.white,
         size: 16,
         shadows: [Shadow(blurRadius: 5.0, color: Color.fromRGBO(0, 0, 0, 0.6), offset: Offset.zero)],

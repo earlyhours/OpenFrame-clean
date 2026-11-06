@@ -8,19 +8,20 @@ import 'package:immich_mobile/providers/infrastructure/user.provider.dart';
 import 'package:immich_mobile/providers/user.provider.dart';
 import 'package:immich_mobile/utils/error_handler.dart';
 import 'package:immich_mobile/widgets/common/confirm_dialog.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class PartnerAddAction extends ActionBuilder {
   const PartnerAddAction();
 
   @override
   ActionItem create(BuildContext context, WidgetRef ref) =>
-      ActionItem(icon: Icons.person_add_rounded, label: context.t.add_partner, onAction: () => _add(context, ref));
+      ActionItem(icon: AppIcons.userPlus, label: context.t.add_partner, onAction: () => _add(context, ref));
 
   Future<void> _add(BuildContext context, WidgetRef ref) async {
     final partnerService = ref.read(partnerServiceProvider);
     final authUserId = ref.read(authUserProvider).id;
 
-    final selected = await showDialog<User>(context: context, builder: (_) => const PartnerSelectionDialog());
+    final selected = await showAppDialog<User>(context: context, builder: (_) => const PartnerSelectionDialog());
     if (selected == null) {
       return;
     }
@@ -41,13 +42,13 @@ class PartnerRemoveAction extends ActionBuilder {
 
   @override
   ActionItem create(BuildContext context, WidgetRef ref) =>
-      ActionItem(icon: Icons.person_remove_rounded, label: context.t.remove, onAction: () => _remove(context, ref));
+      ActionItem(icon: AppIcons.userMinus, label: context.t.remove, onAction: () => _remove(context, ref));
 
   Future<void> _remove(BuildContext context, WidgetRef ref) async {
     final partnerService = ref.read(partnerServiceProvider);
     final authUserId = ref.read(authUserProvider).id;
 
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showAppDialog<bool>(
       context: context,
       builder: (_) => ConfirmDialog(
         title: context.t.stop_photo_sharing,

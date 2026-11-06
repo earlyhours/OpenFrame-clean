@@ -7,6 +7,7 @@ import 'package:immich_mobile/providers/infrastructure/asset.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/toast.provider.dart';
 import 'package:immich_mobile/providers/routes.provider.dart';
 import 'package:immich_mobile/utils/error_handler.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 typedef _State = ({bool shouldArchive, List<String> assetIds});
 
@@ -35,7 +36,7 @@ class ArchiveAction extends AssetActionBuilder {
     }
 
     return .new(
-      icon: shouldArchive ? Icons.archive_outlined : Icons.unarchive_outlined,
+      icon: shouldArchive ? AppIcons.archive : AppIcons.archiveRestore,
       label: shouldArchive ? context.t.archive : context.t.unarchive,
       onAction: () => _archive(context, ref),
     );

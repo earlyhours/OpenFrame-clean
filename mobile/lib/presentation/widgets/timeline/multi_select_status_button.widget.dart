@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/providers/timeline/multiselect.provider.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class MultiSelectStatusButton extends ConsumerWidget {
   const MultiSelectStatusButton({super.key});
@@ -9,13 +10,16 @@ class MultiSelectStatusButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectCount = ref.watch(multiSelectProvider.select((s) => s.selectedAssets.length));
-    return ElevatedButton.icon(
-      onPressed: () => ref.read(multiSelectProvider.notifier).reset(),
-      icon: Icon(Icons.close_rounded, color: context.colorScheme.onPrimary),
-      label: Text(
-        selectCount.toString(),
-        style: context.textTheme.titleMedium?.copyWith(height: 2.5, color: context.colorScheme.onPrimary),
+    return OutlinedButton.icon(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: context.primaryColor,
+        backgroundColor: context.colorScheme.surfaceContainer,
+        minimumSize: const Size(48, 44),
+        side: BorderSide(color: context.colorScheme.outlineVariant),
       ),
+      onPressed: () => ref.read(multiSelectProvider.notifier).reset(),
+      icon: Icon(AppIcons.x, color: context.primaryColor),
+      label: Text(selectCount.toString(), style: context.textTheme.labelLarge?.copyWith(color: context.primaryColor)),
     );
   }
 }

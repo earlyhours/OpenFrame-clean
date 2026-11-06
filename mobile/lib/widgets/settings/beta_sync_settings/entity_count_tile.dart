@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
-import 'package:immich_mobile/extensions/theme_extensions.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class EntityCountTile extends StatelessWidget {
   final int count;
@@ -21,49 +21,39 @@ class EntityCountTile extends StatelessWidget {
     const double charWidth = 11.0;
     final maxDigits = ((availableWidth - 32) / charWidth).floor().clamp(1, 8);
 
-    return Container(
-      height: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.colorScheme.surfaceContainerLow,
-        borderRadius: const BorderRadius.all(Radius.circular(16)),
-        border: Border.all(width: 0.5, color: context.colorScheme.outline.withAlpha(25)),
-      ),
+    return Padding(
+      padding: const EdgeInsets.all(SettingsMetrics.rowInset),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Icon and Label
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: context.primaryColor, size: 14),
-              const SizedBox(width: 4),
+              Icon(icon, color: context.colorScheme.onSurfaceVariant, size: 15),
+              const SizedBox(width: 6),
               Flexible(
                 child: Text(
                   label,
-                  style: TextStyle(color: context.primaryColor, fontWeight: FontWeight.w500),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.textTheme.labelMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
                 ),
               ),
             ],
           ),
-          // Number
-          const Spacer(),
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: RichText(
-              text: TextSpan(
-                style: const TextStyle(fontSize: 18, fontFamily: 'GoogleSansCode'),
-                children: [
-                  TextSpan(
-                    text: zeroPadding(count, maxDigits),
-                    style: TextStyle(color: context.colorScheme.onSurfaceSecondary.withAlpha(75)),
-                  ),
-                  TextSpan(
-                    text: count.toString(),
-                    style: TextStyle(color: context.colorScheme.onSurface),
-                  ),
-                ],
-              ),
+          const SizedBox(height: 8),
+          RichText(
+            text: TextSpan(
+              style: context.monoStyle.copyWith(fontSize: 20),
+              children: [
+                TextSpan(
+                  text: zeroPadding(count, maxDigits),
+                  style: TextStyle(color: context.colorScheme.onSurface.withValues(alpha: .18)),
+                ),
+                TextSpan(
+                  text: count.toString(),
+                  style: TextStyle(color: context.colorScheme.onSurface),
+                ),
+              ],
             ),
           ),
         ],

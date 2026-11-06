@@ -5,6 +5,7 @@ import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/providers/auth.provider.dart';
 import 'package:immich_mobile/widgets/forms/pin_input.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class PinRegistrationForm extends HookConsumerWidget {
   final Function() onDone;
@@ -53,7 +54,7 @@ class PinRegistrationForm extends HookConsumerWidget {
     return Form(
       child: Column(
         children: [
-          Icon(Icons.pin_outlined, size: 64, color: context.primaryColor),
+          Icon(AppIcons.pin, size: 64, color: context.primaryColor),
           const SizedBox(height: 32),
           SizedBox(
             width: context.width * 0.7,

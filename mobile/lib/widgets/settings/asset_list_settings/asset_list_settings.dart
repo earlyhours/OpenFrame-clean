@@ -19,29 +19,33 @@ class AssetListSettings extends HookConsumerWidget {
     final smoothScrubbing = useValueNotifier(ref.watch(appConfigProvider.select((s) => s.timeline.smoothScrubbing)));
 
     final assetListSetting = [
-      SettingsSwitchListTile(
-        valueNotifier: storageIndicator,
-        title: context.t.theme_setting_asset_list_storage_indicator_title,
-        onChanged: (value) {
-          unawaited(ref.read(settingsProvider).write(.timelineStorageIndicator, value));
-          ref.invalidate(appSettingsServiceProvider);
-          ref.invalidate(settingsProvider);
-        },
-      ),
-      SettingsSwitchListTile(
-        valueNotifier: smoothScrubbing,
-        title: context.t.theme_setting_asset_list_smooth_scrubbing_title,
-        subtitle: context.t.theme_setting_asset_list_smooth_scrubbing_subtitle,
-        onChanged: (value) {
-          unawaited(ref.read(settingsProvider).write(.timelineSmoothScrubbing, value));
-          ref.invalidate(appSettingsServiceProvider);
-          ref.invalidate(settingsProvider);
-        },
+      SettingsSection(
+        children: [
+          SettingsSwitchListTile(
+            valueNotifier: storageIndicator,
+            title: context.t.theme_setting_asset_list_storage_indicator_title,
+            onChanged: (value) {
+              unawaited(ref.read(settingsProvider).write(.timelineStorageIndicator, value));
+              ref.invalidate(appSettingsServiceProvider);
+              ref.invalidate(settingsProvider);
+            },
+          ),
+          SettingsSwitchListTile(
+            valueNotifier: smoothScrubbing,
+            title: context.t.theme_setting_asset_list_smooth_scrubbing_title,
+            subtitle: context.t.theme_setting_asset_list_smooth_scrubbing_subtitle,
+            onChanged: (value) {
+              unawaited(ref.read(settingsProvider).write(.timelineSmoothScrubbing, value));
+              ref.invalidate(appSettingsServiceProvider);
+              ref.invalidate(settingsProvider);
+            },
+          ),
+        ],
       ),
       const LayoutSettings(),
       const GroupSettings(),
     ];
 
-    return SettingsSubPageScaffold(settings: assetListSetting, showDivider: true);
+    return SettingsSubPageScaffold(settings: assetListSetting);
   }
 }

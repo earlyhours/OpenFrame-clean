@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/providers/asset_viewer/download.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class DownloadStatusFloatingButton extends ConsumerWidget {
   const DownloadStatusFloatingButton({super.key});
@@ -41,9 +42,9 @@ class DownloadStatusFloatingButton extends ConsumerWidget {
                 alignment: AlignmentDirectional.center,
                 children: [
                   isDownloading
-                      ? Icon(Icons.downloading_rounded, color: context.colorScheme.primary, size: 28)
+                      ? Icon(AppIcons.download, color: context.colorScheme.primary, size: ImmichIconSize.md)
                       : Icon(
-                          Icons.download_done,
+                          AppIcons.cloudCheck,
                           color: context.isDarkTheme ? Colors.green[200] : Colors.green[400],
                           size: 28,
                         ),

@@ -31,8 +31,8 @@
 </script>
 
 <div class="flex h-full flex-col">
-  <div class="flex h-16 w-full items-center justify-between border-b px-4 py-2 md:px-2">
-    <Breadcrumbs items={breadcrumbs} separator={mdiSlashForward} />
+  <div class="flex h-18 w-full items-center justify-between gap-4 border-b px-4 md:px-6">
+    <Breadcrumbs class="of-breadcrumbs min-w-0" items={breadcrumbs} separator={mdiSlashForward} />
 
     {#if enabledActions.length > 0}
       <div class="hidden md:block">
@@ -56,6 +56,6 @@
     {/if}
   </div>
   <Scrollable class="grow">
-    <Container class="p-2 pb-16" {children} />
+    <Container class="p-4 pb-16 md:p-6 md:pb-16" {children} />
   </Scrollable>
 </div>

@@ -20,17 +20,19 @@ enum AvatarColor {
   final String value;
   const AvatarColor(this.value);
 
+  /// A curated, muted palette that sits with the warm theme instead of the
+  /// server's saturated defaults. Every tone carries white text.
   Color toColor({bool isDarkTheme = false}) => switch (this) {
-    AvatarColor.primary => isDarkTheme ? const Color(0xFFABCBFA) : const Color(0xFF4250AF),
-    AvatarColor.pink => const Color.fromARGB(255, 244, 114, 182),
-    AvatarColor.red => const Color.fromARGB(255, 239, 68, 68),
-    AvatarColor.yellow => const Color.fromARGB(255, 234, 179, 8),
-    AvatarColor.blue => const Color.fromARGB(255, 59, 130, 246),
-    AvatarColor.green => const Color.fromARGB(255, 22, 163, 74),
-    AvatarColor.purple => const Color.fromARGB(255, 147, 51, 234),
-    AvatarColor.orange => const Color.fromARGB(255, 234, 88, 12),
-    AvatarColor.gray => const Color.fromARGB(255, 75, 85, 99),
-    AvatarColor.amber => const Color.fromARGB(255, 217, 119, 6),
+    AvatarColor.primary => isDarkTheme ? const Color(0xFFD9681F) : const Color(0xFFC85A16),
+    AvatarColor.pink => const Color(0xFFB8737F), // dusty rose
+    AvatarColor.red => const Color(0xFFB45F48), // terracotta
+    AvatarColor.yellow => const Color(0xFFA8884F), // sand
+    AvatarColor.blue => const Color(0xFF657A8C), // slate
+    AvatarColor.green => const Color(0xFF6F8A6A), // sage
+    AvatarColor.purple => const Color(0xFF85698A), // plum
+    AvatarColor.orange => const Color(0xFFC0703A), // clay
+    AvatarColor.gray => const Color(0xFF77716A), // stone
+    AvatarColor.amber => const Color(0xFFB4843A), // amber
   };
 }
 

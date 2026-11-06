@@ -4,6 +4,7 @@ import 'package:immich_mobile/domain/services/timeline.service.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/presentation/actions/action.dart';
 import 'package:immich_mobile/providers/infrastructure/store.provider.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class OpenInBrowserAction extends ActionBuilder {
@@ -14,7 +15,7 @@ class OpenInBrowserAction extends ActionBuilder {
 
   @override
   ActionItem create(BuildContext context, WidgetRef ref) =>
-      .new(icon: Icons.open_in_browser, label: context.t.open_in_browser, onAction: () => _open(ref));
+      .new(icon: AppIcons.externalLink, label: context.t.open_in_browser, onAction: () => _open(ref));
 
   Future<void> _open(WidgetRef ref) async {
     final serverEndpoint = ref.read(storeServiceProvider).get(.serverEndpoint).replaceFirst('/api', '');

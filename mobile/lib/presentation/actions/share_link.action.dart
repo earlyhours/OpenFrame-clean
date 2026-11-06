@@ -7,6 +7,7 @@ import 'package:immich_mobile/constants/enums.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/presentation/actions/action.dart';
 import 'package:immich_mobile/routing/router.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 final _stateProvider = Provider.family.autoDispose<List<String>?, ActionSource>((ref, source) {
   final assets = ref.watch(assetsActionProvider(source));
@@ -25,7 +26,7 @@ class ShareLinkAction extends AssetActionBuilder {
     }
 
     return .new(
-      icon: Icons.link_rounded,
+      icon: AppIcons.link,
       label: context.t.share_link,
       onAction: () async => unawaited(context.pushRoute(SharedLinkEditRoute(assetsList: remoteIds))),
     );

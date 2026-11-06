@@ -5,7 +5,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/constants/enums.dart';
 import 'package:immich_mobile/domain/models/settings_key.dart';
-import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/providers/infrastructure/settings.provider.dart';
 import 'package:immich_ui/immich_ui.dart';
@@ -24,17 +23,10 @@ class ShareSetting extends HookConsumerWidget {
       }
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return SettingsSection(
+      title: context.t.default_share_quality,
+      footer: context.t.default_quality_subtitle,
       children: [
-        SettingGroupTitle(title: context.t.default_share_quality, icon: Icons.ios_share_outlined),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            context.t.default_quality_subtitle,
-            style: context.textTheme.bodyMedium!.copyWith(color: context.textTheme.bodyMedium!.color!.withAlpha(215)),
-          ),
-        ),
         SettingsRadioListTile(
           groups: [
             SettingsRadioGroup(title: context.t.share_original, value: ShareAssetType.original),

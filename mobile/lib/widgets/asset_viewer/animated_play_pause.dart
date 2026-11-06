@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 /// A widget that animates implicitly between a play and a pause icon.
 class AnimatedPlayPause extends StatefulWidget {
@@ -43,12 +44,27 @@ class AnimatedPlayPauseState extends State<AnimatedPlayPause> with SingleTickerP
 
   @override
   Widget build(BuildContext context) {
-    final icon = AnimatedIcon(
-      color: widget.color,
-      size: widget.size,
-      icon: AnimatedIcons.play_pause,
-      progress: animationController,
+    Widget buildIcon(Color? color) => AnimatedBuilder(
+      animation: animationController,
+      builder: (context, _) => SizedBox.square(
+        dimension: widget.size,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Opacity(
+              opacity: 1 - animationController.value,
+              child: Icon(AppIcons.play, color: color, size: widget.size),
+            ),
+            Opacity(
+              opacity: animationController.value,
+              child: Icon(AppIcons.pause, color: color, size: widget.size),
+            ),
+          ],
+        ),
+      ),
     );
+
+    final icon = buildIcon(widget.color);
 
     return Center(
       child: Stack(
@@ -59,12 +75,7 @@ class AnimatedPlayPauseState extends State<AnimatedPlayPause> with SingleTickerP
               offset: shadow.offset,
               child: ImageFiltered(
                 imageFilter: ImageFilter.blur(sigmaX: shadow.blurRadius / 2, sigmaY: shadow.blurRadius / 2),
-                child: AnimatedIcon(
-                  color: shadow.color,
-                  size: widget.size,
-                  icon: AnimatedIcons.play_pause,
-                  progress: animationController,
-                ),
+                child: buildIcon(shadow.color),
               ),
             ),
           icon,

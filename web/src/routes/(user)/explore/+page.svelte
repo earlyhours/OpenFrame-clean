@@ -69,46 +69,32 @@
 
 <UserPageLayout title={data.meta.title}>
   {#if hasPeople}
-    <div class="mt-2 mb-6">
-      <div class="flex justify-between">
-        <p class="mb-4 font-medium dark:text-immich-dark-fg">{$t('people')}</p>
-        <a
-          href={Route.people()}
-          class="pe-4 text-sm font-medium hover:text-immich-primary dark:text-immich-dark-fg dark:hover:text-immich-dark-primary"
-          draggable="false">{$t('view_all')}</a
-        >
+    <section class="mb-10">
+      <div class="mb-4 flex items-baseline justify-between">
+        <h2 class="of-section-title">{$t('people')}</h2>
+        <a href={Route.people()} class="of-section-link" draggable="false">{$t('view_all')}</a>
       </div>
       <SingleGridRow class="grid grid-flow-col grid-auto-fill-20 gap-x-4 md:grid-auto-fill-28">
         {#snippet children({ itemCount })}
           {#each people.slice(0, itemCount) as person (person.id)}
             <a href={Route.viewPerson(person)} class="text-center">
               <div class="@container relative">
-                <ImageThumbnail
-                  circle
-                  shadow
-                  url={getPeopleThumbnailUrl(person)}
-                  altText={person.name}
-                  widthStyle="100%"
-                />
+                <ImageThumbnail circle url={getPeopleThumbnailUrl(person)} altText={person.name} widthStyle="100%" />
                 <PersonIndicator {person} />
               </div>
-              <p class="mt-2 text-sm font-medium text-ellipsis dark:text-white">{person.name}</p>
+              <p class="mt-3 truncate text-sm font-medium text-dark">{person.name}</p>
             </a>
           {/each}
         {/snippet}
       </SingleGridRow>
-    </div>
+    </section>
   {/if}
 
   {#if places.length > 0}
-    <div class="mt-2 mb-6">
-      <div class="flex justify-between">
-        <p class="mb-4 font-medium dark:text-immich-dark-fg">{$t('places')}</p>
-        <a
-          href={Route.places()}
-          class="pe-4 text-sm font-medium hover:text-immich-primary dark:text-immich-dark-fg dark:hover:text-immich-dark-primary"
-          draggable="false">{$t('view_all')}</a
-        >
+    <section class="mb-10">
+      <div class="mb-4 flex items-baseline justify-between">
+        <h2 class="of-section-title">{$t('places')}</h2>
+        <a href={Route.places()} class="of-section-link" draggable="false">{$t('view_all')}</a>
       </div>
       <SingleGridRow class="grid grid-flow-col grid-auto-fill-28 gap-x-4 md:grid-auto-fill-36">
         {#snippet children({ itemCount })}
@@ -122,7 +108,7 @@
                 />
               </div>
               <span
-                class="absolute bottom-2 w-full px-1 text-center text-sm font-medium text-ellipsis text-white capitalize backdrop-blur-[1px] hover:cursor-pointer"
+                class="absolute bottom-2 w-full px-1 text-center text-sm font-medium text-ellipsis text-white capitalize hover:cursor-pointer"
               >
                 {item.value}
               </span>
@@ -130,38 +116,30 @@
           {/each}
         {/snippet}
       </SingleGridRow>
-    </div>
+    </section>
   {/if}
 
   {#if memories.length > 0}
-    <div class="mt-2 mb-6">
-      <div class="flex justify-between">
-        <p class="mb-4 font-medium dark:text-immich-dark-fg">{$t('memories')}</p>
-        <a
-          href={Route.memories()}
-          class="pe-4 text-sm font-medium hover:text-immich-primary dark:text-immich-dark-fg dark:hover:text-immich-dark-primary"
-          draggable="false">{$t('view_all')}</a
-        >
+    <section class="mb-10">
+      <div class="mb-4 flex items-baseline justify-between">
+        <h2 class="of-section-title">{$t('memories')}</h2>
+        <a href={Route.memories()} class="of-section-link" draggable="false">{$t('view_all')}</a>
       </div>
       <ImageCarousel items={memories}>
         {#snippet child(item)}
           <MemoryCard {item} />
         {/snippet}
       </ImageCarousel>
-    </div>
+    </section>
   {/if}
 
   {#if recents.length > 0}
-    <div class="mt-2 mb-6">
-      <div class="flex justify-between">
-        <p class="mb-4 font-medium dark:text-immich-dark-fg">{$t('recently_added')}</p>
-        <a
-          href={Route.recentlyAdded()}
-          class="pe-4 text-sm font-medium hover:text-immich-primary dark:text-immich-dark-fg dark:hover:text-immich-dark-primary"
-          draggable="false">{$t('view_all')}</a
-        >
+    <section class="mb-10">
+      <div class="mb-4 flex items-baseline justify-between">
+        <h2 class="of-section-title">{$t('recently_added')}</h2>
+        <a href={Route.recentlyAdded()} class="of-section-link" draggable="false">{$t('view_all')}</a>
       </div>
-      <div class="flex h-24 max-w-fit flex-wrap gap-x-1 overflow-hidden md:h-42">
+      <div class="flex h-24 max-w-fit flex-wrap gap-2 overflow-hidden md:h-42">
         {#each recents as item (item.data.id)}
           <button
             type="button"
@@ -177,7 +155,7 @@
           </button>
         {/each}
       </div>
-    </div>
+    </section>
   {/if}
 
   {#if !hasPeople && places.length === 0 && recents.length === 0}

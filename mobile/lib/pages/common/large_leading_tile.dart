@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class LargeLeadingTile extends StatelessWidget {
   const LargeLeadingTile({
@@ -31,31 +32,35 @@ class LargeLeadingTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(borderRadius),
-      onTap: disabled ? null : onTap,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: selected
-              ? selectedTileColor ?? Theme.of(context).primaryColor.withAlpha(30)
-              : tileColor ?? Colors.transparent,
-          borderRadius: BorderRadius.circular(borderRadius),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(padding: leadingPadding, child: leading),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(width: context.width * 0.6, child: title),
-                  subtitle ?? const SizedBox.shrink(),
-                ],
+    return Pressable(
+      enabled: !disabled,
+      scale: 0.98,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(borderRadius),
+        onTap: disabled ? null : onTap,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: selected
+                ? selectedTileColor ?? Theme.of(context).primaryColor.withAlpha(30)
+                : tileColor ?? Colors.transparent,
+            borderRadius: BorderRadius.circular(borderRadius),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(padding: leadingPadding, child: leading),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(width: context.width * 0.6, child: title),
+                    subtitle ?? const SizedBox.shrink(),
+                  ],
+                ),
               ),
-            ),
-            ?trailing,
-          ],
+              ?trailing,
+            ],
+          ),
         ),
       ),
     );

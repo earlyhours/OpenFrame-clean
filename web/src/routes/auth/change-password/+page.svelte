@@ -1,18 +1,11 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import AuthPageLayout from '$lib/components/layouts/AuthPageLayout.svelte';
+  import AuthShell from '$lib/components/auth/AuthShell.svelte';
   import { authManager } from '$lib/managers/auth-manager.svelte';
   import { Route } from '$lib/route';
   import { handleChangePassword } from '$lib/services/user.service';
-  import { Alert, Button, Field, HelperText, PasswordInput, Stack, Text } from '@immich/ui';
+  import { Button, Field, HelperText, PasswordInput } from '@immich/ui';
   import { t } from 'svelte-i18n';
-  import type { PageData } from './$types';
-
-  interface Props {
-    data: PageData;
-  }
-
-  let { data }: Props = $props();
 
   let currentPassword = $state('');
   let password = $state('');
@@ -32,25 +25,23 @@
   };
 </script>
 
-<AuthPageLayout title={data.meta.title}>
+<AuthShell
+  title={$t('change_password')}
+  subtitle={$t('hi_user', { values: { name: authManager.user.name, email: authManager.user.email } })}
+>
   <form onsubmit={onSubmit} class="flex flex-col gap-4">
-    <Alert color="primary" size="small" class="mb-2">
-      <Stack gap={4}>
-        <Text>{$t('hi_user', { values: { name: authManager.user.name, email: authManager.user.email } })}</Text>
-        <Text>{$t('change_password_description')}</Text>
-      </Stack>
-    </Alert>
+    <p class="text-sm/6 text-muted">{$t('change_password_description')}</p>
 
     <Field label={$t('password')} required>
-      <PasswordInput bind:value={currentPassword} autocomplete="current-password" />
+      <PasswordInput bind:value={currentPassword} autocomplete="current-password" size="large" />
     </Field>
 
     <Field label={$t('new_password')} required>
-      <PasswordInput bind:value={password} autocomplete="new-password" />
+      <PasswordInput bind:value={password} autocomplete="new-password" size="large" />
     </Field>
 
     <Field label={$t('confirm_password')} required>
-      <PasswordInput bind:value={passwordConfirm} autocomplete="new-password" />
+      <PasswordInput bind:value={passwordConfirm} autocomplete="new-password" size="large" />
       <HelperText color="danger">{errorMessage}</HelperText>
     </Field>
 
@@ -58,4 +49,4 @@
       >{$t('to_change_password')}</Button
     >
   </form>
-</AuthPageLayout>
+</AuthShell>

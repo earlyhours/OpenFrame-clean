@@ -10,13 +10,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart' hide Store;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:immich_mobile/demo/demo_mode.dart';
+import 'package:immich_mobile/demo/demo_server.dart';
 import 'package:immich_mobile/domain/models/store.model.dart';
 import 'package:immich_mobile/entities/store.entity.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/infrastructure/repositories/settings.repository.dart';
+import 'package:immich_mobile/pages/login/qr_scanner.page.dart';
 import 'package:immich_mobile/providers/auth.provider.dart';
 import 'package:immich_mobile/providers/background_sync.provider.dart';
+import 'package:immich_mobile/providers/connect_link.provider.dart';
 import 'package:immich_mobile/providers/feature_message.provider.dart';
 import 'package:immich_mobile/providers/gallery_permission.provider.dart';
 import 'package:immich_mobile/providers/oauth.provider.dart';
@@ -25,6 +29,7 @@ import 'package:immich_mobile/providers/view_intent/view_intent_handler.provider
 import 'package:immich_mobile/providers/websocket.provider.dart';
 import 'package:immich_mobile/repositories/permission.repository.dart';
 import 'package:immich_mobile/routing/router.dart';
+import 'package:immich_mobile/utils/connect_payload.dart';
 import 'package:immich_mobile/utils/provider_utils.dart';
 import 'package:immich_mobile/utils/semver.dart';
 import 'package:immich_mobile/utils/url_helper.dart';
@@ -70,11 +75,10 @@ class LoginForm extends HookConsumerWidget {
     final isOauthEnable = useState<bool>(false);
     final isPasswordLoginEnable = useState<bool>(false);
     final oAuthButtonLabel = useState<String>('OAuth');
-    final logoAnimationController = useAnimationController(duration: const Duration(seconds: 60));
-    unawaited(logoAnimationController.repeat());
     final serverInfo = ref.watch(serverInfoProvider);
     final warningMessage = useState<String?>(null);
-    final loginFormKey = GlobalKey<FormState>();
+    final isCheckingServer = useState(false);
+    final connectError = useState<String?>(null);
     final ValueNotifier<String?> serverEndpoint = useState<String?>(null);
 
     Future<void> checkVersionMismatch() async {
@@ -91,6 +95,11 @@ class LoginForm extends HookConsumerWidget {
     /// Fetch the server login credential and enables oAuth login if necessary
     /// Returns true if successful, false otherwise
     Future<void> getServerAuthSettings() async {
+      if (isCheckingServer.value) {
+        return;
+      }
+      isCheckingServer.value = true;
+      FocusManager.instance.primaryFocus?.unfocus();
       final sanitizeServerUrl = normalizeServerUrl(serverEndpointController.text);
       final serverUrl = punycodeEncodeUrl(sanitizeServerUrl);
 
@@ -159,6 +168,10 @@ class LoginForm extends HookConsumerWidget {
         );
         isOauthEnable.value = false;
         isPasswordLoginEnable.value = true;
+      } finally {
+        if (context.mounted) {
+          isCheckingServer.value = false;
+        }
       }
     }
 
@@ -167,20 +180,44 @@ class LoginForm extends HookConsumerWidget {
       if (serverUrl != null) {
         serverEndpointController.text = serverUrl;
       }
+      if (kDemoMode) {
+        // Demo build: any email/password works against the on-device demo server.
+        serverEndpointController.text = serverUrl ?? DemoServer.baseUrl;
+        emailController.text = 'alex@openframe.app';
+        passwordController.text = 'demo';
+      }
       return null;
     }, []);
 
-    void populateTestLoginInfo() {
-      emailController.text = 'demo@immich.app';
-      passwordController.text = 'demo';
-      serverEndpointController.text = 'https://demo.immich.app';
+    Future<void> connectFromLink(String payload) async {
+      final url = parseConnectPayload(payload);
+      if (url == null) {
+        connectError.value = 'This link does not contain a valid server address.';
+        return;
+      }
+      if (isCheckingServer.value) {
+        return;
+      }
+      connectError.value = null;
+      serverEndpoint.value = null;
+      passwordController.clear();
+      serverEndpointController.text = url;
+      await getServerAuthSettings();
     }
 
-    void populateTestLoginInfo1() {
-      emailController.text = 'testuser@email.com';
-      passwordController.text = 'password';
-      serverEndpointController.text = 'http://10.1.15.216:2283/api';
-    }
+    final pendingLink = ref.watch(pendingConnectLinkProvider);
+    useEffect(() {
+      if (pendingLink != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) {
+            return;
+          }
+          ref.read(pendingConnectLinkProvider.notifier).state = null;
+          unawaited(connectFromLink(pendingLink));
+        });
+      }
+      return null;
+    }, [pendingLink]);
 
     Future<void> handleSyncFlow() async {
       final backgroundManager = ref.read(backgroundSyncProvider);
@@ -203,7 +240,7 @@ class LoginForm extends HookConsumerWidget {
       }
 
       if (!hasPermission) {
-        await showDialog(
+        await showAppDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
@@ -433,7 +470,7 @@ class LoginForm extends HookConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.warning_amber_rounded, color: Colors.amber.shade800),
+              Icon(AppIcons.triangleAlert, color: Colors.amber.shade800),
               const SizedBox(width: 8),
               Expanded(
                 child: Padding(padding: const EdgeInsets.only(top: 2), child: Text(warningMessage.value!)),
@@ -451,21 +488,59 @@ class LoginForm extends HookConsumerWidget {
               mainAxisSize: MainAxisSize.max,
               children: [
                 ImmichForm(
-                  onSubmit: getServerAuthSettings,
+                  onSubmit: isCheckingServer.value ? null : getServerAuthSettings,
                   submitText: context.t.next,
-                  submitIcon: Icons.arrow_forward_rounded,
-                  builder: (_, form) => ImmichURLInput(
-                    controller: serverEndpointController,
-                    label: context.t.login_form_endpoint_url,
-                    hintText: context.t.login_form_endpoint_hint,
-                    validator: _validateUrl,
-                    keyboardAction: .next,
-                    onSubmit: (_) => form.submit(),
+                  submitIcon: AppIcons.arrowRightDir,
+                  builder: (_, form) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      ImmichURLInput(
+                        controller: serverEndpointController,
+                        label: context.t.login_form_endpoint_url,
+                        hintText: context.t.login_form_endpoint_hint,
+                        validator: _validateUrl,
+                        enabled: !isCheckingServer.value,
+                        keyboardAction: .next,
+                        onSubmit: (_) => form.submit(),
+                      ),
+                      if (connectError.value != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: Text(connectError.value!, style: TextStyle(color: context.colorScheme.error)),
+                        ),
+                      if (isCheckingServer.value)
+                        const Padding(
+                          padding: EdgeInsets.only(top: 16),
+                          child: Center(child: CircularProgressIndicator()),
+                        ),
+                      const SizedBox(height: 16),
+                      TextButton.icon(
+                        icon: const Icon(AppIcons.qrCode),
+                        label: const Text('Scan QR code'),
+                        onPressed: isCheckingServer.value
+                            ? null
+                            : () async {
+                                FocusManager.instance.primaryFocus?.unfocus();
+                                final url = await Navigator.of(context).push<String>(
+                                  MaterialPageRoute(
+                                    builder: (_) => const ConnectQrScannerPage(),
+                                    fullscreenDialog: true,
+                                  ),
+                                );
+                                if (url == null || !context.mounted) {
+                                  return;
+                                }
+                                serverEndpointController.text = url;
+                                connectError.value = null;
+                                await form.submit();
+                              },
+                      ),
+                    ],
                   ),
                 ),
                 ImmichTextButton(
                   labelText: context.t.settings,
-                  icon: Icons.settings,
+                  icon: AppIcons.settings,
                   variant: ImmichVariant.ghost,
                   onPressed: () => context.pushRoute(const SettingsRoute()),
                 ),
@@ -482,7 +557,7 @@ class LoginForm extends HookConsumerWidget {
                   padding: const EdgeInsets.only(bottom: ImmichSpacing.md),
                   child: Text(
                     normalizeServerUrl(serverEndpointController.text),
-                    style: context.textTheme.displaySmall,
+                    style: context.textTheme.bodyMedium?.copyWith(fontFamily: 'GeistMono'),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -490,7 +565,7 @@ class LoginForm extends HookConsumerWidget {
                   ImmichForm(
                     onSubmit: login,
                     submitText: context.t.login,
-                    submitIcon: Icons.login_rounded,
+                    submitIcon: AppIcons.logIn,
                     builder: (context, form) => Column(
                       spacing: ImmichSpacing.md,
                       children: [
@@ -517,7 +592,7 @@ class LoginForm extends HookConsumerWidget {
                   ImmichForm(
                     onSubmit: oAuthLogin,
                     submitText: oAuthButtonLabel.value,
-                    submitIcon: Icons.pin_outlined,
+                    submitIcon: AppIcons.pin,
                     builder: (context, _) => isPasswordLoginEnable.value
                         ? Padding(
                             padding: const EdgeInsets.only(left: 18.0, right: 18.0, top: 12.0),
@@ -528,7 +603,7 @@ class LoginForm extends HookConsumerWidget {
                 if (!isOauthEnable.value && !isPasswordLoginEnable.value) Center(child: Text(context.t.login_disabled)),
                 ImmichTextButton(
                   labelText: context.t.back,
-                  icon: Icons.arrow_back,
+                  icon: AppIcons.arrowLeftDir,
                   variant: ImmichVariant.ghost,
                   onPressed: () => serverEndpoint.value = null,
                 ),
@@ -537,38 +612,43 @@ class LoginForm extends HookConsumerWidget {
           );
 
     return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
+      builder: (context, constraints) => SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
           child: Center(
             child: Container(
-              constraints: const BoxConstraints(maxWidth: 300),
+              constraints: const BoxConstraints(maxWidth: 440),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(height: constraints.maxHeight / 5),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      GestureDetector(
-                        onDoubleTap: () => populateTestLoginInfo(),
-                        onLongPress: () => populateTestLoginInfo1(),
-                        child: RotationTransition(turns: logoAnimationController, child: const ImmichLogo()),
-                      ),
-                      const Padding(padding: EdgeInsets.only(top: 8.0, bottom: 16), child: ImmichTitleText()),
-                    ],
+                  const Center(child: ImmichLogo(size: 64)),
+                  const SizedBox(height: 16),
+                  const Center(child: FittedBox(child: ImmichTitleText(fontSize: 36))),
+                  const SizedBox(height: 24),
+                  Text(
+                    serverEndpoint.value == null ? 'Connect to your server' : 'Welcome back',
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
                   ),
-
-                  // Note: This used to have an AnimatedSwitcher, but was removed
-                  // because of https://github.com/flutter/flutter/issues/120874
-                  Form(key: loginFormKey, child: serverSelectionOrLogin),
+                  const SizedBox(height: 16),
+                  Text(
+                    serverEndpoint.value == null
+                        ? 'Enter your server address or scan its QR code to get started.'
+                        : 'Sign in to your OpenFrame account.',
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
+                  ),
+                  const SizedBox(height: 24),
+                  serverSelectionOrLogin,
                 ],
               ),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

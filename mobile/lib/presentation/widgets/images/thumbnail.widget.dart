@@ -131,7 +131,11 @@ class _ThumbnailState extends State<Thumbnail> with SingleTickerProviderStateMix
           return;
         }
 
-        if ((synchronousCall && _providerImage == null) || !_isVisible()) {
+        // Loading tiles during a fling should paint once, not animate for six
+        // or twelve frames while the viewport is already moving.
+        final isScrolling =
+            !synchronousCall && (Scrollable.maybeOf(context)?.position.isScrollingNotifier.value ?? false);
+        if (synchronousCall || isScrolling || !_isVisible()) {
           _fadeController.value = 1.0;
         } else if (_fadeController.isAnimating) {
           unawaited(_fadeController.forward());
@@ -141,10 +145,11 @@ class _ThumbnailState extends State<Thumbnail> with SingleTickerProviderStateMix
 
         setState(() {
           _previousImage?.dispose();
-          if (_providerImage != null) {
-            _previousImage = _providerImage;
-          } else {
+          if (_fadeController.isCompleted) {
+            _providerImage?.dispose();
             _previousImage = null;
+          } else {
+            _previousImage = _providerImage;
           }
           _providerImage = imageInfo.image;
         });

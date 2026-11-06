@@ -16,6 +16,7 @@ import 'package:immich_mobile/utils/option.dart';
 import 'package:immich_mobile/utils/url_helper.dart';
 import 'package:immich_mobile/widgets/common/confirm_dialog.dart';
 import 'package:immich_mobile/widgets/common/immich_toast.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:share_plus/share_plus.dart';
 
 @RoutePage()
@@ -260,7 +261,7 @@ class SharedLinkEditPage extends HookConsumerWidget {
                     width: double.infinity,
                     child: OutlinedButton.icon(
                       onPressed: selectDate,
-                      icon: const Icon(Icons.edit_calendar),
+                      icon: const Icon(AppIcons.calendarCog),
                       label: Text(context.t.edit_date_and_time),
                     ),
                   ),
@@ -277,7 +278,7 @@ class SharedLinkEditPage extends HookConsumerWidget {
       if (!context.mounted) {
         return;
       }
-      context.scaffoldMessenger.showSnackBar(
+      context.showSnackBar(
         SnackBar(
           content: Text(
             context.t.shared_link_clipboard_copied_massage,
@@ -296,7 +297,7 @@ class SharedLinkEditPage extends HookConsumerWidget {
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
           enabledBorder: themeData.inputDecorationTheme.focusedBorder,
-          suffixIcon: IconButton(onPressed: () => Share.share(link), icon: const Icon(Icons.share)),
+          suffixIcon: IconButton(onPressed: () => Share.share(link), icon: const Icon(AppIcons.share2)),
         ),
       );
     }
@@ -307,13 +308,13 @@ class SharedLinkEditPage extends HookConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.add_link, size: 100, color: themeData.colorScheme.primary),
+            Icon(AppIcons.link, size: 100, color: themeData.colorScheme.primary),
             const SizedBox(height: 20),
             buildLinkCopyField(newShareLink.value),
             const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () => context.maybePop(),
-              icon: const Icon(Icons.check),
+              icon: const Icon(AppIcons.check),
               label: Text(context.t.done, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             ),
           ],
@@ -425,7 +426,7 @@ class SharedLinkEditPage extends HookConsumerWidget {
     }
 
     Future<void> handleDeleteLink() async {
-      return showDialog(
+      return showAppDialog(
         context: context,
         builder: (BuildContext context) => ConfirmDialog(
           title: context.t.delete_shared_link_dialog_title,
@@ -501,14 +502,14 @@ class SharedLinkEditPage extends HookConsumerWidget {
                                 side: BorderSide(color: themeData.colorScheme.error),
                               ),
                               onPressed: handleDeleteLink,
-                              icon: const Icon(Icons.delete_outline),
+                              icon: const Icon(AppIcons.trash2),
                               label: Text(
                                 context.t.delete,
                                 style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                               ),
                             ),
                           ElevatedButton.icon(
-                            icon: const Icon(Icons.check),
+                            icon: const Icon(AppIcons.check),
                             onPressed: existingLink != null ? handleEditLink : handleNewLink,
                             label: Text(
                               existingLink != null ? context.t.shared_link_edit_submit_button : context.t.create_link,

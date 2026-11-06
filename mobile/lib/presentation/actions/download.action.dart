@@ -9,6 +9,7 @@ import 'package:immich_mobile/presentation/actions/action.dart';
 import 'package:immich_mobile/providers/background_sync.provider.dart';
 import 'package:immich_mobile/repositories/download.repository.dart';
 import 'package:immich_mobile/utils/error_handler.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 final _stateProvider = Provider.family.autoDispose<List<RemoteAsset>?, ActionSource>((ref, source) {
   final assets = ref.watch(assetsActionProvider(source));
@@ -26,7 +27,7 @@ class DownloadAction extends AssetActionBuilder {
       return null;
     }
 
-    return .new(icon: Icons.download, label: context.t.download, onAction: () => _download(ref, assets));
+    return .new(icon: AppIcons.download, label: context.t.download, onAction: () => _download(ref, assets));
   }
 
   Future<void> _download(WidgetRef ref, List<RemoteAsset> assets) async {

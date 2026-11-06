@@ -123,7 +123,7 @@
 </div>
 
 <!-- Search Albums -->
-<div class="hidden h-10 xl:block xl:w-60 2xl:w-80">
+<div class="hidden h-10 xl:block xl:w-40 2xl:w-60">
   <SearchBar placeholder={$t('search_albums')} bind:name={searchQuery} showLoadingSpinner={false} />
 </div>
 
@@ -135,7 +135,7 @@
   variant="ghost"
   color="secondary"
 >
-  <p class="hidden md:block">{$t('create_album')}</p>
+  <p class="hidden whitespace-nowrap md:block">{$t('create_album')}</p>
 </Button>
 
 <!-- Sort Albums -->

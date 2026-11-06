@@ -14,6 +14,7 @@ import 'package:immich_mobile/presentation/pages/search/paginated_search.provide
 import 'package:immich_mobile/providers/asset_viewer/asset_viewer.provider.dart';
 import 'package:immich_mobile/providers/user.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 const _collapsedTagsMaxHeight = 140.0;
 
@@ -100,7 +101,7 @@ class _TagDetailsState extends ConsumerState<TagDetails> {
               backgroundColor: tagBackground,
               shape: const StadiumBorder(),
               side: BorderSide(color: tagBorder),
-              deleteIcon: Icon(Icons.close, size: 16, color: tagText),
+              deleteIcon: Icon(AppIcons.x, size: 16, color: tagText),
               onDeleted: switch (UntagAction(source: .viewer, tagId: tag.id).create(context, ref)) {
                 final action? => () async => await action.onAction(),
                 null => null,
@@ -161,7 +162,7 @@ class _TagDetailsState extends ConsumerState<TagDetails> {
                 ),
               if (tagAction != null)
                 ActionChip(
-                  avatar: Icon(Icons.new_label_outlined, size: 18, color: context.primaryColor),
+                  avatar: Icon(AppIcons.tag, size: 18, color: context.primaryColor),
                   label: Text(context.t.add_tag),
                   color: WidgetStateProperty.resolveWith(
                     (states) =>

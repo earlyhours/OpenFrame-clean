@@ -33,57 +33,60 @@ class SlideshowSettings extends HookConsumerWidget {
     });
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SettingGroupTitle(title: context.t.slideshow, icon: Icons.slideshow_outlined),
-        SettingsSwitchListTile(
-          valueNotifier: useRepeat,
-          title: context.t.slideshow_repeat,
-          subtitle: context.t.slideshow_repeat_description,
-        ),
-        SettingsSliderListTile(
-          valueNotifier: useDuration,
-          text: context.t.duration,
-          minValue: 5,
-          noDivisons: 5,
-          maxValue: 30,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 20),
-          child: SettingsSubTitle(title: context.t.look),
-        ),
-        SettingsRadioListTile(
-          groups: [
-            SettingsRadioGroup(title: context.t.contain, value: SlideshowLook.contain),
-            SettingsRadioGroup(title: context.t.cover, value: SlideshowLook.cover),
-            SettingsRadioGroup(title: context.t.blurred_background, value: SlideshowLook.blurredBackground),
+        SettingsSection(
+          title: context.t.slideshow,
+          children: [
+            SettingsSwitchListTile(
+              valueNotifier: useRepeat,
+              title: context.t.slideshow_repeat,
+              subtitle: context.t.slideshow_repeat_description,
+            ),
+            SettingsSliderListTile(
+              valueNotifier: useDuration,
+              text: context.t.duration,
+              minValue: 5,
+              noDivisons: 5,
+              maxValue: 30,
+            ),
           ],
-          groupBy: useLook.value,
-          onRadioChanged: (value) {
-            if (value != null) {
-              useLook.value = value;
-            }
-          },
         ),
-        Padding(
-          padding: const EdgeInsets.only(top: 20),
-          child: SettingsSubTitle(title: context.t.direction),
+        SettingsSection(
+          title: context.t.look,
+          children: [
+            SettingsRadioListTile(
+              groups: [
+                SettingsRadioGroup(title: context.t.contain, value: SlideshowLook.contain),
+                SettingsRadioGroup(title: context.t.cover, value: SlideshowLook.cover),
+                SettingsRadioGroup(title: context.t.blurred_background, value: SlideshowLook.blurredBackground),
+              ],
+              groupBy: useLook.value,
+              onRadioChanged: (value) {
+                if (value != null) {
+                  useLook.value = value;
+                }
+              },
+            ),
+          ],
         ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 32),
-          child: SettingsRadioListTile(
-            groups: [
-              SettingsRadioGroup(title: context.t.forward, value: SlideshowDirection.forward),
-              SettingsRadioGroup(title: context.t.backward, value: SlideshowDirection.backward),
-              SettingsRadioGroup(title: context.t.shuffle, value: SlideshowDirection.shuffle),
-            ],
-            groupBy: useDirection.value,
-            onRadioChanged: (value) {
-              if (value != null) {
-                useDirection.value = value;
-              }
-            },
-          ),
+        SettingsSection(
+          title: context.t.direction,
+          children: [
+            SettingsRadioListTile(
+              groups: [
+                SettingsRadioGroup(title: context.t.forward, value: SlideshowDirection.forward),
+                SettingsRadioGroup(title: context.t.backward, value: SlideshowDirection.backward),
+                SettingsRadioGroup(title: context.t.shuffle, value: SlideshowDirection.shuffle),
+              ],
+              groupBy: useDirection.value,
+              onRadioChanged: (value) {
+                if (value != null) {
+                  useDirection.value = value;
+                }
+              },
+            ),
+          ],
         ),
       ],
     );

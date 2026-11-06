@@ -4,6 +4,7 @@ import 'package:immich_mobile/domain/models/time_range.model.dart';
 import 'package:immich_mobile/extensions/datetime_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/utils/option.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class MapTimeRange extends StatelessWidget {
   const MapTimeRange({super.key, required this.timeRange, required this.onChanged});
@@ -24,7 +25,7 @@ class MapTimeRange extends StatelessWidget {
                 : context.t.not_set,
           ),
           trailing: timeRange.from != null
-              ? IconButton(icon: const Icon(Icons.close), onPressed: () => onChanged(timeRange.clearFrom()))
+              ? IconButton(icon: const Icon(AppIcons.x), onPressed: () => onChanged(timeRange.clearFrom()))
               : null,
           onTap: () async {
             final initial = timeRange.from ?? DateTime.now();
@@ -50,7 +51,7 @@ class MapTimeRange extends StatelessWidget {
                 : context.t.not_set,
           ),
           trailing: timeRange.to != null
-              ? IconButton(icon: const Icon(Icons.close), onPressed: () => onChanged(timeRange.clearTo()))
+              ? IconButton(icon: const Icon(AppIcons.x), onPressed: () => onChanged(timeRange.clearTo()))
               : null,
           onTap: () async {
             final initial = timeRange.to ?? DateTime.now();

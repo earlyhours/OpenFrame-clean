@@ -11,6 +11,7 @@ import 'package:immich_mobile/providers/infrastructure/album.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/widgets/album/album_action_filled_button.dart';
 import 'package:immich_mobile/widgets/common/immich_toast.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 @RoutePage()
 class CreateAlbumPage extends ConsumerStatefulWidget {
@@ -106,7 +107,7 @@ class _CreateAlbumPageState extends ConsumerState<CreateAlbumPage> {
           backgroundColor: context.colorScheme.surfaceContainerHigh,
         ),
         onPressed: onSelectPhotos,
-        icon: Icon(Icons.add_rounded, color: context.primaryColor),
+        icon: Icon(AppIcons.plus, color: context.primaryColor),
         label: Padding(
           padding: const EdgeInsets.only(left: 8.0),
           child: Text(
@@ -237,7 +238,7 @@ class _CreateAlbumPageState extends ConsumerState<CreateAlbumPage> {
           scrollDirection: Axis.horizontal,
           children: [
             AlbumActionFilledButton(
-              iconData: Icons.add_photo_alternate_outlined,
+              iconData: AppIcons.imagePlus,
               onPressed: onSelectPhotos,
               labelText: context.t.add_photos,
             ),
@@ -254,7 +255,7 @@ class _CreateAlbumPageState extends ConsumerState<CreateAlbumPage> {
         elevation: 0,
         centerTitle: false,
         backgroundColor: context.scaffoldBackgroundColor,
-        leading: IconButton(onPressed: () => context.maybePop(), icon: const Icon(Icons.close_rounded)),
+        leading: IconButton(onPressed: () => context.maybePop(), icon: const Icon(AppIcons.x)),
         title: Text(context.t.create_album),
         actions: [
           TextButton(
@@ -329,7 +330,7 @@ class _AlbumTitleTextFieldState extends State<_AlbumTitleTextField> {
                 onPressed: () {
                   widget.textController.clear();
                 },
-                icon: Icon(Icons.cancel_rounded, color: context.primaryColor),
+                icon: Icon(AppIcons.circleX, color: context.primaryColor),
                 splashRadius: 10.0,
               )
             : null,
@@ -409,7 +410,7 @@ class _AlbumViewerEditableDescriptionState extends State<_AlbumViewerEditableDes
                   onPressed: () {
                     widget.textController.clear();
                   },
-                  icon: Icon(Icons.cancel_rounded, color: context.primaryColor),
+                  icon: Icon(AppIcons.circleX, color: context.primaryColor),
                   splashRadius: 10.0,
                 )
               : null,

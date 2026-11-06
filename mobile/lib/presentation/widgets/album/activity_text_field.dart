@@ -4,6 +4,7 @@ import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/providers/user.provider.dart';
 import 'package:immich_mobile/widgets/common/user_circle_avatar.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class ActivityTextField extends ConsumerStatefulWidget {
   final bool isEnabled;
@@ -91,7 +92,7 @@ class _ActivityTextFieldState extends ConsumerState<ActivityTextField> {
               : null,
           suffixIcon: IconButton(
             onPressed: sendEnabled ? onEditingComplete : null,
-            icon: const Icon(Icons.send),
+            icon: const Icon(AppIcons.send),
             iconSize: 24,
             color: context.primaryColor,
             disabledColor: context.colorScheme.secondaryContainer,

@@ -4,6 +4,7 @@ import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/providers/backup/backup.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/settings.provider.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class BackupToggleButton extends ConsumerStatefulWidget {
   final VoidCallback onStart;
@@ -123,7 +124,7 @@ class BackupToggleButtonState extends ConsumerState<BackupToggleButton> with Sin
                     ),
                     child: isProcessing
                         ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
-                        : Icon(Icons.cloud_upload_outlined, color: context.primaryColor, size: 24),
+                        : Icon(AppIcons.cloudUpload, color: context.primaryColor, size: 24),
                   ),
                   const SizedBox(width: 16),
                   Expanded(

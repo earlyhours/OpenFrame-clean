@@ -12,6 +12,7 @@ import 'package:immich_mobile/presentation/widgets/album/album_selector.widget.d
 import 'package:immich_mobile/presentation/widgets/bottom_sheet/base_bottom_sheet.widget.dart';
 import 'package:immich_mobile/providers/infrastructure/action.provider.dart';
 import 'package:immich_mobile/widgets/common/immich_toast.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class LocalAlbumBottomSheet extends ConsumerStatefulWidget {
   const LocalAlbumBottomSheet({super.key});
@@ -58,7 +59,7 @@ class _LocalAlbumBottomSheetState extends ConsumerState<LocalAlbumBottomSheet> {
     }
 
     Future<void> onKeyboardExpand() {
-      return sheetController.animateTo(0.85, duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
+      return sheetController.animateTo(0.85, duration: AppMotion.base, curve: AppMotion.emphasized);
     }
 
     return BaseBottomSheet(

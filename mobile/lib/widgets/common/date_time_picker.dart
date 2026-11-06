@@ -7,6 +7,7 @@ import 'package:immich_mobile/extensions/datetime_extensions.dart';
 import 'package:immich_mobile/extensions/duration_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/widgets/common/dropdown_search_menu.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/timezone.dart';
@@ -19,7 +20,7 @@ Future<String?> showDateTimePicker({
   String? initialTZ,
   Duration? initialTZOffset,
 }) {
-  return showDialog<String?>(
+  return showAppDialog<String?>(
     context: context,
     builder: (context) =>
         _DateTimePicker(initialDateTime: initialDateTime, initialTZ: initialTZ, initialTZOffset: initialTZOffset),
@@ -149,7 +150,7 @@ class _DateTimePicker extends HookWidget {
               const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
               1,
             ),
-            trailing: Icon(Icons.edit_outlined, size: 18, color: context.primaryColor),
+            trailing: Icon(AppIcons.pencil, size: 18, color: context.primaryColor),
             title: Text(
               DateFormat("dd-MM-yyyy hh:mm a", resolvedDateTimeLocale()).format(date.value),
               style: context.textTheme.bodyMedium,
@@ -158,7 +159,7 @@ class _DateTimePicker extends HookWidget {
           ),
           const SizedBox(height: 24),
           DropdownSearchMenu(
-            trailingIcon: Icon(Icons.arrow_drop_down, color: context.primaryColor),
+            trailingIcon: Icon(AppIcons.chevronDown, color: context.primaryColor),
             hintText: context.t.timezone,
             label: Text(context.t.timezone),
             textStyle: context.textTheme.bodyMedium,

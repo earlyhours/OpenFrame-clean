@@ -51,27 +51,27 @@
     <button
       type="button"
       onclick={() => toggleAlbumGroupCollapsing(group.id)}
-      class="mt-2 w-full cursor-pointer rounded-md py-2 pe-2 text-start transition-colors hover:bg-subtle hover:text-primary dark:text-immich-dark-fg dark:hover:bg-immich-dark-gray"
+      class="my-2 flex w-full cursor-pointer items-center gap-1 rounded-lg py-2 pe-2 text-start transition-colors duration-150 hover:text-primary"
       aria-expanded={!isCollapsed}
     >
-      <Icon icon={mdiChevronRight} size="24" class="-mt-2.5 inline-block transition-all duration-250 {iconRotation}" />
-      <span class="text-3xl font-bold text-black dark:text-white">{group.name}</span>
-      <span class="ms-1.5">({$t('albums_count', { values: { count: albums.length } })})</span>
+      <Icon icon={mdiChevronRight} size="24" class="transition-transform duration-200 {iconRotation}" />
+      <span class="of-section-title">{group.name}</span>
+      <span class="ms-1 text-sm text-muted">({$t('albums_count', { values: { count: albums.length } })})</span>
     </button>
-    <hr class="dark:border-immich-dark-gray" />
+    <hr />
   </div>
 {/if}
 
 <div class="mt-4">
   {#if !isCollapsed}
-    <div class="grid grid-auto-fill-56 gap-y-4" transition:slide={{ duration: 300 }}>
+    <div class="grid grid-auto-fill-56 gap-4" transition:slide={{ duration: 200 }}>
       {#each albums as album, index (album.id)}
         {@const { Edit, Share, Download, Leave, Delete } = getAlbumActions($t, album)}
         {@const items = [Edit, Share, Download, Leave, Delete]}
         <a
           href={Route.viewAlbum(album)}
           class="h-fit"
-          animate:flip={{ duration: 400 }}
+          animate:flip={{ duration: 250 }}
           oncontextmenu={(event) => oncontextmenu(event, items)}
         >
           <AlbumCard

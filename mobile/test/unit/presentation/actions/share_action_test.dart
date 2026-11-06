@@ -66,7 +66,7 @@ void main() {
   Future<void> pickPreviewQuality(WidgetTester tester) async {
     final shared = invokeSecondaryAction();
     await settle(tester);
-    await tester.tap(find.byIcon(Icons.photo_size_select_large_rounded));
+    await tester.tap(find.byIcon(AppIcons.maximize));
     await settle(tester);
     await shared;
   }
@@ -109,13 +109,13 @@ void main() {
       final shared = invokeSecondaryAction();
       await settle(tester);
 
-      expect(find.byIcon(Icons.high_quality_rounded), findsOneWidget);
-      expect(find.byIcon(Icons.photo_size_select_large_rounded), findsNothing);
+      expect(find.byIcon(AppIcons.sparkle), findsOneWidget);
+      expect(find.byIcon(AppIcons.maximize), findsNothing);
 
-      await tester.tap(find.byIcon(Icons.high_quality_rounded));
+      await tester.tap(find.byIcon(AppIcons.sparkle));
       await settle(tester);
       await shared;
-      expect(find.byIcon(Icons.photo_size_select_large_rounded), findsNothing);
+      expect(find.byIcon(AppIcons.maximize), findsNothing);
     });
 
     testWidgets('is hidden when nothing is selected', (tester) async {

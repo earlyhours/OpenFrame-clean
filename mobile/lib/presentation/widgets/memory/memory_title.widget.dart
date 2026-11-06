@@ -4,6 +4,7 @@ import 'package:immich_mobile/domain/models/memory.model.dart';
 import 'package:immich_mobile/extensions/datetime_extensions.dart';
 import 'package:immich_mobile/extensions/object_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:intl/intl.dart';
 
 /// [asset] adds the age at that asset to birthday titles
@@ -50,7 +51,7 @@ class MemoryTitle extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(Icons.cake_rounded, color: style?.color, size: 20),
+        Icon(AppIcons.cake, color: style?.color, size: 20),
         const SizedBox(height: 4),
         Text(title, style: style, maxLines: 2, overflow: TextOverflow.ellipsis),
       ],

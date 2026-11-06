@@ -23,18 +23,16 @@ class BackupSettings extends StatelessWidget {
   Widget build(BuildContext context) {
     return SettingsSubPageScaffold(
       settings: [
-        SettingGroupTitle(title: context.t.network_requirements, icon: Icons.cell_tower),
-        const _UseCellularForVideosButton(),
-        const _UseCellularForPhotosButton(),
-        if (CurrentPlatform.isAndroid) ...[
-          const Divider(),
-          SettingGroupTitle(title: context.t.background_options, icon: Icons.charging_station_rounded),
-          const _BackupOnlyWhenChargingButton(),
-          const _BackupDelaySlider(),
-        ],
-        const Divider(),
-        SettingGroupTitle(title: context.t.backup_albums_sync, icon: Icons.sync),
-        const _AlbumSyncActionButton(),
+        SettingsSection(
+          title: context.t.network_requirements,
+          children: const [_UseCellularForVideosButton(), _UseCellularForPhotosButton()],
+        ),
+        if (CurrentPlatform.isAndroid)
+          SettingsSection(
+            title: context.t.background_options,
+            children: const [_BackupOnlyWhenChargingButton(), _BackupDelaySlider()],
+          ),
+        SettingsSection(title: context.t.backup_albums_sync, children: const [_AlbumSyncActionButton()]),
       ],
     );
   }
@@ -88,61 +86,59 @@ class _AlbumSyncActionButtonState extends ConsumerState<_AlbumSyncActionButton> 
   @override
   Widget build(BuildContext context) {
     final albumSyncEnable = ref.watch(appConfigProvider.select((c) => c.backup.syncAlbums));
-    return Padding(
-      padding: const EdgeInsets.only(left: 8.0),
-      child: ListView(
-        shrinkWrap: true,
-        children: [
-          Column(
-            children: [
-              SettingListTile(
-                title: context.t.sync_albums,
-                subtitle: context.t.sync_upload_album_setting_subtitle,
-                trailing: Switch(
-                  value: albumSyncEnable,
-                  onChanged: (bool newValue) async {
-                    await ref.read(settingsProvider).write(.backupSyncAlbums, newValue);
-
-                    if (newValue == true) {
-                      await _manageLinkedAlbums();
-                    }
-                  },
-                ),
-              ),
-              AnimatedSize(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                child: AnimatedOpacity(
-                  duration: const Duration(milliseconds: 200),
-                  opacity: albumSyncEnable ? 1.0 : 0.0,
-                  child: albumSyncEnable
-                      ? SettingListTile(
-                          onTap: _manualSyncAlbums,
-                          contentPadding: const EdgeInsets.only(left: 32, right: 16),
-                          title: context.t.organize_into_albums,
-                          subtitle: context.t.organize_into_albums_description,
-                          trailing: isAlbumSyncInProgress
-                              ? const SizedBox(
-                                  width: 32,
-                                  height: 32,
-                                  child: CircularProgressIndicator.adaptive(strokeWidth: 2),
-                                )
-                              : IconButton(
-                                  onPressed: _manualSyncAlbums,
-                                  icon: const Icon(Icons.sync_rounded),
-                                  color: context.colorScheme.onSurface.withValues(alpha: 0.7),
-                                  iconSize: 20,
-                                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                                ),
-                        )
-                      : const SizedBox.shrink(),
-                ),
-              ),
-            ],
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SettingsTile(
+          title: context.t.sync_albums,
+          subtitle: context.t.sync_upload_album_setting_subtitle,
+          showChevron: false,
+          onTap: () => _setAlbumSync(!albumSyncEnable),
+          trailing: SettingsSwitch(value: albumSyncEnable, onChanged: _setAlbumSync),
+        ),
+        AnimatedSize(
+          duration: AppMotion.of(context, AppMotion.base),
+          curve: AppMotion.emphasized,
+          alignment: Alignment.topCenter,
+          child: AnimatedOpacity(
+            duration: AppMotion.of(context, AppMotion.fast),
+            curve: AppMotion.emphasized,
+            opacity: albumSyncEnable ? 1.0 : 0.0,
+            child: albumSyncEnable
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SettingsDivider(),
+                      SettingsTile(
+                        onTap: _manualSyncAlbums,
+                        title: context.t.organize_into_albums,
+                        subtitle: context.t.organize_into_albums_description,
+                        showChevron: false,
+                        trailing: isAlbumSyncInProgress
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator.adaptive(strokeWidth: 2),
+                              )
+                            : Icon(AppIcons.refreshCw, size: 20, color: context.colorScheme.onSurfaceVariant),
+                      ),
+                    ],
+                  )
+                : const SizedBox.shrink(),
           ),
-        ],
-      ),
+        ),
+      ],
     );
+  }
+
+  Future<void> _setAlbumSync(bool newValue) async {
+    await ref.read(settingsProvider).write(.backupSyncAlbums, newValue);
+
+    if (newValue == true) {
+      await _manageLinkedAlbums();
+    }
   }
 }
 
@@ -164,19 +160,17 @@ class _BackupSwitchTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final value = ref.watch(appConfigProvider.select(selector));
-    return Padding(
-      padding: const EdgeInsets.only(left: 8.0),
-      child: SettingListTile(
-        title: title,
-        subtitle: subtitle,
-        trailing: Switch(
-          value: value,
-          onChanged: (bool newValue) async {
-            await ref.read(settingsProvider).write(metadataKey, newValue);
-            onChanged?.call(newValue);
-          },
-        ),
-      ),
+    Future<void> update(bool newValue) async {
+      await ref.read(settingsProvider).write(metadataKey, newValue);
+      onChanged?.call(newValue);
+    }
+
+    return SettingsTile(
+      title: title,
+      subtitle: subtitle,
+      showChevron: false,
+      onTap: () => update(!value),
+      trailing: SettingsSwitch(value: value, onChanged: update),
     );
   }
 }
@@ -255,34 +249,34 @@ class _BackupDelaySlider extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final triggerDelay = ref.watch(appConfigProvider.select((c) => c.backup.triggerDelay));
     final currentValue = backupDelayToSliderValue(triggerDelay);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 24.0, top: 8.0),
-          child: Text(
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(SettingsMetrics.rowInset, 12, SettingsMetrics.rowInset, 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
             context.t.backup_controller_page_background_delay(
               duration: formatBackupDelaySliderValue(context, currentValue),
             ),
             style: context.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
           ),
-        ),
-        Slider(
-          value: currentValue.toDouble(),
-          onChanged: (double v) async {
-            final seconds = backupDelayToSeconds(v.toInt());
-            await ref.read(settingsProvider).write(SettingsKey.backupTriggerDelay, seconds);
-          },
-          onChangeEnd: (double v) async {
-            final seconds = backupDelayToSeconds(v.toInt());
-            await ref.read(settingsProvider).write(SettingsKey.backupTriggerDelay, seconds);
-          },
-          max: 3.0,
-          min: 0.0,
-          divisions: 3,
-          label: formatBackupDelaySliderValue(context, currentValue),
-        ),
-      ],
+          SettingsSlider(
+            value: currentValue.toDouble(),
+            onChanged: (double v) async {
+              final seconds = backupDelayToSeconds(v.toInt());
+              await ref.read(settingsProvider).write(SettingsKey.backupTriggerDelay, seconds);
+            },
+            onChangeEnd: (double v) async {
+              final seconds = backupDelayToSeconds(v.toInt());
+              await ref.read(settingsProvider).write(SettingsKey.backupTriggerDelay, seconds);
+            },
+            max: 3.0,
+            min: 0.0,
+            divisions: 3,
+            label: formatBackupDelaySliderValue(context, currentValue),
+          ),
+        ],
+      ),
     );
   }
 }

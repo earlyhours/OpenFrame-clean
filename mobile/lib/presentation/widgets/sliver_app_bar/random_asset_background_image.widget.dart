@@ -5,6 +5,7 @@ import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/domain/services/timeline.service.dart';
 import 'package:immich_mobile/presentation/widgets/images/image_provider.dart';
 import 'package:immich_mobile/presentation/widgets/images/progressive_image.widget.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 /// Randomly selects an asset from the provided [TimelineService] for a persistent Ken Burns zoom
 class RandomAssetBackgroundImage extends StatefulWidget {
@@ -183,7 +184,7 @@ class _RandomAssetBackgroundImageState extends State<RandomAssetBackgroundImage>
                             return SizedBox(
                               width: double.infinity,
                               height: double.infinity,
-                              child: Icon(Icons.error_outline_rounded, size: 24, color: Colors.red[300]),
+                              child: Icon(AppIcons.circleAlert, size: 24, color: Colors.red[300]),
                             );
                           },
                         ),
@@ -213,7 +214,7 @@ class _RandomAssetBackgroundImageState extends State<RandomAssetBackgroundImage>
                             return SizedBox(
                               width: double.infinity,
                               height: double.infinity,
-                              child: Icon(Icons.error_outline_rounded, size: 24, color: Colors.red[300]),
+                              child: Icon(AppIcons.circleAlert, size: 24, color: Colors.red[300]),
                             );
                           },
                         ),

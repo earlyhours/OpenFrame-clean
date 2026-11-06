@@ -4,6 +4,7 @@ import 'package:immich_mobile/data/store.dart';
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/providers/asset_viewer/asset_viewer.provider.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class OcrToggleButton extends ConsumerWidget {
   final BaseAsset asset;
@@ -16,7 +17,9 @@ class OcrToggleButton extends ConsumerWidget {
     final showingOcr = ref.watch(assetViewerProvider.select((s) => s.showingOcr));
 
     return AnimatedSwitcher(
-      duration: Durations.short4,
+      duration: AppMotion.of(context, AppMotion.fast),
+      switchInCurve: AppMotion.emphasized,
+      switchOutCurve: Curves.easeInCubic,
       child: !hasOcr
           ? const SizedBox.shrink()
           : Align(
@@ -31,7 +34,7 @@ class OcrToggleButton extends ConsumerWidget {
                     onTap: ref.watch(assetViewerProvider.notifier).toggleOcr,
                     child: const Padding(
                       padding: EdgeInsets.all(10.0),
-                      child: Icon(Icons.text_fields_rounded, size: 22, color: Colors.white),
+                      child: Icon(AppIcons.type, size: 22, color: Colors.white),
                     ),
                   ),
                 ),

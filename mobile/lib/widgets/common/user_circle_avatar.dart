@@ -34,17 +34,21 @@ class UserCircleAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userAvatarColor = user.avatarColor.toColor().withValues(alpha: opacity);
+    final userAvatarColor = user.avatarColor
+        .toColor(isDarkTheme: Theme.of(context).brightness == Brightness.dark)
+        .withValues(alpha: opacity);
     final profileImageUrl =
         '${Store.get(StoreKey.serverEndpoint)}/users/${user.id}/profile-image?d=${user.profileChangedAt.millisecondsSinceEpoch}';
 
-    final textColor = (user.avatarColor.toColor().computeLuminance() > 0.5 ? Colors.black : Colors.white).withValues(
-      alpha: opacity,
-    );
-
-    final textIcon = DefaultTextStyle(
-      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: textColor),
-      child: Text(user.name[0].toUpperCase()),
+    final textIcon = Text(
+      user.name.isEmpty ? '?' : user.name.characters.first.toUpperCase(),
+      style: TextStyle(
+        fontFamily: Theme.of(context).textTheme.bodyMedium?.fontFamily,
+        fontWeight: FontWeight.w600,
+        fontSize: size * 0.42,
+        height: 1,
+        color: Colors.white.withValues(alpha: opacity),
+      ),
     );
 
     return Tooltip(

@@ -7,11 +7,12 @@ import 'package:immich_mobile/extensions/asyncvalue_extensions.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/widgets/common/search_field.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 String _trimSlashes(String s) => s.replaceAll(RegExp(r'^/+|/+$'), '');
 
 Future<(Set<String>, Set<String>)?> showTagPickerModal({required BuildContext context, Set<String>? initialSelection}) {
-  return showDialog<(Set<String>, Set<String>)?>(
+  return showAppDialog<(Set<String>, Set<String>)?>(
     context: context,
     builder: (context) => _TagPickerModal(initialSelection: initialSelection),
   );
@@ -141,7 +142,7 @@ class TagPicker extends HookConsumerWidget {
                             ),
                           ),
                           trailing: Icon(
-                            Icons.add,
+                            AppIcons.plus,
                             color: isCreateSelected ? context.colorScheme.onPrimary : context.colorScheme.onSurface,
                           ),
                           onTap: () {

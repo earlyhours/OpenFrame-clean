@@ -12,6 +12,7 @@ import 'package:immich_mobile/presentation/widgets/images/thumbnail.widget.dart'
 import 'package:immich_mobile/providers/backup/backup.provider.dart';
 import 'package:immich_mobile/repositories/asset_media.repository.dart';
 import 'package:immich_mobile/routing/router.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 @RoutePage()
 class BackupAssetDetailPage extends ConsumerWidget {
@@ -83,7 +84,7 @@ class BackupAssetDetailPage extends ConsumerWidget {
                     ),
                     trailing: const Padding(
                       padding: EdgeInsets.only(right: 24, left: 8),
-                      child: Icon(Icons.image_search),
+                      child: Icon(AppIcons.scanSearch),
                     ),
                     onTap: () async {
                       await context.maybePop();

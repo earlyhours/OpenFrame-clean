@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class PhotoViewDefaultError extends StatelessWidget {
   const PhotoViewDefaultError({super.key, required this.decoration});
@@ -9,7 +10,7 @@ class PhotoViewDefaultError extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: decoration,
-      child: Center(child: Icon(Icons.broken_image, color: Colors.grey[400], size: 40.0)),
+      child: Center(child: Icon(AppIcons.imageOff, color: Colors.grey[400], size: 40.0)),
     );
   }
 }

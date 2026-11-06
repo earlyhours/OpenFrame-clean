@@ -42,7 +42,7 @@
 </script>
 
 <div
-  class="flex min-w-52 place-content-center place-items-center justify-between overflow-hidden ps-5 pe-1 text-sm md:flex dark:text-immich-dark-fg"
+  class="flex place-content-center place-items-center justify-between overflow-hidden px-6 text-sm text-muted md:flex"
 >
   {#if $connected}
     <div class="flex place-content-center place-items-center gap-2">
@@ -80,7 +80,7 @@
     href={releaseInfo.releaseUrl}
     target="_blank"
     rel="noopener noreferrer"
-    class="group ms-4 mt-3 block min-w-52 rounded-lg border border-gray-200/50 bg-white/50 p-2.5 text-sm transition-all duration-200 hover:border-immich-primary/40 hover:bg-immich-primary/5 dark:border-gray-700/50 dark:bg-gray-800/50 dark:hover:border-immich-dark-primary/40 dark:hover:bg-immich-dark-primary/5"
+    class="of-sidebar-card group mx-3 mt-3 block rounded-xl border bg-subtle p-3 text-sm transition-colors duration-150 hover:border-primary/40"
   >
     <div class="flex items-center justify-between gap-2">
       <div class="flex items-center gap-2">

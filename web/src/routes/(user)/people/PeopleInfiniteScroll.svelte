@@ -29,7 +29,7 @@
   });
 </script>
 
-<div class="grid w-full grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-10">
+<div class="grid w-full grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-10">
   {#each people as person, index (person.id)}
     {#if hasNextPage && index === people.length - 1}
       <div bind:this={lastPersonContainer}>

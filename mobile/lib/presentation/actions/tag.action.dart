@@ -7,6 +7,7 @@ import 'package:immich_mobile/presentation/actions/action.dart';
 import 'package:immich_mobile/providers/infrastructure/toast.provider.dart';
 import 'package:immich_mobile/utils/error_handler.dart';
 import 'package:immich_mobile/widgets/common/tag_picker.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 final _stateProvider = Provider.family.autoDispose<List<String>?, ActionSource>((ref, source) {
   final tagsEnabled = ref.watch(
@@ -32,7 +33,7 @@ class TagAction extends AssetActionBuilder {
     }
 
     return .new(
-      icon: Icons.sell_outlined,
+      icon: AppIcons.tag,
       label: context.t.control_bottom_app_bar_add_tags,
       onAction: () => _tag(context, ref, assetIds),
     );
@@ -94,7 +95,7 @@ class UntagAction extends AssetActionBuilder {
       return null;
     }
 
-    return .new(icon: Icons.close, label: context.t.remove_tag, onAction: () => _untag(context, ref, assetIds, tagId));
+    return .new(icon: AppIcons.x, label: context.t.remove_tag, onAction: () => _untag(context, ref, assetIds, tagId));
   }
 
   Future<void> _untag(BuildContext context, WidgetRef ref, List<String> assetIds, String tagId) async {

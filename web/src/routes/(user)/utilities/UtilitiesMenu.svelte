@@ -21,24 +21,27 @@
   ];
 </script>
 
-<div class="rounded-3xl border border-gray-300 pt-1 pb-6 dark:border-immich-dark-gray dark:text-white">
-  <Text size="tiny" color="muted" fontWeight="medium" class="p-4">{$t('organize_your_library')}</Text>
+<div class="overflow-hidden rounded-xl border bg-subtle pb-2">
+  <Text size="tiny" color="muted" fontWeight="medium" class="px-4 pt-4 pb-2">{$t('organize_your_library')}</Text>
 
   {#each links as link (link.href)}
-    <a href={link.href} class="flex w-full items-center gap-4 p-4 hover:bg-gray-100 dark:hover:bg-immich-dark-gray">
+    <a
+      href={link.href}
+      class="flex min-h-14 w-full items-center gap-4 px-4 py-3 text-start text-sm font-medium text-dark transition-colors duration-150 hover:bg-(--of-panel-2)"
+    >
       <span><Icon icon={link.icon} class="text-primary" size="24" /> </span>
       {link.label}
     </a>
   {/each}
 </div>
-<br />
-<div class="rounded-3xl border border-gray-300 pt-1 pb-6 dark:border-immich-dark-gray dark:text-white">
-  <Text size="tiny" color="muted" fontWeight="medium" class="p-4">{$t('download')}</Text>
+<div class="h-6"></div>
+<div class="overflow-hidden rounded-xl border bg-subtle pb-2">
+  <Text size="tiny" color="muted" fontWeight="medium" class="px-4 pt-4 pb-2">{$t('download')}</Text>
 
   <button
     type="button"
     onclick={() => modalManager.show(ObtainiumConfigModal, {})}
-    class="flex w-full items-center gap-4 p-4 hover:bg-gray-100 dark:hover:bg-immich-dark-gray"
+    class="flex min-h-14 w-full items-center gap-4 px-4 py-3 text-start text-sm font-medium text-dark transition-colors duration-150 hover:bg-(--of-panel-2)"
   >
     <span>
       <Icon icon={mdiLinkEdit} class="text-immich-primary dark:text-immich-dark-primary" size="24" />
@@ -48,7 +51,7 @@
   <button
     type="button"
     onclick={() => modalManager.show(AppDownloadModal, {})}
-    class="flex w-full items-center gap-4 p-4 hover:bg-gray-100 dark:hover:bg-immich-dark-gray"
+    class="flex min-h-14 w-full items-center gap-4 px-4 py-3 text-start text-sm font-medium text-dark transition-colors duration-150 hover:bg-(--of-panel-2)"
   >
     <span>
       <Icon icon={mdiCellphoneArrowDownVariant} class="text-immich-primary dark:text-immich-dark-primary" size="24" />

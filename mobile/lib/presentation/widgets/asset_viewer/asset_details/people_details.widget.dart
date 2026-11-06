@@ -15,6 +15,7 @@ import 'package:immich_mobile/providers/routes.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/utils/image_url_builder.dart';
 import 'package:immich_mobile/utils/people.utils.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class PeopleDetails extends ConsumerWidget {
   final BaseAsset asset;
@@ -66,7 +67,7 @@ class PeopleDetails extends ConsumerWidget {
                           ContextHelper(context).pop();
                           unawaited(context.pushRoute(PersonRoute(person: person)));
                         },
-                        onNameTap: () => showDialog(
+                        onNameTap: () => showAppDialog(
                           context: context,
                           useRootNavigator: false,
                           builder: (BuildContext context) {

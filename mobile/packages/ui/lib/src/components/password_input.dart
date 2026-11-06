@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:immich_ui/src/components/text_input.dart';
+import 'package:immich_ui/src/icons.dart';
 import 'package:immich_ui/src/internal.dart';
 
 class ImmichPasswordInput extends StatefulWidget {
@@ -52,7 +53,7 @@ class _ImmichPasswordInputState extends State<ImmichPasswordInput> {
       smartQuotesType: .disabled,
       suffixIcon: IconButton(
         onPressed: _toggleVisibility,
-        icon: Icon(_visible ? Icons.visibility_off_rounded : Icons.visibility_rounded),
+        icon: Icon(_visible ? AppIcons.eyeOff : AppIcons.eye),
       ),
       autofillHints: const [AutofillHints.password],
     );

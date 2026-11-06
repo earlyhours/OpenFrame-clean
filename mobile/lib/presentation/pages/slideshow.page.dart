@@ -22,6 +22,7 @@ import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/utils/system_ui.utils.dart';
 import 'package:immich_mobile/widgets/common/immich_loading_indicator.dart';
 import 'package:immich_mobile/widgets/photo_view/photo_view.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 @RoutePage()
@@ -290,7 +291,8 @@ class _SlideshowPageState extends ConsumerState<SlideshowPage>
               ignoring: !_showAppBar,
               child: AnimatedOpacity(
                 opacity: _showAppBar ? 1.0 : 0.0,
-                duration: Durations.short2,
+                duration: AppMotion.of(context, AppMotion.fast),
+                curve: AppMotion.emphasized,
                 child: Column(
                   children: [
                     AppBar(
@@ -299,7 +301,7 @@ class _SlideshowPageState extends ConsumerState<SlideshowPage>
                       actions: [
                         IconButton(
                           onPressed: _slideshow.paused ? _slideshow.resume : _slideshow.pause,
-                          icon: Icon(_slideshow.paused ? Icons.play_arrow : Icons.pause),
+                          icon: Icon(_slideshow.paused ? AppIcons.play : AppIcons.pause),
                         ),
                         IconButton(
                           onPressed: () {
@@ -308,7 +310,7 @@ class _SlideshowPageState extends ConsumerState<SlideshowPage>
                             }
                             unawaited(context.pushRoute(SettingsSubRoute(section: SettingSection.assetViewer)));
                           },
-                          icon: const Icon(Icons.settings),
+                          icon: const Icon(AppIcons.settings),
                         ),
                       ],
                     ),

@@ -93,6 +93,7 @@ class _AssetViewerState extends ConsumerState<AssetViewer> {
 
   StreamSubscription? _reloadSubscription;
   KeepAliveLink? _stackChildrenKeepAlive;
+  Animation<double>? _openingAnimation;
 
   void _onTapNavigate(int direction) {
     final page = _pageController.page?.toInt();
@@ -119,7 +120,7 @@ class _AssetViewerState extends ConsumerState<AssetViewer> {
 
     _reloadSubscription = EventStream.shared.listen(_onEvent);
 
-    WidgetsBinding.instance.addPostFrameCallback(_onAssetInit);
+    WidgetsBinding.instance.addPostFrameCallback(_afterFirstFrame);
 
     final assetViewer = ref.read(assetViewerProvider);
     unawaited(_setSystemUIMode(assetViewer.showingControls, assetViewer.showingDetails));
@@ -127,6 +128,7 @@ class _AssetViewerState extends ConsumerState<AssetViewer> {
 
   @override
   void dispose() {
+    _openingAnimation?.removeStatusListener(_onOpeningStatus);
     _pageController.dispose();
     _preloader.dispose();
     unawaited(_reloadSubscription?.cancel());
@@ -158,12 +160,40 @@ class _AssetViewerState extends ConsumerState<AssetViewer> {
     return false;
   }
 
-  void _onAssetInit(Duration timeStamp) {
-    _preloader.preload(
-      widget.initialIndex,
-      context.sizeData,
-      thumbnailSize: ref.read(assetViewerProvider).thumbnailSize,
-    );
+  void _afterFirstFrame(Duration timeStamp) {
+    if (!mounted) {
+      return;
+    }
+    final route = ModalRoute.of(context);
+    if (route != null && !route.isCurrent) {
+      return;
+    }
+    final animation = route?.animation;
+    if (animation == null || animation.status == AnimationStatus.completed) {
+      _onAssetInit();
+    } else if (animation.status == AnimationStatus.forward) {
+      _openingAnimation = animation;
+      animation.addStatusListener(_onOpeningStatus);
+    }
+  }
+
+  void _onOpeningStatus(AnimationStatus status) {
+    if (status == AnimationStatus.forward) {
+      return;
+    }
+    _openingAnimation?.removeStatusListener(_onOpeningStatus);
+    _openingAnimation = null;
+    if (status == AnimationStatus.completed) {
+      // Keep database prefetch and adjacent image decoding off the hero's frames.
+      WidgetsBinding.instance.addPostFrameCallback((_) => _onAssetInit());
+    }
+  }
+
+  void _onAssetInit() {
+    if (!mounted || !(ModalRoute.of(context)?.isCurrent ?? true)) {
+      return;
+    }
+    _preloader.preload(_currentPage, context.sizeData, thumbnailSize: ref.read(assetViewerProvider).thumbnailSize);
     _handleCasting();
   }
 
@@ -205,7 +235,7 @@ class _AssetViewerState extends ConsumerState<AssetViewer> {
 
     context.scaffoldMessenger.clearSnackBars();
     ref.read(castProvider.notifier).stop();
-    context.scaffoldMessenger.showSnackBar(
+    context.showSnackBar(
       SnackBar(
         duration: const Duration(seconds: 2),
         content: Text(

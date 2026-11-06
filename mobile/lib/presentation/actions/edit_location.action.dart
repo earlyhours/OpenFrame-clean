@@ -10,6 +10,7 @@ import 'package:immich_mobile/providers/infrastructure/db.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/toast.provider.dart';
 import 'package:immich_mobile/utils/error_handler.dart';
 import 'package:immich_mobile/widgets/common/location_picker.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
 typedef _State = ({List<String> assetIds, RemoteAsset? origin});
@@ -33,7 +34,7 @@ class EditLocationAction extends AssetActionBuilder {
     }
 
     return .new(
-      icon: Icons.edit_location_alt_outlined,
+      icon: AppIcons.mapPinPen,
       label: context.t.control_bottom_app_bar_edit_location,
       onAction: () => _edit(context, ref),
     );

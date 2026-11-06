@@ -120,9 +120,7 @@
 
       <!-- PRODUCT KEY INFO CARD -->
       {#if isServerProduct}
-        <div
-          class="flex place-content-center gap-4 rounded-xl border border-immich-dark-primary/20 bg-gray-50 p-6 pe-12 dark:bg-immich-dark-primary/15"
-        >
+        <div class="flex place-content-center gap-4 rounded-xl border bg-subtle p-6 pe-12">
           <Icon icon={mdiKey} size="56" class="text-primary" />
 
           <div>
@@ -152,9 +150,7 @@
           </div>
         {/if}
       {:else}
-        <div
-          class="flex place-content-center gap-4 rounded-xl border border-immich-dark-primary/20 bg-gray-50 p-6 pe-12 dark:bg-immich-dark-primary/15"
-        >
+        <div class="flex place-content-center gap-4 rounded-xl border bg-subtle p-6 pe-12">
           <Icon icon={mdiKey} size="56" class="text-primary" />
 
           <div>

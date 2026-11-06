@@ -10,6 +10,7 @@ import 'package:immich_mobile/models/auth/auxilary_endpoint.model.dart';
 import 'package:immich_mobile/providers/api.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/settings.provider.dart';
 import 'package:immich_mobile/widgets/settings/networking_settings/endpoint_input.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class ExternalNetworkPreference extends HookConsumerWidget {
   const ExternalNetworkPreference({super.key, required this.enabled});
@@ -80,78 +81,50 @@ class ExternalNetworkPreference extends HookConsumerWidget {
       return null;
     }, const []);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Container(
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(16)),
-          color: context.colorScheme.surfaceContainerLow,
-          border: Border.all(color: context.colorScheme.surfaceContainerHighest, width: 1),
+    return SettingsSection(
+      title: context.t.external_network,
+      footer: context.t.external_network_sheet_info,
+      children: [
+        Form(
+          key: GlobalKey<FormState>(),
+          child: ReorderableListView.builder(
+            buildDefaultDragHandles: false,
+            proxyDecorator: proxyDecorator,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: entries.value.length,
+            onReorderItem: handleReorder,
+            itemBuilder: (context, index) {
+              return EndpointInput(
+                key: Key(index.toString()),
+                index: index,
+                initialValue: entries.value[index],
+                onValidated: updateValidationStatus,
+                onDismissed: handleDismiss,
+                enabled: enabled,
+              );
+            },
+          ),
         ),
-        child: Stack(
-          children: [
-            Positioned(
-              bottom: -36,
-              right: -36,
-              child: Icon(Icons.dns_rounded, size: 120, color: context.primaryColor.withValues(alpha: 0.05)),
+        Padding(
+          padding: const EdgeInsets.all(SettingsMetrics.rowInset),
+          child: SizedBox(
+            height: 48,
+            child: OutlinedButton.icon(
+              icon: const Icon(AppIcons.plus),
+              label: Text(context.t.add_endpoint),
+              onPressed: enabled
+                  ? () {
+                      entries.value = [
+                        ...entries.value,
+                        const AuxilaryEndpoint(url: '', status: AuxCheckStatus.unknown),
+                      ];
+                    }
+                  : null,
             ),
-            ListView(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              physics: const ClampingScrollPhysics(),
-              shrinkWrap: true,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 24),
-                  child: Text(context.t.external_network_sheet_info, style: context.textTheme.bodyMedium),
-                ),
-                const SizedBox(height: 4),
-                Divider(color: context.colorScheme.surfaceContainerHighest),
-                Form(
-                  key: GlobalKey<FormState>(),
-                  child: ReorderableListView.builder(
-                    buildDefaultDragHandles: false,
-                    proxyDecorator: proxyDecorator,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: entries.value.length,
-                    onReorderItem: handleReorder,
-                    itemBuilder: (context, index) {
-                      return EndpointInput(
-                        key: Key(index.toString()),
-                        index: index,
-                        initialValue: entries.value[index],
-                        onValidated: updateValidationStatus,
-                        onDismissed: handleDismiss,
-                        enabled: enabled,
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: SizedBox(
-                    height: 48,
-                    child: OutlinedButton.icon(
-                      icon: const Icon(Icons.add),
-                      label: Text(context.t.add_endpoint),
-                      onPressed: enabled
-                          ? () {
-                              entries.value = [
-                                ...entries.value,
-                                const AuxilaryEndpoint(url: '', status: AuxCheckStatus.unknown),
-                              ];
-                            }
-                          : null,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }

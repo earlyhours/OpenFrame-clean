@@ -7,6 +7,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:immich_mobile/domain/models/log.model.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 @RoutePage()
 class AppLogDetailPage extends HookWidget {
@@ -41,7 +42,7 @@ class AppLogDetailPage extends HookWidget {
                           return;
                         }
 
-                        context.scaffoldMessenger.showSnackBar(
+                        context.showSnackBar(
                           SnackBar(
                             content: Text(
                               context.t.copied_to_clipboard,
@@ -52,7 +53,7 @@ class AppLogDetailPage extends HookWidget {
                       }),
                     );
                   },
-                  icon: Icon(Icons.copy, size: 16.0, color: context.primaryColor),
+                  icon: Icon(AppIcons.copy, size: 16.0, color: context.primaryColor),
                 ),
               ],
             ),
@@ -65,7 +66,7 @@ class AppLogDetailPage extends HookWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: SelectableText(
                   text,
-                  style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold, fontFamily: "GoogleSansCode"),
+                  style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold, fontFamily: "GeistMono"),
                 ),
               ),
             ),
@@ -96,7 +97,7 @@ class AppLogDetailPage extends HookWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: SelectableText(
                   logger,
-                  style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold, fontFamily: "GoogleSansCode"),
+                  style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold, fontFamily: "GeistMono"),
                 ),
               ),
             ),

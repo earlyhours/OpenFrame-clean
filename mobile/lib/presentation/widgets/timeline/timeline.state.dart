@@ -54,10 +54,16 @@ class TimelineState {
 
 class TimelineStateNotifier extends Notifier<TimelineState> {
   void setScrolling(bool isScrolling) {
+    if (state.isScrolling == isScrolling) {
+      return;
+    }
     state = state.copyWith(isScrolling: isScrolling);
   }
 
   void setRecommendDeferredLoading(bool recommendDeferredLoading) {
+    if (state.recommendDeferredLoading == recommendDeferredLoading) {
+      return;
+    }
     state = state.copyWith(recommendDeferredLoading: recommendDeferredLoading);
   }
 

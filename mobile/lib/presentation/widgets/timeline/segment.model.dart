@@ -91,7 +91,33 @@ abstract class Segment {
 extension SegmentListExtension on List<Segment> {
   bool equals(List<Segment> other) => length == other.length && lastOrNull?.endOffset == other.lastOrNull?.endOffset;
 
-  Segment? findByIndex(int index) => firstWhereOrNull((s) => s.containsIndex(index));
+  Segment? findByIndex(int index) {
+    var low = 0;
+    var high = length;
+    while (low < high) {
+      final mid = (low + high) ~/ 2;
+      if (this[mid].lastIndex < index) {
+        low = mid + 1;
+      } else {
+        high = mid;
+      }
+    }
+    final position = low;
+    return position < length && this[position].containsIndex(index) ? this[position] : null;
+  }
 
-  Segment? findByOffset(double offset) => firstWhereOrNull((s) => s.isWithinOffset(offset)) ?? lastOrNull;
+  Segment? findByOffset(double offset) {
+    var low = 0;
+    var high = length;
+    while (low < high) {
+      final mid = (low + high) ~/ 2;
+      if (this[mid].endOffset < offset) {
+        low = mid + 1;
+      } else {
+        high = mid;
+      }
+    }
+    final position = low;
+    return position < length && this[position].isWithinOffset(offset) ? this[position] : lastOrNull;
+  }
 }

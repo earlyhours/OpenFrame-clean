@@ -12,6 +12,7 @@ import 'package:immich_mobile/providers/server_info.provider.dart';
 import 'package:immich_mobile/providers/user.provider.dart';
 import 'package:immich_mobile/widgets/common/confirm_dialog.dart';
 import 'package:immich_mobile/widgets/common/immich_toast.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 @RoutePage()
 class TrashPage extends StatelessWidget {
@@ -70,7 +71,7 @@ class _TrashKebabMenu extends ConsumerWidget {
     required Future<ActionResult> Function(String userId) action,
     required String Function(int count) successMsg,
   }) async {
-    await showDialog<bool>(
+    await showAppDialog<bool>(
       context: context,
       builder: (_) => ConfirmDialog(
         title: title,
@@ -110,7 +111,7 @@ class _TrashKebabMenu extends ConsumerWidget {
       menuChildren: [
         BaseActionButton(
           label: context.t.empty_trash,
-          iconData: Icons.delete_forever_outlined,
+          iconData: AppIcons.trash2,
           onPressed: () => _confirmAndRun(
             context,
             ref,
@@ -123,7 +124,7 @@ class _TrashKebabMenu extends ConsumerWidget {
         ),
         BaseActionButton(
           label: context.t.restore_all,
-          iconData: Icons.restore_outlined,
+          iconData: AppIcons.history,
           onPressed: () => _confirmAndRun(
             context,
             ref,
@@ -137,7 +138,7 @@ class _TrashKebabMenu extends ConsumerWidget {
       ],
       builder: (context, controller, child) {
         return IconButton(
-          icon: const Icon(Icons.more_vert_rounded),
+          icon: const Icon(AppIcons.ellipsisVertical),
           onPressed: () => controller.isOpen ? controller.close() : controller.open(),
         );
       },

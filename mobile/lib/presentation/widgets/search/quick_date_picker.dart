@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:immich_mobile/extensions/datetime_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:intl/intl.dart';
 
 sealed class DateFilterInputModel {
@@ -157,7 +158,7 @@ class QuickDatePicker extends HookWidget {
         child: RadioListTile(
           title: Text(context.t.pick_custom_range),
           subtitle: hasPreviousInput ? Text(currentInput!.asHumanReadable(context)) : null,
-          secondary: hasPreviousInput ? const Icon(Icons.edit) : null,
+          secondary: hasPreviousInput ? const Icon(AppIcons.pencil) : null,
           value: _QuickPickerType.custom,
           toggleable: true,
         ),

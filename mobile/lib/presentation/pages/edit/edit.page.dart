@@ -78,7 +78,7 @@ class _EditImagePageState extends ConsumerState<EditImagePage> with TickerProvid
   }
 
   Future<bool?> _showDiscardChangesDialog() {
-    return showDialog<bool>(
+    return showAppDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(context.t.editor_discard_edits_title),
@@ -128,8 +128,8 @@ class _EditImagePageState extends ConsumerState<EditImagePage> with TickerProvid
               children: [
                 Expanded(child: _EditorPreview(image: widget.image)),
                 AnimatedSize(
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeInOut,
+                  duration: AppMotion.of(context, AppMotion.base),
+                  curve: AppMotion.emphasized,
                   alignment: Alignment.bottomCenter,
                   clipBehavior: Clip.none,
                   child: Container(
@@ -263,14 +263,14 @@ class _TransformControls extends ConsumerWidget {
               Row(
                 children: [
                   ImmichIconButton(
-                    icon: Icons.rotate_left,
+                    icon: AppIcons.rotateCcw,
                     variant: ImmichVariant.ghost,
                     color: ImmichColor.secondary,
                     onPressed: editorNotifier.rotateCCW,
                   ),
                   const SizedBox(width: 8),
                   ImmichIconButton(
-                    icon: Icons.rotate_right,
+                    icon: AppIcons.rotateCw,
                     variant: ImmichVariant.ghost,
                     color: ImmichColor.secondary,
                     onPressed: editorNotifier.rotateCW,
@@ -280,7 +280,7 @@ class _TransformControls extends ConsumerWidget {
               Row(
                 children: [
                   ImmichIconButton(
-                    icon: Icons.flip,
+                    icon: AppIcons.flipHorizontal,
                     variant: ImmichVariant.ghost,
                     color: ImmichColor.secondary,
                     onPressed: editorNotifier.flipHorizontally,
@@ -289,7 +289,7 @@ class _TransformControls extends ConsumerWidget {
                   Transform.rotate(
                     angle: pi / 2,
                     child: ImmichIconButton(
-                      icon: Icons.flip,
+                      icon: AppIcons.flipHorizontal,
                       variant: ImmichVariant.ghost,
                       color: ImmichColor.secondary,
                       onPressed: editorNotifier.flipVertically,
@@ -323,7 +323,7 @@ class _SaveEditsButton extends ConsumerWidget {
             child: SizedBox(width: 28, height: 28, child: CircularProgressIndicator(strokeWidth: 2.5)),
           )
         : ImmichIconButton(
-            icon: Icons.done_rounded,
+            icon: AppIcons.check,
             color: ImmichColor.primary,
             variant: ImmichVariant.ghost,
             disabled: !hasUnsavedEdits,
@@ -423,7 +423,7 @@ class _EditorPreviewState extends ConsumerState<_EditorPreview> with TickerProvi
           child: AnimatedRotation(
             turns: editorState.rotationAngle / 360,
             duration: editorState.animationDuration,
-            curve: Curves.easeInOut,
+            curve: AppMotion.standard,
             onEnd: editorNotifier.normalizeRotation,
             child: Transform(
               alignment: Alignment.center,
@@ -436,7 +436,7 @@ class _EditorPreviewState extends ConsumerState<_EditorPreview> with TickerProvi
                 ),
               child: AnimatedContainer(
                 duration: editorState.animationDuration,
-                curve: Curves.easeInOut,
+                curve: AppMotion.standard,
                 padding: const EdgeInsets.all(10),
                 width: (editorState.rotationAngle % 180 == 0) ? baseWidth : baseHeight,
                 height: (editorState.rotationAngle % 180 == 0) ? baseHeight : baseWidth,

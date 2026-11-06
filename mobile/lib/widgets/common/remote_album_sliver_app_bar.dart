@@ -15,6 +15,7 @@ import 'package:immich_mobile/providers/infrastructure/timeline.provider.dart';
 import 'package:immich_mobile/providers/timeline/multiselect.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/widgets/album/remote_album_shared_user_icons.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class RemoteAlbumSliverAppBar extends ConsumerStatefulWidget {
   const RemoteAlbumSliverAppBar({super.key, required this.kebabMenu, this.onEditTitle, this.onActivity});
@@ -71,7 +72,7 @@ class _MesmerizingSliverAppBarState extends ConsumerState<RemoteAlbumSliverAppBa
           ? const SizedBox.shrink()
           : IconButton(
               icon: Icon(
-                Platform.isIOS ? Icons.arrow_back_ios_new_rounded : Icons.arrow_back,
+                Platform.isIOS ? AppIcons.chevronLeftDir : AppIcons.arrowLeftDir,
                 color: actionIconColor,
                 shadows: actionIconShadows,
               ),
@@ -80,11 +81,11 @@ class _MesmerizingSliverAppBarState extends ConsumerState<RemoteAlbumSliverAppBa
       actions: [
         IconButton(
           onPressed: () => context.pushRoute(SlideshowRoute(timeline: ref.read(timelineServiceProvider))),
-          icon: Icon(Icons.slideshow_outlined, color: actionIconColor, shadows: actionIconShadows),
+          icon: Icon(AppIcons.presentation, color: actionIconColor, shadows: actionIconShadows),
         ),
         if (currentAlbum.isActivityEnabled && currentAlbum.isShared)
           IconButton(
-            icon: Icon(Icons.chat_outlined, color: actionIconColor, shadows: actionIconShadows),
+            icon: Icon(AppIcons.messageSquare, color: actionIconColor, shadows: actionIconShadows),
             onPressed: widget.onActivity,
           ),
         widget.kebabMenu,
@@ -95,13 +96,10 @@ class _MesmerizingSliverAppBarState extends ConsumerState<RemoteAlbumSliverAppBa
           final scrollProgress = _calculateScrollProgress(settings);
 
           return AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            child: scrollProgress > 0.95
-                ? Text(
-                    currentAlbum.name,
-                    style: TextStyle(color: context.primaryColor, fontWeight: FontWeight.w600, fontSize: 18),
-                  )
-                : null,
+            duration: AppMotion.of(context, AppMotion.fast),
+            switchInCurve: AppMotion.emphasized,
+            switchOutCurve: Curves.easeInCubic,
+            child: scrollProgress > 0.95 ? Text(currentAlbum.name, style: context.textTheme.headlineSmall) : null,
           );
         },
       ),
@@ -225,7 +223,9 @@ class _ExpandedBackgroundState extends ConsumerState<_ExpandedBackground> with S
                           dateRange.value!.$2.toLocal(),
                         ),
                         style: const TextStyle(
-                          color: Colors.white,
+                          fontFamily: 'GeistMono',
+                          fontSize: 12,
+                          color: Color(0xFFF2F1EC),
                           shadows: [Shadow(offset: Offset(0, 2), blurRadius: 12, color: Colors.black87)],
                         ),
                       ),
@@ -240,7 +240,9 @@ class _ExpandedBackgroundState extends ConsumerState<_ExpandedBackground> with S
                       duration: const Duration(milliseconds: 300),
                       child: const ItemCountText(
                         style: TextStyle(
-                          color: Colors.white,
+                          fontFamily: 'GeistMono',
+                          fontSize: 12,
+                          color: Color(0xFFF2F1EC),
                           shadows: [Shadow(offset: Offset(0, 2), blurRadius: 12, color: Colors.black87)],
                         ),
                       ),
@@ -288,9 +290,10 @@ class _DynamicText extends StatelessWidget {
   const _DynamicText({required this.text, required this.maxWidth});
 
   static const _baseTextStyle = TextStyle(
-    color: Colors.white,
-    fontWeight: FontWeight.bold,
-    letterSpacing: 0.5,
+    color: Color(0xFFF2F1EC),
+    fontFamily: 'GeistPixel',
+    fontWeight: FontWeight.w400,
+    letterSpacing: -0.5,
     shadows: [Shadow(offset: Offset(0, 2), blurRadius: 12, color: Colors.black54)],
     overflow: TextOverflow.ellipsis,
   );

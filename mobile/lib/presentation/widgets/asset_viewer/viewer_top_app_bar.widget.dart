@@ -51,7 +51,7 @@ class ViewerTopAppBar extends ConsumerWidget implements PreferredSizeWidget {
       if (asset.isMotionPhoto) const MotionPhotoActionButton(iconOnly: true),
       if (album != null && album.isActivityEnabled && album.isShared)
         IconButton(
-          icon: const Icon(Icons.chat_outlined),
+          icon: const Icon(AppIcons.messageSquare),
           onPressed: () {
             unawaited(
               context.router.push(
@@ -96,7 +96,7 @@ class ViewerTopAppBar extends ConsumerWidget implements PreferredSizeWidget {
               child: SizedBox(
                 height: preferredSize.height,
                 child: Theme(
-                  data: context.themeData.copyWith(iconTheme: const IconThemeData(size: 22, color: Colors.white)),
+                  data: context.themeData.copyWith(iconTheme: const IconThemeData(size: ImmichIconSize.md, color: Colors.white)),
                   child: NavigationToolbar(
                     centerMiddle: true,
                     leading: const _AppBarBackButton(),
@@ -134,13 +134,14 @@ class _AppBarBackButton extends ConsumerWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: showingDetails ? context.colorScheme.surface : Colors.transparent,
         shape: const CircleBorder(),
-        iconSize: 22,
+        iconSize: ImmichIconSize.md,
         iconColor: showingDetails ? context.colorScheme.onSurface : Colors.white,
-        padding: const EdgeInsets.all(10.0),
-        elevation: showingDetails ? 4 : 0,
+        padding: const EdgeInsets.all(ImmichSpacing.md),
+        elevation: 0,
+        shadowColor: Colors.transparent,
       ),
       onPressed: context.maybePop,
-      child: const Icon(Icons.arrow_back_rounded),
+      child: const Icon(AppIcons.arrowLeftDir),
     );
   }
 }

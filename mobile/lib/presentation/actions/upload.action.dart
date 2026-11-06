@@ -30,7 +30,7 @@ class UploadAction extends AssetActionBuilder {
       return null;
     }
 
-    return .new(icon: Icons.backup_outlined, label: context.t.upload, onAction: () => _upload(context, ref, assets));
+    return .new(icon: AppIcons.cloudUpload, label: context.t.upload, onAction: () => _upload(context, ref, assets));
   }
 
   Future<void> _upload(BuildContext context, WidgetRef ref, List<LocalAsset> assets) async {
@@ -44,7 +44,7 @@ class UploadAction extends AssetActionBuilder {
       // dismissed below, unless the user cancelled it themselves first
       var isDialogOpen = true;
       unawaited(
-        showDialog<void>(
+        showAppDialog<void>(
           context: context,
           barrierDismissible: false,
           builder: (_) => const _UploadProgressDialog(),
@@ -123,7 +123,7 @@ class _UploadProgressDialog extends ConsumerWidget {
         mainAxisSize: .min,
         children: [
           if (hasError)
-            const Icon(Icons.error_outline, color: Colors.red, size: 48)
+            const Icon(AppIcons.circleAlert, color: Colors.red, size: 48)
           else
             CircularProgressIndicator(value: progress > 0 ? progress : null),
           const SizedBox(height: 16),

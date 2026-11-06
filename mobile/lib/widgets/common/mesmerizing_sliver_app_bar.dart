@@ -8,6 +8,7 @@ import 'package:immich_mobile/presentation/widgets/sliver_app_bar/item_count_tex
 import 'package:immich_mobile/presentation/widgets/sliver_app_bar/random_asset_background_image.widget.dart';
 import 'package:immich_mobile/providers/infrastructure/timeline.provider.dart';
 import 'package:immich_mobile/providers/timeline/multiselect.provider.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class MesmerizingSliverAppBar extends ConsumerStatefulWidget {
   const MesmerizingSliverAppBar({super.key, required this.title});
@@ -38,7 +39,12 @@ class _MesmerizingSliverAppBarState extends ConsumerState<MesmerizingSliverAppBa
     final isMultiSelectEnabled = ref.watch(multiSelectProvider.select((s) => s.isEnabled));
     Widget hideWhenSelecting(Widget child) => IgnorePointer(
       ignoring: isMultiSelectEnabled,
-      child: AnimatedOpacity(duration: Durations.medium1, opacity: isMultiSelectEnabled ? 0 : 1, child: child),
+      child: AnimatedOpacity(
+        duration: AppMotion.of(context, AppMotion.base),
+        curve: AppMotion.emphasized,
+        opacity: isMultiSelectEnabled ? 0 : 1,
+        child: child,
+      ),
     );
 
     return SliverAppBar(
@@ -50,7 +56,7 @@ class _MesmerizingSliverAppBarState extends ConsumerState<MesmerizingSliverAppBa
       leading: hideWhenSelecting(
         IconButton(
           icon: Icon(
-            Platform.isIOS ? Icons.arrow_back_ios_new_rounded : Icons.arrow_back,
+            Platform.isIOS ? AppIcons.chevronLeftDir : AppIcons.arrowLeftDir,
             color: Color.lerp(Colors.white, context.primaryColor, _scrollProgress),
             shadows: [
               _scrollProgress < 0.95
@@ -80,7 +86,9 @@ class _MesmerizingSliverAppBarState extends ConsumerState<MesmerizingSliverAppBa
           return FlexibleSpaceBar(
             centerTitle: true,
             title: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
+              duration: AppMotion.of(context, AppMotion.fast),
+              switchInCurve: AppMotion.emphasized,
+              switchOutCurve: Curves.easeInCubic,
               child: scrollProgress > 0.95
                   ? Text(
                       widget.title,

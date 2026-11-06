@@ -65,14 +65,53 @@ class AdvancedSettings extends HookConsumerWidget {
     }, []);
 
     final advancedSettings = [
-      SettingsSwitchListTile(
-        enabled: true,
-        valueNotifier: advancedTroubleshooting,
-        title: context.t.advanced_settings_troubleshooting_title,
-        subtitle: context.t.advanced_settings_troubleshooting_subtitle,
+      SettingsSection(
+        children: [
+          SettingsSwitchListTile(
+            enabled: true,
+            valueNotifier: advancedTroubleshooting,
+            title: context.t.advanced_settings_troubleshooting_title,
+            subtitle: context.t.advanced_settings_troubleshooting_subtitle,
+          ),
+          SettingsSliderListTile(
+            text: context.t.advanced_settings_log_level_title(level: logLevel),
+            valueNotifier: levelId,
+            maxValue: 8,
+            minValue: 1,
+            noDivisons: 7,
+            label: logLevel,
+          ),
+        ],
+      ),
+      SettingsSection(
+        children: [
+          SettingsSwitchListTile(
+            valueNotifier: preferRemote,
+            title: context.t.advanced_settings_prefer_remote_title,
+            subtitle: context.t.advanced_settings_prefer_remote_subtitle,
+          ),
+          SettingsSwitchListTile(
+            valueNotifier: readonlyModeEnabled,
+            title: context.t.advanced_settings_readonly_mode_title,
+            subtitle: context.t.advanced_settings_readonly_mode_subtitle,
+            onChanged: (value) {
+              readonlyModeEnabled.value = value;
+              ref.read(readonlyModeProvider.notifier).setReadonlyMode(value);
+              context.showSnackBar(
+                SnackBar(
+                  duration: const Duration(seconds: 2),
+                  content: Text(
+                    value ? context.t.readonly_mode_enabled : context.t.readonly_mode_disabled,
+                    style: context.textTheme.bodyLarge?.copyWith(color: context.primaryColor),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       if (isManageMediaSupported.value)
-        Column(
+        SettingsSection(
           children: [
             SettingsSwitchListTile(
               enabled: true,
@@ -101,81 +140,52 @@ class AdvancedSettings extends HookConsumerWidget {
             ),
           ],
         ),
-      SettingsSliderListTile(
-        text: context.t.advanced_settings_log_level_title(level: logLevel),
-        valueNotifier: levelId,
-        maxValue: 8,
-        minValue: 1,
-        noDivisons: 7,
-        label: logLevel,
-      ),
-      SettingsSwitchListTile(
-        valueNotifier: preferRemote,
-        title: context.t.advanced_settings_prefer_remote_title,
-        subtitle: context.t.advanced_settings_prefer_remote_subtitle,
-      ),
-      const CustomProxyHeaderSettings(),
-      const SslClientCertSettings(),
-      SettingsSwitchListTile(
-        valueNotifier: readonlyModeEnabled,
-        title: context.t.advanced_settings_readonly_mode_title,
-        subtitle: context.t.advanced_settings_readonly_mode_subtitle,
-        onChanged: (value) {
-          readonlyModeEnabled.value = value;
-          ref.read(readonlyModeProvider.notifier).setReadonlyMode(value);
-          context.scaffoldMessenger.showSnackBar(
-            SnackBar(
-              duration: const Duration(seconds: 2),
-              content: Text(
-                value ? context.t.readonly_mode_enabled : context.t.readonly_mode_disabled,
-                style: context.textTheme.bodyLarge?.copyWith(color: context.primaryColor),
-              ),
-            ),
-          );
-        },
-      ),
-      ListTile(
-        title: Text(context.t.advanced_settings_clear_image_cache, style: const TextStyle(fontWeight: FontWeight.w500)),
-        leading: const Icon(Icons.playlist_remove_rounded),
-        onTap: () async {
-          final int clearedBytes;
-          try {
-            clearedBytes = await remoteImageApi.clearCache();
-          } catch (e) {
-            if (!context.mounted) {
-              return;
-            }
+      SettingsSection(
+        children: [
+          const CustomProxyHeaderSettings(),
+          const SslClientCertSettings(),
+          SettingsTile(
+            title: context.t.advanced_settings_clear_image_cache,
+            onTap: () async {
+              final int clearedBytes;
+              try {
+                clearedBytes = await remoteImageApi.clearCache();
+              } catch (e) {
+                if (!context.mounted) {
+                  return;
+                }
 
-            context.scaffoldMessenger.showSnackBar(
-              SnackBar(
-                duration: const Duration(seconds: 2),
-                content: Text(
-                  context.t.advanced_settings_clear_image_cache_error,
-                  style: context.textTheme.bodyLarge?.copyWith(color: context.themeData.colorScheme.error),
+                context.showSnackBar(
+                  SnackBar(
+                    duration: const Duration(seconds: 2),
+                    content: Text(
+                      context.t.advanced_settings_clear_image_cache_error,
+                      style: context.textTheme.bodyLarge?.copyWith(color: context.themeData.colorScheme.error),
+                    ),
+                  ),
+                );
+                return;
+              }
+
+              if (clearedBytes < 0 || !context.mounted) {
+                return;
+              }
+
+              // iOS always returns a small non-zero value
+              final clearedMB = clearedBytes < (256 * 1024) ? "0 MiB" : formatHumanReadableBytes(clearedBytes, 2);
+              context.showSnackBar(
+                SnackBar(
+                  duration: const Duration(seconds: 2),
+                  content: Text(
+                    context.t.advanced_settings_clear_image_cache_success(size: clearedMB),
+                    style: context.textTheme.bodyLarge?.copyWith(color: context.primaryColor),
+                  ),
                 ),
-              ),
-            );
-            return;
-          }
-
-          if (clearedBytes < 0 || !context.mounted) {
-            return;
-          }
-
-          // iOS always returns a small non-zero value
-          final clearedMB = clearedBytes < (256 * 1024) ? "0 MiB" : formatHumanReadableBytes(clearedBytes, 2);
-          context.scaffoldMessenger.showSnackBar(
-            SnackBar(
-              duration: const Duration(seconds: 2),
-              content: Text(
-                context.t.advanced_settings_clear_image_cache_success(size: clearedMB),
-                style: context.textTheme.bodyLarge?.copyWith(color: context.primaryColor),
-              ),
-            ),
-          );
-        },
+              );
+            },
+          ),
+        ],
       ),
-      const SizedBox(height: 60),
     ];
 
     return SettingsSubPageScaffold(settings: advancedSettings);

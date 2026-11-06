@@ -43,11 +43,11 @@
 }
 
 @utility immich-form-input {
-  @apply bg-gray-100 ring-1 ring-gray-200 transition outline-none focus-within:ring-primary focus-within:ring-1 disabled:cursor-not-allowed dark:bg-gray-800 dark:ring-neutral-900 dark:focus-within:ring-primary flex w-full items-center rounded-lg disabled:bg-gray-300 disabled:text-dark dark:disabled:bg-gray-900 dark:disabled:text-gray-200 flex-1 py-2.5 text-base px-4;
+  @apply flex min-h-11 w-full flex-1 items-center rounded-[10px] border bg-subtle px-4 py-2.5 text-base text-dark transition-[border-color,box-shadow] duration-150 ease-out outline-none hover:border-light-300 focus-within:border-primary focus-within:ring-3 focus-within:ring-primary/15 disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 @utility immich-form-label {
-  @apply font-medium text-gray-500 dark:text-gray-300;
+  @apply text-muted;
 }
 
 @utility immich-scrollbar {
@@ -76,15 +76,16 @@
 @layer base {
   :root {
     /* light */
-    --immich-primary: 66 80 175;
-    --immich-bg: 255 255 255;
-    --immich-fg: 0 0 0;
+    --immich-primary: 217 79 0;
+    --immich-bg: 236 233 227;
+    --immich-fg: 29 28 26;
+    --immich-gray: 246 244 239;
 
     /* dark */
-    --immich-dark-primary: 172 203 250;
-    --immich-dark-bg: 10 10 10;
-    --immich-dark-fg: 229 231 235;
-    --immich-dark-gray: 33 33 33;
+    --immich-dark-primary: 239 90 0;
+    --immich-dark-bg: 11 11 12;
+    --immich-dark-fg: 242 241 236;
+    --immich-dark-gray: 19 19 20;
   }
 
   button:not(:disabled),
@@ -122,8 +123,8 @@
     letter-spacing: 0.1px;
 
     /* Used by layouts to ensure proper spacing between navbar and content */
-    --navbar-height: calc(4.5rem + 4px);
-    --navbar-height-md: calc(4.5rem + 4px - 14px);
+    --navbar-height: 4rem;
+    --navbar-height-md: 3.5rem;
   }
 
   :root.dark {
@@ -169,9 +170,9 @@
     background-color: black;
   }
 
-  input:focus-visible {
-    outline-offset: 0px !important;
-    outline: none !important;
+  :focus-visible {
+    outline: 2px solid #ff8a3d;
+    outline-offset: 3px;
   }
 
   .text-white-shadow {
@@ -192,5 +193,409 @@
 
   .maplibregl-popup-content {
     @apply bg-subtle rounded-lg;
+  }
+}
+
+@font-face {
+  font-family: 'Geist Pixel';
+  src: url('$lib/assets/fonts/GeistPixel/geist-pixel.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --color-white: #f2f1ec;
+  --font-display: 'Geist Pixel', 'Geist', sans-serif;
+  --color-gray-50: #faf9f6;
+  --color-gray-100: #f6f4ef;
+  --color-gray-200: #e6e2da;
+  --color-gray-300: #d6d3cc;
+  --color-gray-400: #b3aea6;
+  --color-gray-500: #857f77;
+  --color-gray-600: #68635d;
+  --color-gray-700: #343230;
+  --color-gray-800: #1c1b1a;
+  --color-gray-900: #131314;
+  --color-gray-950: #0b0b0c;
+}
+
+/* Both token families are used: legacy screens and the shared @immich/ui controls. */
+:root,
+.light {
+  --of-bg: #ece9e3;
+  --of-panel: #f6f4ef;
+  --of-panel-2: #e6e2da;
+  --of-ink: #1d1c1a;
+  --of-ink-2: #48443e;
+  --of-mute: #68635d;
+  --of-line: rgb(29 28 26 / 12%);
+  --of-line-2: rgb(29 28 26 / 22%);
+  --of-accent: #d94f00;
+  --of-accent-soft: rgb(217 79 0 / 10%);
+  --of-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --immich-ui-primary-50: #fff3e9;
+  --immich-ui-primary-100: #ffe5cf;
+  --immich-ui-primary-200: #ffcca5;
+  --immich-ui-primary-300: #ffac70;
+  --immich-ui-primary-400: #ff8a3d;
+  --immich-ui-primary-500: var(--of-accent);
+  --immich-ui-primary-600: #b83d00;
+  --immich-ui-primary-700: #933200;
+  --immich-ui-primary-800: #722b08;
+  --immich-ui-primary-900: #51220e;
+  --immich-ui-primary-950: #321708;
+  --immich-ui-light: var(--of-bg);
+  --immich-ui-dark: var(--of-ink);
+  --immich-ui-muted: var(--of-mute);
+  --immich-ui-gray: var(--of-panel);
+  --immich-ui-default-border: var(--of-line);
+  --immich-ui-light-50: #faf9f6;
+  --immich-ui-light-100: var(--of-panel);
+  --immich-ui-light-200: #e2ddd4;
+  --immich-ui-light-300: #d6d3cc;
+  --immich-ui-light-400: #b3aea6;
+  --immich-ui-light-500: #857f77;
+  --immich-ui-light-600: #68635d;
+  --immich-ui-light-700: #48443e;
+  --immich-ui-light-800: #343230;
+  --immich-ui-light-900: #1d1c1a;
+  --immich-ui-light-950: #0b0b0c;
+  --immich-ui-dark-50: var(--immich-ui-light-950);
+  --immich-ui-dark-100: var(--immich-ui-light-900);
+  --immich-ui-dark-200: var(--immich-ui-light-800);
+  --immich-ui-dark-300: var(--immich-ui-light-700);
+  --immich-ui-dark-400: var(--immich-ui-light-600);
+  --immich-ui-dark-500: var(--immich-ui-light-500);
+  --immich-ui-dark-600: var(--immich-ui-light-400);
+  --immich-ui-dark-700: var(--immich-ui-light-300);
+  --immich-ui-dark-800: var(--immich-ui-light-200);
+  --immich-ui-dark-900: var(--immich-ui-light-100);
+  --immich-ui-dark-950: var(--immich-ui-light-50);
+}
+
+:root.dark,
+.dark {
+  --of-bg: #0b0b0c;
+  --of-panel: #131314;
+  --of-panel-2: #0f0f10;
+  --of-ink: #f2f1ec;
+  --of-ink-2: #d6d3cc;
+  --of-mute: #b3aea6;
+  --of-line: rgb(242 241 236 / 10%);
+  --of-line-2: rgb(242 241 236 / 18%);
+  --of-accent: #ef5a00;
+  --of-accent-soft: rgb(239 90 0 / 14%);
+  --immich-ui-default-border: var(--of-line);
+  --immich-ui-primary-50: #24150f;
+  --immich-ui-primary-100: #381b0e;
+  --immich-ui-primary-200: #58250d;
+  --immich-ui-primary-300: #7d300b;
+  --immich-ui-primary-400: #b0440b;
+  --immich-ui-primary-600: #ff8a3d;
+  --immich-ui-primary-700: #ffac70;
+  --immich-ui-primary-800: #ffcca5;
+  --immich-ui-primary-900: #ffe5cf;
+  --immich-ui-primary-950: #fff3e9;
+  --immich-ui-success-500: #46c97d;
+  --immich-ui-warning-500: #f2b34b;
+  --immich-ui-danger-500: #ff6a4d;
+  --immich-ui-light-50: #0b0b0c;
+  --immich-ui-light-100: #111112;
+  --immich-ui-light-200: #242323;
+  --immich-ui-light-300: #343230;
+  --immich-ui-light-400: #68635d;
+  --immich-ui-light-500: #857f77;
+  --immich-ui-light-600: #b3aea6;
+  --immich-ui-light-700: #d6d3cc;
+  --immich-ui-light-800: #e6e2da;
+  --immich-ui-light-900: #f2f1ec;
+  --immich-ui-light-950: #f6f4ef;
+}
+
+body {
+  background: var(--of-bg);
+  color: var(--of-ink);
+}
+
+/*
+ * Shared shell design language. One 8px rhythm (Tailwind 2/4/6/8/12/16), three radii, hairline borders, and a single
+ * ease-out curve at 150-250ms. Mono is kept for metadata (counts, dates, paths); titles and controls use Geist.
+ */
+:root {
+  --of-r-sm: 8px;
+  --of-r-md: 12px;
+  --of-r-lg: 16px;
+  --of-t-fast: 150ms;
+  --of-t-base: 200ms;
+  --of-row-h: 56px;
+}
+
+button.bg-primary,
+a.bg-primary:not(.sr-only) {
+  color: #fff;
+  letter-spacing: 0;
+  transition:
+    background-color var(--of-t-fast) var(--of-ease),
+    transform var(--of-t-fast) var(--of-ease);
+}
+
+/* Large @immich/ui buttons default to 18px with 32px sides; 16px and 24px keep them in step with inputs and body copy. */
+:is(button, a).outline-offset-2.text-lg {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+:is(button, a).outline-offset-2.text-lg.px-8 {
+  padding-inline: 24px;
+}
+
+/* Outlined secondary buttons use the hairline border rather than full-strength ink. */
+:is(button, a).outline-offset-2.border-dark {
+  border-color: var(--of-line-2);
+}
+
+button.bg-primary:not(:disabled):active,
+a.bg-primary:not(.sr-only):active {
+  transform: scale(0.98);
+}
+
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+.of-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--of-mute);
+}
+
+.of-eyebrow::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 2px;
+  background: var(--of-accent);
+}
+
+/* Page title: the one place the display face is used large. */
+.of-page-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--of-ink);
+}
+
+/* Section heading inside a page (Explore rows, settings groups). */
+.of-section-title {
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--of-ink);
+}
+
+.of-section-link {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--of-mute);
+  transition: color var(--of-t-fast) var(--of-ease);
+}
+
+.of-section-link:hover {
+  color: var(--of-accent);
+}
+
+/* Navigation group label: quiet sentence case, no marker. */
+.of-nav-label {
+  padding: 24px 24px 8px;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--of-mute);
+}
+
+.of-nav-label:first-child {
+  padding-top: 8px;
+}
+
+.of-surface {
+  border: 1px solid var(--of-line);
+  border-radius: var(--of-r-md);
+  background: var(--of-panel);
+}
+
+/* @immich/ui's AppShellHeader reserves 72px; the navigation bar sets its own height. */
+header:has(> #dashboard-navbar) {
+  min-height: 0;
+  flex-shrink: 0;
+}
+
+/* Admin breadcrumbs read as the page title, matching .of-page-title on user pages. */
+.of-breadcrumbs {
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 36px;
+  color: var(--of-mute);
+}
+
+.of-breadcrumbs > :last-child {
+  min-width: 0;
+  color: var(--of-ink);
+}
+
+.of-breadcrumbs a {
+  text-decoration: none;
+  transition: color var(--of-t-fast) var(--of-ease);
+}
+
+.of-breadcrumbs a:hover {
+  color: var(--of-accent);
+}
+
+#dashboard-navbar {
+  background: var(--of-bg);
+  color: var(--of-mute);
+}
+
+#main-search-bar {
+  height: 44px;
+  padding-block: 0;
+  border: 1px solid var(--of-line);
+  border-radius: var(--of-r-md);
+  background: var(--of-panel);
+  color: var(--of-ink);
+  box-shadow: none;
+  transition:
+    border-color var(--of-t-fast) var(--of-ease),
+    background-color var(--of-t-fast) var(--of-ease);
+}
+
+#main-search-bar::placeholder {
+  color: var(--of-mute);
+}
+
+#main-search-bar:hover {
+  border-color: var(--of-line-2);
+}
+
+#main-search-bar[aria-expanded='true'] {
+  border-bottom-color: transparent;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+#main-search-bar:focus {
+  border-color: var(--of-accent);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--of-accent-soft);
+}
+
+:is(#sidebar, .of-sidebar) {
+  padding-top: 8px;
+  color: var(--of-mute);
+}
+
+/* Below the sidebar breakpoint the rail collapses to zero width, where a border would show as a stray line. */
+@media (min-width: 850px) {
+  :is(#sidebar, .of-sidebar) {
+    border-inline-end: 1px solid var(--of-line);
+  }
+}
+
+/* Rows: 40px high, 12px gutter, 10px radius, icon and label on a fixed 16px / 12px grid. */
+:is(#sidebar, .of-sidebar) a:not(.of-sidebar-card) {
+  width: calc(100% - 24px);
+  margin-inline: 12px;
+  padding-block: 0;
+  min-height: 40px;
+  border-radius: 10px;
+  font-weight: 500;
+  color: var(--of-ink-2);
+  transition:
+    background-color var(--of-t-fast) var(--of-ease),
+    color var(--of-t-fast) var(--of-ease);
+}
+
+:is(#sidebar, .of-sidebar) a:not(.of-sidebar-card) > div {
+  gap: 12px;
+}
+
+:is(#sidebar, .of-sidebar) a:not(.of-sidebar-card):hover {
+  background: var(--of-panel-2);
+  color: var(--of-ink);
+}
+
+:is(#sidebar, .of-sidebar) a[aria-current='page'] {
+  background: var(--of-accent-soft);
+  color: var(--of-ink);
+}
+
+:is(#sidebar, .of-sidebar) a[aria-current='page'] span {
+  font-weight: 600;
+}
+
+:is(#sidebar, .of-sidebar) a[aria-current='page'] svg {
+  color: var(--of-accent);
+  opacity: 1;
+}
+
+:is(#sidebar, .of-sidebar) svg {
+  opacity: 0.72;
+}
+
+/* Disclosure toggle for rows with children (Albums): inside the row, at the trailing edge. */
+:is(#sidebar, .of-sidebar) .relative.flex.items-center > button.absolute {
+  inset-inline-end: 20px;
+  z-index: 1;
+  margin: 0;
+  color: var(--of-mute);
+}
+
+#account-info-panel {
+  border: 1px solid var(--of-line-2);
+  border-radius: var(--of-r-lg);
+  background: var(--of-panel);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 14%);
+}
+
+#account-info-panel a {
+  background: transparent;
+  color: var(--of-ink);
+  border-radius: var(--of-r-sm);
+}
+
+[data-id='scrubber'] {
+  font-family: var(--font-mono);
+  color: var(--of-mute);
+}
+
+[data-selected] {
+  background: var(--of-accent-soft);
+}
+
+[data-icon-select] {
+  filter: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

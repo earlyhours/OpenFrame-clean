@@ -6,6 +6,7 @@ import 'package:immich_mobile/presentation/actions/action.dart';
 import 'package:immich_mobile/providers/infrastructure/asset.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/toast.provider.dart';
 import 'package:immich_mobile/utils/error_handler.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 final _stateProvider = Provider.family.autoDispose<List<String>?, ActionSource>((ref, source) {
   final assets = ref.watch(ownedAssetsActionProvider(source));
@@ -22,7 +23,7 @@ class RestoreAction extends AssetActionBuilder {
       return null;
     }
 
-    return .new(icon: Icons.history_rounded, label: context.t.restore, onAction: () => _restore(context, ref));
+    return .new(icon: AppIcons.history, label: context.t.restore, onAction: () => _restore(context, ref));
   }
 
   Future<void> _restore(BuildContext context, WidgetRef ref) async {

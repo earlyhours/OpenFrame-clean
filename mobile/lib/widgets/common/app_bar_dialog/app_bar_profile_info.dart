@@ -13,6 +13,7 @@ import 'package:immich_mobile/providers/upload_profile_image.provider.dart';
 import 'package:immich_mobile/providers/user.provider.dart';
 import 'package:immich_mobile/widgets/common/immich_loading_indicator.dart';
 import 'package:immich_mobile/widgets/common/user_circle_avatar.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class AppBarProfileInfoBox extends HookConsumerWidget {
   const AppBarProfileInfoBox({super.key});
@@ -64,7 +65,7 @@ class AppBarProfileInfoBox extends HookConsumerWidget {
       final isReadonlyModeEnabled = ref.read(readonlyModeProvider);
       ref.read(readonlyModeProvider.notifier).toggleReadonlyMode();
 
-      context.scaffoldMessenger.showSnackBar(
+      context.showSnackBar(
         SnackBar(
           duration: const Duration(seconds: 2),
           content: Text(
@@ -94,7 +95,7 @@ class AppBarProfileInfoBox extends HookConsumerWidget {
                   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(50.0))),
                   child: Padding(
                     padding: const EdgeInsets.all(5.0),
-                    child: Icon(Icons.camera_alt_outlined, color: context.primaryColor, size: 14),
+                    child: Icon(AppIcons.camera, color: context.primaryColor, size: 14),
                   ),
                 ),
               ),

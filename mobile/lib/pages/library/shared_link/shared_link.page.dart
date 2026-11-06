@@ -9,6 +9,7 @@ import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/models/shared_link/shared_link.model.dart';
 import 'package:immich_mobile/providers/shared_link.provider.dart';
 import 'package:immich_mobile/widgets/shared_link/shared_link_item.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 @RoutePage()
 class SharedLinkPage extends HookConsumerWidget {
@@ -34,7 +35,7 @@ class SharedLinkPage extends HookConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.link_off, size: 100, color: Theme.of(context).colorScheme.onSurface.withAlpha(128)),
+            Icon(AppIcons.link2Off, size: 100, color: Theme.of(context).colorScheme.onSurface.withAlpha(128)),
             const SizedBox(height: 20),
             Text(context.t.you_dont_have_any_shared_links, style: const TextStyle(fontSize: 14)),
           ],

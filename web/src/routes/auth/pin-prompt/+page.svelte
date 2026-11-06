@@ -1,14 +1,13 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import AuthPageLayout from '$lib/components/layouts/AuthPageLayout.svelte';
+  import AuthShell from '$lib/components/auth/AuthShell.svelte';
   import PinCodeCreateForm from '$lib/components/user-settings-page/PinCodeCreateForm.svelte';
   import { Route } from '$lib/route';
   import { handleError } from '$lib/utils/handle-error';
   import { unlockAuthSession } from '@immich/sdk';
-  import { Button, Icon, PinInput } from '@immich/ui';
+  import { Button, PinInput } from '@immich/ui';
   import { mdiLockOpenVariantOutline, mdiLockOutline, mdiLockSmart } from '@mdi/js';
   import { t } from 'svelte-i18n';
-  import { fade } from 'svelte/transition';
   import type { PageData } from './$types';
 
   interface Props {
@@ -23,6 +22,7 @@
   let pinCode = $state('');
 
   const handleUnlockSession = async (code: string) => {
+    isBadPinCode = false;
     try {
       await unlockAuthSession({ sessionUnlockDto: { pinCode: code } });
 
@@ -38,36 +38,25 @@
   };
 </script>
 
-<AuthPageLayout withHeader={false}>
-  <div class="flex items-center justify-center">
-    <div class="flex w-96 flex-col items-center justify-center gap-6">
-      {#if hasPinCode}
-        {#if isVerified}
-          <div in:fade={{ duration: 200 }}>
-            <Icon icon={mdiLockOpenVariantOutline} size="64" class="text-success/90" />
-          </div>
-        {:else}
-          <div class:text-danger={isBadPinCode} class:text-primary={!isBadPinCode}>
-            <Icon icon={mdiLockOutline} size="64" />
-          </div>
-        {/if}
-
-        <p class="text-center text-sm" style="text-wrap: pretty;">{$t('enter_your_pin_code_subtitle')}</p>
-
+<AuthShell
+  title={hasPinCode ? $t('auth_pin_title') : $t('auth_pin_create_title')}
+  subtitle={hasPinCode ? $t('enter_your_pin_code_subtitle') : $t('new_pin_code_subtitle')}
+  icon={isVerified ? mdiLockOpenVariantOutline : hasPinCode ? mdiLockOutline : mdiLockSmart}
+  iconTone={isVerified ? 'success' : isBadPinCode ? 'danger' : 'default'}
+>
+  <div class="flex flex-col items-center gap-6" aria-live="polite">
+    {#if hasPinCode}
+      {#if !isVerified}
         <PinInput password autofocus bind:value={pinCode} onComplete={handleUnlockSession} />
-      {:else}
-        <div class="text-primary">
-          <Icon icon={mdiLockSmart} size="64" />
-        </div>
-        <p class="mb-4 text-center text-sm" style="text-wrap: pretty;">
-          {$t('new_pin_code_subtitle')}
-        </p>
-        <PinCodeCreateForm showLabel={false} onCreated={() => (hasPinCode = true)} />
       {/if}
+    {:else}
+      <PinCodeCreateForm showLabel={false} onCreated={() => (hasPinCode = true)} />
+    {/if}
 
-      <div class={hasPinCode ? '' : 'flex w-full items-start'}>
-        <Button type="button" color="secondary" onclick={() => goto(Route.photos())}>{$t('cancel')}</Button>
-      </div>
-    </div>
+    {#if !isVerified}
+      <Button type="button" color="secondary" variant="ghost" shape="round" onclick={() => goto(Route.photos())}
+        >{$t('cancel')}</Button
+      >
+    {/if}
   </div>
-</AuthPageLayout>
+</AuthShell>

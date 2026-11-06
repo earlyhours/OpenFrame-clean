@@ -22,6 +22,7 @@ import 'package:immich_mobile/presentation/widgets/bottom_sheet/base_bottom_shee
 import 'package:immich_mobile/providers/infrastructure/action.provider.dart';
 import 'package:immich_mobile/providers/user.provider.dart';
 import 'package:immich_mobile/widgets/common/immich_toast.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class RemoteAlbumBottomSheet extends ConsumerStatefulWidget {
   final RemoteAlbum album;
@@ -71,7 +72,7 @@ class _RemoteAlbumBottomSheetState extends ConsumerState<RemoteAlbumBottomSheet>
     }
 
     Future<void> onKeyboardExpand() {
-      return sheetController.animateTo(0.85, duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
+      return sheetController.animateTo(0.85, duration: AppMotion.base, curve: AppMotion.emphasized);
     }
 
     return BaseBottomSheet(

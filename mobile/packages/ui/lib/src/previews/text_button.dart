@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:immich_ui/src/components/text_button.dart';
+import 'package:immich_ui/src/icons.dart';
 import 'package:immich_ui/src/previews.dart';
 import 'package:immich_ui/src/types.dart';
 
@@ -10,8 +11,17 @@ Widget previewTextButtonVariants() => const Wrap(
   spacing: 12,
   runSpacing: 12,
   children: [
-    ImmichTextButton(onPressed: _previewNoop, labelText: 'Filled', expanded: false),
-    ImmichTextButton(onPressed: _previewNoop, labelText: 'Ghost', variant: ImmichVariant.ghost, expanded: false),
+    ImmichTextButton(
+      onPressed: _previewNoop,
+      labelText: 'Filled',
+      expanded: false,
+    ),
+    ImmichTextButton(
+      onPressed: _previewNoop,
+      labelText: 'Ghost',
+      variant: ImmichVariant.ghost,
+      expanded: false,
+    ),
   ],
 );
 
@@ -20,11 +30,16 @@ Widget previewTextButtonWithIcons() => const Wrap(
   spacing: 12,
   runSpacing: 12,
   children: [
-    ImmichTextButton(onPressed: _previewNoop, labelText: 'With Icon', icon: Icons.add, expanded: false),
+    ImmichTextButton(
+      onPressed: _previewNoop,
+      labelText: 'With Icon',
+      icon: AppIcons.plus,
+      expanded: false,
+    ),
     ImmichTextButton(
       onPressed: _previewNoop,
       labelText: 'Download',
-      icon: Icons.download,
+      icon: AppIcons.download,
       variant: ImmichVariant.ghost,
       expanded: false,
     ),
@@ -43,7 +58,12 @@ Widget previewTextButtonDisabled() => const Wrap(
   spacing: 12,
   runSpacing: 12,
   children: [
-    ImmichTextButton(onPressed: _previewNoop, labelText: 'Disabled', disabled: true, expanded: false),
+    ImmichTextButton(
+      onPressed: _previewNoop,
+      labelText: 'Disabled',
+      disabled: true,
+      expanded: false,
+    ),
     ImmichTextButton(
       onPressed: _previewNoop,
       labelText: 'Disabled Ghost',

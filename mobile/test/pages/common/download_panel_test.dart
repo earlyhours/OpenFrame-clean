@@ -1,7 +1,7 @@
 import 'package:background_downloader/background_downloader.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:immich_mobile/pages/common/download_task_tile.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 import '../../widget_tester_extensions.dart';
 
@@ -11,14 +11,14 @@ void main() {
       DownloadTaskTile(progress: 1, fileName: 'photo.jpg', status: TaskStatus.complete, onCancelDownload: () {}),
     );
 
-    expect(find.byIcon(Icons.download_done), findsOneWidget);
-    expect(find.byIcon(Icons.close), findsNothing);
+    expect(find.byIcon(AppIcons.cloudCheck), findsOneWidget);
+    expect(find.byIcon(AppIcons.x), findsNothing);
 
     await tester.pumpConsumerWidget(
       DownloadTaskTile(progress: 1, fileName: 'photo.jpg', status: TaskStatus.failed, onCancelDownload: () {}),
     );
 
-    expect(find.byIcon(Icons.download_done), findsNothing);
-    expect(find.byIcon(Icons.close), findsOneWidget);
+    expect(find.byIcon(AppIcons.cloudCheck), findsNothing);
+    expect(find.byIcon(AppIcons.x), findsOneWidget);
   });
 }

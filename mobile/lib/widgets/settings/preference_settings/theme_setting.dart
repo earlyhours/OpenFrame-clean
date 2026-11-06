@@ -48,10 +48,9 @@ class ThemeSetting extends HookConsumerWidget {
       colorfulInterface.value = useColorfulInterface;
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return SettingsSection(
+      title: context.t.theme,
       children: [
-        SettingGroupTitle(title: context.t.theme, icon: Icons.color_lens_outlined),
         SettingsSwitchListTile(
           valueNotifier: isSystemTheme,
           title: context.t.theme_setting_system_theme_switch,

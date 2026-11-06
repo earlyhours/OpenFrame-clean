@@ -6,6 +6,7 @@ import 'package:immich_mobile/presentation/actions/action.dart';
 import 'package:immich_mobile/providers/infrastructure/asset.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/toast.provider.dart';
 import 'package:immich_mobile/utils/error_handler.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 typedef _State = ({bool shouldFavorite, List<String> assetIds});
 
@@ -31,7 +32,7 @@ class FavoriteAction extends AssetActionBuilder {
     }
 
     return .new(
-      icon: shouldFavorite ? Icons.favorite_border_rounded : Icons.favorite_rounded,
+      icon: shouldFavorite ? AppIcons.heart : AppFilledIcons.heart,
       label: shouldFavorite ? context.t.favorite : context.t.unfavorite,
       onAction: () => _favorite(context, ref),
     );

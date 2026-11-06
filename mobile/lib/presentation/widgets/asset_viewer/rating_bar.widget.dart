@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class RatingBar extends StatefulWidget {
   final double initialRating;
@@ -111,7 +112,7 @@ class _RatingBarState extends State<RatingBar> {
                 final bool filled = _currentRating > index;
                 return widget.itemBuilder ??
                     Icon(
-                      Icons.star_rounded,
+                      AppIcons.star,
                       size: widget.itemSize,
                       color: filled ? widget.filledColor : widget.unfilledColor,
                     );

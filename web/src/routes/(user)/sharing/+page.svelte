@@ -46,38 +46,32 @@
 <UserPageLayout title={data.meta.title} actions={[CreateAlbum, ViewSharedLinks]}>
   <div class="flex flex-col">
     {#if data.partners.length > 0}
-      <div class="mt-2 mb-6">
-        <div>
-          <p class="mb-4 font-medium dark:text-immich-dark-fg">{$t('partners')}</p>
-        </div>
+      <section class="mb-10">
+        <h2 class="of-section-title mb-4">{$t('partners')}</h2>
 
         <div class="flex flex-row flex-wrap gap-4">
           {#each data.partners as partner (partner.id)}
             <a
               href={Route.viewPartner(partner)}
-              class="flex gap-4 rounded-lg px-5 py-4 transition-all hover:bg-gray-200 dark:hover:bg-gray-700"
+              class="flex items-center gap-4 rounded-xl border bg-subtle px-5 py-4 transition-colors duration-150 hover:border-(--of-line-2)"
             >
               <UserAvatar user={partner} size="lg" />
               <div class="text-start">
-                <p class="text-immich-fg dark:text-immich-dark-fg">
+                <p class="font-medium text-dark">
                   {partner.name}
                 </p>
-                <p class="text-sm text-immich-fg/75 dark:text-immich-dark-fg/75">
+                <p class="text-sm text-muted">
                   {partner.email}
                 </p>
               </div>
             </a>
           {/each}
         </div>
-      </div>
-
-      <hr class="mb-4 dark:border-immich-dark-gray" />
+      </section>
     {/if}
 
-    <div class="mt-2 mb-6">
-      <div>
-        <p class="mb-4 font-medium dark:text-immich-dark-fg">{$t('albums')}</p>
-      </div>
+    <section class="mb-6">
+      <h2 class="of-section-title mb-4">{$t('albums')}</h2>
 
       <div>
         <!-- Shared Album List -->
@@ -88,6 +82,6 @@
           {/snippet}
         </Albums>
       </div>
-    </div>
+    </section>
   </div>
 </UserPageLayout>

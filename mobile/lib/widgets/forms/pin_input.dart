@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:pinput/pinput.dart';
 
 class PinInput extends StatelessWidget {
@@ -43,7 +44,7 @@ class PinInput extends StatelessWidget {
     final defaultPinTheme = PinTheme(
       width: getPinSize().width,
       height: getPinSize().height,
-      textStyle: TextStyle(fontSize: 24, color: context.colorScheme.onSurface, fontFamily: 'GoogleSansCode'),
+      textStyle: TextStyle(fontSize: 24, color: context.colorScheme.onSurface, fontFamily: 'GeistMono'),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(19)),
         border: Border.all(color: context.colorScheme.surfaceBright),
@@ -66,7 +67,7 @@ class PinInput extends StatelessWidget {
           forceErrorState: hasError ?? false,
           autofocus: autoFocus ?? false,
           obscureText: obscureText ?? false,
-          obscuringWidget: Icon(Icons.vpn_key_rounded, color: context.primaryColor, size: 20),
+          obscuringWidget: Icon(AppIcons.key, color: context.primaryColor, size: 20),
           separatorBuilder: (index) => const SizedBox(height: 64, width: 3),
           cursor: Column(
             mainAxisAlignment: MainAxisAlignment.end,

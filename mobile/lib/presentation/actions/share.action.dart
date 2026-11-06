@@ -5,12 +5,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/constants/enums.dart';
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
-import 'package:immich_mobile/extensions/platform_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/presentation/actions/action.dart';
 import 'package:immich_mobile/providers/infrastructure/settings.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/toast.provider.dart';
 import 'package:immich_mobile/repositories/asset_media.repository.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 final _stateProvider = Provider.family.autoDispose<List<BaseAsset>?, ActionSource>((ref, source) {
   final assets = ref.watch(assetsActionProvider(source));
@@ -29,7 +29,7 @@ class ShareAction extends AssetActionBuilder {
     }
 
     return .new(
-      icon: CurrentPlatform.isAndroid ? Icons.share_rounded : Icons.ios_share_rounded,
+      icon: AppIcons.share2,
       label: context.t.share,
       onAction: () => _share(context, ref, assets, ref.read(appConfigProvider).share.fileType),
       onSecondaryAction: () => _promptQualityAndShare(context, ref, assets),
@@ -40,7 +40,7 @@ class ShareAction extends AssetActionBuilder {
     // Only show preview option when at least one of the assets is not a video
     final showPreview = assets.any((asset) => !asset.isVideo);
 
-    final fileType = await showDialog<ShareAssetType>(
+    final fileType = await showAppDialog<ShareAssetType>(
       context: context,
       builder: (_) => _ShareFileTypeDialog(showPreview: showPreview),
       useRootNavigator: false,
@@ -59,7 +59,7 @@ class ShareAction extends AssetActionBuilder {
     final toastService = ref.read(toastServiceProvider);
     final errorMessage = context.t.scaffold_body_error_occurred;
 
-    await showDialog(
+    await showAppDialog(
       context: context,
       barrierDismissible: false,
       useRootNavigator: false,
@@ -146,13 +146,13 @@ class _ShareFileTypeDialog extends StatelessWidget {
         mainAxisSize: .min,
         children: [
           ListTile(
-            leading: const Icon(Icons.high_quality_rounded),
+            leading: const Icon(AppIcons.sparkle),
             title: Text(context.t.share_original),
             onTap: () => context.pop(ShareAssetType.original),
           ),
           if (showPreview)
             ListTile(
-              leading: const Icon(Icons.photo_size_select_large_rounded),
+              leading: const Icon(AppIcons.maximize),
               title: Text(context.t.share_preview),
               onTap: () => context.pop(ShareAssetType.preview),
             ),

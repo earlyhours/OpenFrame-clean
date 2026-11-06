@@ -7,6 +7,7 @@ import 'package:immich_mobile/providers/infrastructure/asset.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/toast.provider.dart';
 import 'package:immich_mobile/providers/user.provider.dart';
 import 'package:immich_mobile/utils/error_handler.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 typedef _State = ({bool shouldStack, List<String> assetIds, List<String> stackIds});
 
@@ -36,7 +37,7 @@ class StackAction extends AssetActionBuilder {
     }
 
     return .new(
-      icon: shouldStack ? Icons.filter_none_rounded : Icons.layers_clear_outlined,
+      icon: shouldStack ? AppIcons.layers : AppIcons.layersMinus,
       label: shouldStack ? context.t.stack : context.t.unstack,
       onAction: () => _stack(context, ref),
     );

@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/providers/api.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/settings.provider.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class SettingsHeader {
   String key = "";
@@ -62,7 +63,7 @@ class HeaderSettingsPage extends HookConsumerWidget {
               headers.value.add(SettingsHeader());
               headers.value = headers.value.toList();
             },
-            icon: const Icon(Icons.add_outlined),
+            icon: const Icon(AppIcons.plus),
             tooltip: context.t.header_settings_add_header_tip,
           ),
         ],
@@ -147,7 +148,7 @@ class HeaderKeyValueSettings extends StatelessWidget {
                   style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
                   color: Colors.red[400],
                   onPressed: onRemove,
-                  icon: const Icon(Icons.delete_outline),
+                  icon: const Icon(AppIcons.trash2),
                 ),
               ),
             ],

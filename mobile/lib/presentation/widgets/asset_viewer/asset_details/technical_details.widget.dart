@@ -8,6 +8,7 @@ import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/presentation/widgets/asset_viewer/sheet_tile.widget.dart';
 import 'package:immich_mobile/repositories/asset_media.repository.dart';
 import 'package:immich_mobile/utils/bytes_units.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 const _kSeparator = '  •  ';
 
@@ -36,7 +37,7 @@ class TechnicalDetails extends ConsumerWidget {
           SheetTile(
             title: cameraTitle,
             titleStyle: context.textTheme.labelLarge,
-            leading: Icon(Icons.camera_alt_outlined, size: 24, color: context.textTheme.labelLarge?.color),
+            leading: Icon(AppIcons.camera, size: 24, color: context.textTheme.labelLarge?.color),
             subtitle: _getCameraInfoSubtitle(exifInfo),
             subtitleStyle: context.textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceSecondary),
           ),
@@ -46,7 +47,7 @@ class TechnicalDetails extends ConsumerWidget {
           SheetTile(
             title: lensTitle,
             titleStyle: context.textTheme.labelLarge,
-            leading: Icon(Icons.camera_outlined, size: 24, color: context.textTheme.labelLarge?.color),
+            leading: Icon(AppIcons.aperture, size: 24, color: context.textTheme.labelLarge?.color),
             subtitle: lensSubtitle,
             subtitleStyle: context.textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceSecondary),
           ),
@@ -55,7 +56,7 @@ class TechnicalDetails extends ConsumerWidget {
           SheetTile(
             title: lensSubtitle,
             titleStyle: context.textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceSecondary),
-            leading: Icon(Icons.camera_outlined, size: 24, color: context.textTheme.labelLarge?.color),
+            leading: Icon(AppIcons.aperture, size: 24, color: context.textTheme.labelLarge?.color),
           ),
         ],
       ],
@@ -64,7 +65,7 @@ class TechnicalDetails extends ConsumerWidget {
 
   Widget _buildFileInfoTile(BuildContext context, WidgetRef ref, BaseAsset asset, ExifInfo? exifInfo) {
     final icon = Icon(
-      asset.isImage ? Icons.image_outlined : Icons.videocam_outlined,
+      asset.isImage ? AppIcons.image : AppIcons.video,
       size: 24,
       color: context.textTheme.labelLarge?.color,
     );

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:immich_ui/extensions/build_context_extensions.dart';
+import 'package:immich_ui/src/components/settings/settings_section.dart';
+import 'package:immich_ui/src/components/settings/settings_tile.dart';
+import 'package:immich_ui/src/icons.dart';
 
 class SettingsRadioGroup<T> {
   final String title;
@@ -8,6 +11,9 @@ class SettingsRadioGroup<T> {
   const SettingsRadioGroup({required this.title, required this.value});
 }
 
+/// A single-choice list: one [SettingsTile] per option, a check on the
+/// selected one. Place it inside a [SettingsSection]; it draws its own
+/// dividers between options.
 class SettingsRadioListTile<T> extends StatelessWidget {
   final List<SettingsRadioGroup<T>> groups;
   final T groupBy;
@@ -17,23 +23,23 @@ class SettingsRadioListTile<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RadioGroup(
-      groupValue: groupBy,
-      onChanged: onRadioChanged,
-      child: Column(
-        children: groups
-            .map(
-              (g) => RadioListTile<T>(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                dense: true,
-                activeColor: context.primaryColor,
-                title: Text(g.title, style: context.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
-                value: g.value,
-                controlAffinity: ListTileControlAffinity.trailing,
-              ),
-            )
-            .toList(),
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (var i = 0; i < groups.length; i++) ...[
+          if (i > 0) const SettingsDivider(),
+          SettingsTile(
+            title: groups[i].title,
+            showChevron: false,
+            selected: false,
+            onTap: () => onRadioChanged(groups[i].value),
+            trailing: groups[i].value == groupBy
+                ? Icon(AppIcons.check, size: 20, color: context.primaryColor)
+                : const SizedBox(width: 20),
+          ),
+        ],
+      ],
     );
   }
 }

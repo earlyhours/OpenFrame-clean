@@ -21,6 +21,7 @@ import 'package:immich_mobile/providers/infrastructure/timeline.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/utils/bytes_units.dart';
 import 'package:immich_mobile/widgets/common/immich_toast.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:intl/intl.dart';
 
 RecursiveFolder? _findFolderInStructure(RootFolder rootFolder, RecursiveFolder targetFolder) {
@@ -86,7 +87,7 @@ class FolderPage extends HookConsumerWidget {
         title: Text(currentFolder.value?.name ?? context.t.folders),
         elevation: 0,
         centerTitle: false,
-        actions: [IconButton(icon: const Icon(Icons.swap_vert), onPressed: onToggleSortOrder)],
+        actions: [IconButton(icon: const Icon(AppIcons.arrowUpDown), onPressed: onToggleSortOrder)],
       ),
       body: folderState.when(
         data: (rootFolder) {
@@ -156,7 +157,7 @@ class FolderContent extends HookConsumerWidget {
                   if (folder!.subfolders.isNotEmpty)
                     ...folder!.subfolders.map(
                       (subfolder) => LargeLeadingTile(
-                        leading: Icon(Icons.folder, color: context.primaryColor, size: 48),
+                        leading: Icon(AppIcons.folder, color: context.primaryColor, size: 48),
                         title: Text(
                           subfolder.name,
                           softWrap: false,
@@ -246,7 +247,7 @@ class FolderPath extends StatelessWidget {
               Text(
                 currentFolder.path,
                 style: TextStyle(
-                  fontFamily: 'GoogleSansCode',
+                  fontFamily: 'GeistMono',
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                   color: context.colorScheme.onSurface.withAlpha(175),

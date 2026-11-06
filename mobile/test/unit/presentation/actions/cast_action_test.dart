@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:immich_mobile/presentation/actions/action.widget.dart';
 import 'package:immich_mobile/presentation/actions/cast.action.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../presentation_context.dart';
@@ -24,7 +24,7 @@ void main() {
     testWidgets('offers to cast when nothing is connected', (tester) async {
       await tester.pumpTestWidget(context, const ActionIconButton(action: CastAction()));
 
-      expect(find.byIcon(Icons.cast_rounded), findsOneWidget);
+      expect(find.byIcon(AppIcons.cast), findsOneWidget);
     });
 
     testWidgets('switches to the connected icon once casting starts', (tester) async {
@@ -33,8 +33,8 @@ void main() {
       captureConnectionListener()(true);
       await tester.pump();
 
-      expect(find.byIcon(Icons.cast_connected_rounded), findsOneWidget);
-      expect(find.byIcon(Icons.cast_rounded), findsNothing);
+      expect(find.byIcon(AppIcons.screenShare), findsOneWidget);
+      expect(find.byIcon(AppIcons.cast), findsNothing);
     });
 
     testWidgets('switches back when casting stops', (tester) async {
@@ -46,7 +46,7 @@ void main() {
       onConnectionState(false);
       await tester.pump();
 
-      expect(find.byIcon(Icons.cast_rounded), findsOneWidget);
+      expect(find.byIcon(AppIcons.cast), findsOneWidget);
     });
   });
 }

@@ -22,6 +22,7 @@ import 'package:immich_mobile/providers/user.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/widgets/common/immich_toast.dart';
 import 'package:immich_mobile/widgets/common/remote_album_sliver_app_bar.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 @RoutePage()
 class RemoteAlbumPage extends ConsumerStatefulWidget {
@@ -109,7 +110,7 @@ class _RemoteAlbumPageState extends ConsumerState<RemoteAlbumPage> {
   }
 
   Future<void> deleteAlbum(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showAppDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -163,7 +164,7 @@ class _RemoteAlbumPageState extends ConsumerState<RemoteAlbumPage> {
   }
 
   Future<void> showEditTitleAndDescription(BuildContext context) async {
-    final result = await showDialog<_EditAlbumData?>(
+    final result = await showAppDialog<_EditAlbumData?>(
       context: context,
       barrierDismissible: true,
       builder: (context) => _EditAlbumDialog(album: _album),
@@ -317,7 +318,7 @@ class _EditAlbumDialogState extends ConsumerState<_EditAlbumDialog> {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.edit_outlined, color: context.colorScheme.primary, size: 24),
+                    Icon(AppIcons.pencil, color: context.colorScheme.primary, size: 24),
                     const SizedBox(width: 12),
                     Text(context.t.edit_album, style: context.textTheme.titleMedium),
                   ],

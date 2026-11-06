@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:immich_ui/src/components/menu_item.dart';
+import 'package:immich_ui/src/icons.dart';
 import 'package:immich_ui/src/previews.dart';
 
 void _previewNoop() {}
@@ -8,12 +9,20 @@ void _previewNoop() {}
 Widget previewMenuItemDefault() => const Column(
   mainAxisSize: MainAxisSize.min,
   children: [
-    ImmichMenuItem(onPressed: _previewNoop, icon: Icons.info_outline, label: 'Info'),
-    ImmichMenuItem(onPressed: _previewNoop, icon: Icons.help_outline_rounded, label: 'Troubleshoot'),
-    ImmichMenuItem(onPressed: _previewNoop, icon: Icons.cast_rounded, label: 'Cast'),
+    ImmichMenuItem(onPressed: _previewNoop, icon: AppIcons.info, label: 'Info'),
+    ImmichMenuItem(
+      onPressed: _previewNoop,
+      icon: AppIcons.circleHelp,
+      label: 'Troubleshoot',
+    ),
+    ImmichMenuItem(onPressed: _previewNoop, icon: AppIcons.cast, label: 'Cast'),
   ],
 );
 
 @ImmichPreview(group: 'MenuItem', name: 'Disabled')
-Widget previewMenuItemDisabled() =>
-    const ImmichMenuItem(onPressed: _previewNoop, icon: Icons.delete_outline_rounded, label: 'Delete', disabled: true);
+Widget previewMenuItemDisabled() => const ImmichMenuItem(
+  onPressed: _previewNoop,
+  icon: AppIcons.trash2,
+  label: 'Delete',
+  disabled: true,
+);

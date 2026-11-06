@@ -162,9 +162,9 @@
 
 {#snippet templateOption(option: StorageTemplateOption, label: string, description: string, preview: string)}
   <div
-    class="flex flex-col rounded-2xl border-2 p-4 transition-colors {selectedOption === option
+    class="flex flex-col rounded-xl border p-4 transition-colors duration-200 {selectedOption === option
       ? 'border-primary bg-primary/5'
-      : 'border-primary/10 hover:border-primary/20'} {disabled ? 'opacity-50' : ''}"
+      : 'hover:border-(--of-line-2)'} {disabled ? 'opacity-50' : ''}"
   >
     <label class="flex items-center gap-3 {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}">
       <input
@@ -188,7 +188,7 @@
             {$t('preset')}
           </label>
           <select
-            class="mt-2 immich-form-input rounded-lg bg-slate-200 p-2 text-sm hover:cursor-pointer dark:bg-gray-600"
+            class="mt-2 immich-form-input text-sm hover:cursor-pointer"
             {disabled}
             name="presets"
             id="preset-select"
@@ -252,9 +252,9 @@
     {/if}
 
     {#if preview}
-      <Text size="small" class="mt-4">
+      <Text size="small" class="mt-4 min-w-0">
         {$t('preview')}:
-        <Code size="small"
+        <Code size="small" class="break-all"
           >{`UPLOAD_LOCATION/library/${authManager.user.storageLabel || authManager.user.id}/${preview}.jpg`}</Code
         >
       </Text>

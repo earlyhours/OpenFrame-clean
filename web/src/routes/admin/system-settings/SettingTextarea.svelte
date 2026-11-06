@@ -30,16 +30,16 @@
 </script>
 
 <div class="mb-4 w-full">
-  <div class="flex h-6.5 place-items-center gap-1">
-    <label class="text-sm font-medium text-primary" for={label}>{label}</label>
+  <div class="mb-1 flex min-h-6 place-items-center gap-2">
+    <label class="text-sm font-medium text-dark" for={label}>{label}</label>
     {#if required}
-      <div class="text-red-400">*</div>
+      <div class="text-danger">*</div>
     {/if}
 
     {#if isEdited}
       <div
         transition:fly={{ x: 10, duration: 200, easing: quintOut }}
-        class="rounded-full bg-orange-100 px-2 text-[10px] text-orange-900"
+        class="rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary"
       >
         {$t('unsaved_change')}
       </div>
@@ -55,7 +55,7 @@
   {/if}
 
   <textarea
-    class="immich-form-input w-full pb-2"
+    class="immich-form-input w-full"
     aria-describedby={description ? `${label}-desc` : undefined}
     aria-labelledby="{label}-label"
     id={label}

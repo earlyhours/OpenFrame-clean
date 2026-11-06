@@ -12,6 +12,7 @@ import 'package:immich_mobile/presentation/widgets/action_buttons/like_activity_
 import 'package:immich_mobile/presentation/widgets/album/activity_text_field.dart';
 import 'package:immich_mobile/providers/infrastructure/current_album.provider.dart';
 import 'package:immich_mobile/widgets/activities/comment_bubble.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 @RoutePage()
 class ActivitiesPage extends HookConsumerWidget {
@@ -25,13 +26,12 @@ class ActivitiesPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final activities = ref.watch(Store.activity.list(album.id, assetId: assetId));
     final listViewScrollController = useScrollController();
+    // Comments present when the page first loads appear instantly; only ones
+    // that arrive afterwards ease in.
+    final initialIds = useRef<Set<String>?>(null);
 
     Future<void> scrollToBottom() {
-      return listViewScrollController.animateTo(
-        0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.fastOutSlowIn,
-      );
+      return listViewScrollController.animateTo(0, duration: AppMotion.base, curve: AppMotion.emphasized);
     }
 
     Future<void> onAddComment(String comment) async {
@@ -60,14 +60,17 @@ class ActivitiesPage extends HookConsumerWidget {
         ),
         body: activities.widgetWhen(
           onData: (data) {
+            final known = initialIds.value ??= {for (final activity in data) activity.id};
             final List<Widget> activityWidgets = [];
             for (final activity in data.reversed) {
-              activityWidgets.add(
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                  child: CommentBubble(activity: activity, isAssetActivity: assetId != null),
-                ),
+              Widget bubble = Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                child: CommentBubble(activity: activity, isAssetActivity: assetId != null),
               );
+              if (!known.contains(activity.id)) {
+                bubble = FadeSlideIn(key: ValueKey(activity.id), offset: 12, child: bubble);
+              }
+              activityWidgets.add(bubble);
             }
 
             return SafeArea(

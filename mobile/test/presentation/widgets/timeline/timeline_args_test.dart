@@ -2,12 +2,15 @@
 
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:immich_mobile/constants/locales.dart';
 import 'package:immich_mobile/domain/models/config/app_config.dart';
 import 'package:immich_mobile/domain/models/timeline.model.dart';
 import 'package:immich_mobile/domain/services/timeline.service.dart';
+import 'package:immich_mobile/generated/codegen_loader.g.dart';
 import 'package:immich_mobile/presentation/widgets/timeline/timeline.state.dart';
 import 'package:immich_mobile/presentation/widgets/timeline/timeline.widget.dart';
 import 'package:immich_mobile/providers/infrastructure/settings.provider.dart';
@@ -72,8 +75,14 @@ class _StubRouterDelegate extends RouterDelegate<void> with ChangeNotifier {
   Future<void> setNewRoutePath(void configuration) => Future.value();
 }
 
-Widget _withRouter(Widget child) =>
-    Router<void>(routerDelegate: _StubRouterDelegate(child), backButtonDispatcher: RootBackButtonDispatcher());
+Widget _withRouter(Widget child) => EasyLocalization(
+  supportedLocales: const [Locale('en')],
+  path: translationsPath,
+  startLocale: const Locale('en'),
+  saveLocale: false,
+  assetLoader: const CodegenLoader(),
+  child: Router<void>(routerDelegate: _StubRouterDelegate(child), backButtonDispatcher: RootBackButtonDispatcher()),
+);
 
 void main() {
   testWidgets('timeline args follow constraints after a zero-sized first frame while buckets are still loading', (

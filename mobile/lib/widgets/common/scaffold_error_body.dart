@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 // Error widget to be used in Scaffold when an AsyncError is received
 class ScaffoldErrorBody extends StatelessWidget {
@@ -25,7 +26,7 @@ class ScaffoldErrorBody extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.only(top: 15),
               child: Icon(
-                Icons.error_outline,
+                AppIcons.circleAlert,
                 size: 100,
                 color: context.themeData.iconTheme.color?.withValues(alpha: 0.5),
               ),

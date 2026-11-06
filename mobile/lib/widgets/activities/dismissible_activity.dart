@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/widgets/common/confirm_dialog.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class DismissibleActivity extends StatelessWidget {
   final String activityId;
@@ -20,7 +21,7 @@ class DismissibleActivity extends StatelessWidget {
       dismissThresholds: const {DismissDirection.horizontal: 0.7},
       direction: DismissDirection.horizontal,
       confirmDismiss: (direction) => onDismiss != null
-          ? showDialog(
+          ? showAppDialog(
               context: context,
               builder: (context) => ConfirmDialog(
                 onOk: () {},
@@ -57,7 +58,7 @@ class _DismissBackground extends StatelessWidget {
       child: withDeleteIcon
           ? const Padding(
               padding: EdgeInsets.all(15),
-              child: Icon(Icons.delete_sweep_rounded, color: Colors.black),
+              child: Icon(AppIcons.brushCleaning, color: Colors.black),
             )
           : null,
     );

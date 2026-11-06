@@ -15,6 +15,7 @@ import 'package:immich_mobile/services/cleanup.service.dart';
 import 'package:immich_mobile/services/toast.service.dart';
 import 'package:immich_mobile/utils/error_handler.dart';
 import 'package:immich_mobile/widgets/common/confirm_dialog.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 typedef _State = ({List<String> localIds, List<String> remoteIds, bool trash, bool isLocalOnly});
 
@@ -58,7 +59,7 @@ class DeleteAction extends AssetActionBuilder {
     }
 
     return .new(
-      icon: Icons.delete_outline,
+      icon: AppIcons.trash2,
       label: trash ? context.t.trash : context.t.delete,
       onAction: () => _delete(context, ref),
     );
@@ -140,7 +141,7 @@ class DeleteAction extends AssetActionBuilder {
     List<String> localIds,
   ) async {
     final assetService = ref.read(assetServiceProvider);
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showAppDialog<bool>(
       context: context,
       builder: (_) => ConfirmDialog(
         title: context.t.delete_dialog_title,
@@ -180,7 +181,7 @@ class CleanupLocalAction extends AssetActionBuilder {
     }
 
     return .new(
-      icon: Icons.no_cell_outlined,
+      icon: AppIcons.smartphone,
       label: context.t.control_bottom_app_bar_delete_from_local,
       onAction: () => _cleanup(context, ref),
     );
@@ -268,6 +269,6 @@ Future<bool> _allowsDeletion(
     return true;
   }
 
-  final confirmed = await showDialog<bool>(context: context, builder: (_) => dialog);
+  final confirmed = await showAppDialog<bool>(context: context, builder: (_) => dialog);
   return confirmed == true;
 }

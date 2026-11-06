@@ -32,16 +32,16 @@
   let subtitleId = $derived(subtitle ? `${id}-subtitle` : undefined);
 </script>
 
-<div class="flex place-items-center justify-between">
-  <div class="me-2">
-    <div class="flex h-6.5 place-items-center gap-1">
-      <label class="text-sm font-medium text-primary" for={switchId}>
+<div class="flex min-h-14 place-items-center justify-between gap-6 py-2">
+  <div class="min-w-0">
+    <div class="flex min-h-6 place-items-center gap-2">
+      <label class="text-sm font-medium text-dark" for={switchId}>
         {title}
       </label>
       {#if isEdited}
         <div
           transition:fly={{ x: 10, duration: 200, easing: quintOut }}
-          class="rounded-full bg-orange-100 px-2 text-[10px] text-orange-900"
+          class="rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary"
         >
           {$t('unsaved_change')}
         </div>
@@ -49,7 +49,7 @@
     </div>
 
     {#if subtitle}
-      <p id={subtitleId} class="text-sm dark:text-immich-dark-fg">{subtitle}</p>
+      <p id={subtitleId} class="mt-0.5 text-sm text-muted">{subtitle}</p>
     {/if}
     {@render children?.()}
   </div>

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 Future<T> showFilterBottomSheet<T>({
   required BuildContext context,
@@ -7,6 +8,7 @@ Future<T> showFilterBottomSheet<T>({
   bool isDismissible = true,
 }) async {
   return await showModalBottomSheet(
+    sheetAnimationStyle: AppMotion.styleOf(context, AppMotion.sheet),
     context: context,
     isScrollControlled: isScrollControlled,
     useSafeArea: false,

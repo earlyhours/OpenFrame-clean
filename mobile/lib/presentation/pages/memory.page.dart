@@ -16,6 +16,7 @@ import 'package:immich_mobile/providers/haptic_feedback.provider.dart';
 import 'package:immich_mobile/utils/system_ui.utils.dart';
 import 'package:immich_mobile/widgets/memories/memory_epilogue.dart';
 import 'package:immich_mobile/widgets/memories/memory_progress_indicator.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 /// Expects the current asset to be set via [assetViewerProvider] before navigating to this page
 @RoutePage()
@@ -56,13 +57,13 @@ class MemoryPage extends HookConsumerWidget {
     }, const []);
 
     void toNextMemory() {
-      unawaited(memoryPageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeIn));
+      unawaited(memoryPageController.nextPage(duration: AppMotion.slow, curve: AppMotion.emphasized));
     }
 
     void toPreviousMemory() {
       if (currentMemoryIndex.value > 0) {
         // Move to the previous memory page
-        unawaited(memoryPageController.previousPage(duration: const Duration(milliseconds: 500), curve: Curves.easeIn));
+        unawaited(memoryPageController.previousPage(duration: AppMotion.slow, curve: AppMotion.emphasized));
 
         // Wait for the next frame to ensure the page is built
         SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -89,7 +90,7 @@ class MemoryPage extends HookConsumerWidget {
         // Go to the next asset
         final PageController controller = memoryAssetPageControllers[currentMemoryIndex.value];
 
-        unawaited(controller.nextPage(curve: Curves.easeInOut, duration: const Duration(milliseconds: 500)));
+        unawaited(controller.nextPage(curve: AppMotion.emphasized, duration: AppMotion.slow));
       } else {
         // Go to the next memory since we are at the end of our assets
         toNextMemory();
@@ -101,7 +102,7 @@ class MemoryPage extends HookConsumerWidget {
         // Go to the previous asset
         final PageController controller = memoryAssetPageControllers[currentMemoryIndex.value];
 
-        unawaited(controller.previousPage(curve: Curves.easeInOut, duration: const Duration(milliseconds: 500)));
+        unawaited(controller.previousPage(curve: AppMotion.emphasized, duration: AppMotion.slow));
       } else {
         // Go to the previous memory since we are at the end of our assets
         toPreviousMemory();
@@ -240,8 +241,8 @@ class MemoryPage extends HookConsumerWidget {
                 return MemoryEpilogue(
                   onStartOver: () => memoryPageController.animateToPage(
                     0,
-                    duration: const Duration(seconds: 1),
-                    curve: Curves.easeInOut,
+                    duration: const Duration(milliseconds: 600),
+                    curve: AppMotion.emphasized,
                   ),
                 );
               }
@@ -333,15 +334,11 @@ class MemoryPage extends HookConsumerWidget {
                             shape: const CircleBorder(),
                             color: Colors.white.withValues(alpha: 0.2),
                             elevation: 0,
-                            child: const Icon(Icons.close_rounded, color: Colors.white),
+                            child: const Icon(AppIcons.x, color: Colors.white),
                           ),
                         ),
                         if (currentAsset.value != null && currentAsset.value!.isVideo)
-                          Positioned(
-                            bottom: 24,
-                            right: 32,
-                            child: Icon(Icons.videocam_outlined, color: Colors.grey[200]),
-                          ),
+                          Positioned(bottom: 24, right: 32, child: Icon(AppIcons.video, color: Colors.grey[200])),
                       ],
                     ),
                   ),

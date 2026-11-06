@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/presentation/widgets/images/thumbnail.widget.dart';
 import 'package:immich_mobile/providers/infrastructure/album.provider.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class LocalAlbumThumbnail extends ConsumerWidget {
   const LocalAlbumThumbnail({super.key, required this.albumId});
@@ -20,7 +21,7 @@ class LocalAlbumThumbnail extends ConsumerWidget {
               borderRadius: const BorderRadius.all(Radius.circular(16)),
               border: Border.all(color: context.colorScheme.outline.withAlpha(50), width: 1),
             ),
-            child: Icon(Icons.collections, size: 24, color: context.primaryColor),
+            child: Icon(AppIcons.images, size: 24, color: context.primaryColor),
           );
         }
 
@@ -30,7 +31,7 @@ class LocalAlbumThumbnail extends ConsumerWidget {
         );
       },
       error: (error, stack) {
-        return const Icon(Icons.error, size: 24);
+        return const Icon(AppIcons.circleAlert, size: 24);
       },
       loading: () => const SizedBox(width: 24, height: 24, child: Center(child: CircularProgressIndicator())),
     );

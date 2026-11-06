@@ -99,14 +99,14 @@ class EndpointInputState extends ConsumerState<EndpointInput> {
         color: Colors.red,
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 16),
-        child: const Icon(Icons.delete, color: Colors.white),
+        child: const Icon(AppIcons.trash2, color: Colors.white),
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+        contentPadding: const EdgeInsets.symmetric(horizontal: SettingsMetrics.rowInset),
         trailing: ReorderableDragStartListener(
           enabled: widget.enabled,
           index: widget.index,
-          child: const Icon(Icons.drag_handle_rounded),
+          child: const Icon(AppIcons.gripHorizontal),
         ),
         leading: NetworkStatusIcon(
           key: ValueKey('status_$auxCheckStatus'),

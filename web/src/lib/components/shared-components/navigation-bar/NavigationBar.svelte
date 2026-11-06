@@ -45,11 +45,11 @@
 <nav id="dashboard-navbar" class="h-(--navbar-height) w-dvw text-sm max-md:h-(--navbar-height-md)">
   <SkipLink text={$t('skip_to_content')} />
   <div
-    class="grid h-full grid-cols-[--spacing(32)_auto] items-center py-2 sidebar:grid-cols-[--spacing(64)_auto] {noBorder
+    class="grid h-full grid-cols-[--spacing(32)_auto] items-center sidebar:grid-cols-[--spacing(64)_auto] {noBorder
       ? ''
       : 'border-b'}"
   >
-    <div class="mx-4 flex flex-row items-center gap-1">
+    <div class="mx-3 flex flex-row items-center gap-2 sidebar:mx-6">
       <IconButton
         id={menuButtonId}
         shape="round"
@@ -70,15 +70,15 @@
         class="sidebar:hidden"
       />
       <a data-sveltekit-preload-data="hover" href={Route.photos()}>
-        <Logo variant={mediaQueryManager.isFullSidebar ? 'inline' : 'icon'} class="max-md:h-12" />
+        <Logo variant={mediaQueryManager.isFullSidebar ? 'inline' : 'icon'} class="h-10" />
       </a>
     </div>
-    <div class="flex justify-between gap-4 pe-6 lg:gap-8">
-      <div class="hidden w-full max-w-5xl flex-1 sm:block tall:ps-0">
-        <SearchBar grayTheme={true} />
+    <div class="flex justify-between gap-4 pe-4 md:pe-6 lg:gap-8">
+      <div class="hidden w-full max-w-2xl flex-1 sm:block">
+        <SearchBar />
       </div>
 
-      <section class="flex w-full place-items-center justify-end gap-1 sm:w-auto md:gap-2">
+      <section class="flex w-full place-items-center justify-end gap-1 sm:w-auto">
         <IconButton
           color="secondary"
           shape="round"
@@ -157,7 +157,7 @@
         >
           <button
             type="button"
-            class="flex ps-2"
+            class="ms-2 flex rounded-full"
             onclick={() => (shouldShowAccountInfoPanel = !shouldShowAccountInfoPanel)}
             title="{authManager.user.name} ({authManager.user.email})"
           >

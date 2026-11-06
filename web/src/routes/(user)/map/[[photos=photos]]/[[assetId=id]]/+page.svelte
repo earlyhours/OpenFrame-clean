@@ -60,7 +60,7 @@
 </script>
 
 {#if config.map.enabled}
-  <UserPageLayout title={data.meta.title}>
+  <UserPageLayout title={data.meta.title} contentClass="p-2 md:p-4">
     <div class="isolate flex size-full flex-col sm:flex-row">
       <div
         class={[

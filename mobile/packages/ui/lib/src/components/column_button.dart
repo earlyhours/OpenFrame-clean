@@ -4,6 +4,7 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:immich_ui/src/constants.dart';
 import 'package:immich_ui/src/internal.dart';
+import 'package:immich_ui/src/motion.dart';
 
 class ImmichColumnButton extends StatefulWidget {
   final IconData icon;
@@ -43,44 +44,65 @@ class _ImmichColumnButtonState extends State<ImmichColumnButton> {
     }
   }
 
-  VoidCallback? get _onPressed => _isDisabled ? null : () => _runAction(widget.onPressed);
+  VoidCallback? get _onPressed =>
+      _isDisabled ? null : () => _runAction(widget.onPressed);
 
-  VoidCallback? get _onLongPress =>
-      _isDisabled || widget.onLongPress == null ? null : () => _runAction(widget.onLongPress!);
+  VoidCallback? get _onLongPress => _isDisabled || widget.onLongPress == null
+      ? null
+      : () => _runAction(widget.onLongPress!);
 
   @override
   Widget build(BuildContext context) {
-    final foreground = context.colorOverride ?? Theme.of(context).colorScheme.onSurface;
+    final theme = Theme.of(context);
+    final foreground = context.colorOverride ?? theme.colorScheme.onSurface;
+    // Column labels sit in a tight row, so swap the wide mono button face for the body face.
+    final labelFamily = theme.textTheme.labelLarge?.fontFamily == 'GeistMono'
+        ? 'Geist'
+        : null;
 
-    return TextButton(
-      onPressed: _onPressed,
-      onLongPress: _onLongPress,
-      style: TextButton.styleFrom(
-        foregroundColor: foreground,
-        padding: const .symmetric(horizontal: ImmichSpacing.sm, vertical: ImmichSpacing.md),
-        tapTargetSize: .shrinkWrap,
-        shape: const RoundedRectangleBorder(borderRadius: .all(.circular(ImmichRadius.xl))),
-      ),
-      child: ConstrainedBox(
-        constraints: const .new(maxWidth: 90),
-        child: Column(
-          mainAxisSize: .min,
-          children: [
-            _isLoading
-                ? const SizedBox.square(
-                    dimension: ImmichIconSize.md,
-                    child: CircularProgressIndicator(strokeWidth: ImmichBorderWidth.lg),
-                  )
-                : Icon(widget.icon, size: ImmichIconSize.md),
-            const SizedBox(height: ImmichSpacing.sm),
-            Text(
-              widget.label,
-              maxLines: 2,
-              textAlign: .center,
-              overflow: .ellipsis,
-              style: const .new(fontSize: ImmichTextSize.body, fontWeight: .w500),
-            ),
-          ],
+    return Pressable(
+      enabled: !_isDisabled,
+      child: TextButton(
+        onPressed: _onPressed,
+        onLongPress: _onLongPress,
+        style: TextButton.styleFrom(
+          foregroundColor: foreground,
+          padding: const .symmetric(
+            horizontal: ImmichSpacing.sm,
+            vertical: ImmichSpacing.sm,
+          ),
+          tapTargetSize: .shrinkWrap,
+          shape: const RoundedRectangleBorder(
+            borderRadius: .all(.circular(ImmichRadius.lg)),
+          ),
+        ),
+        child: ConstrainedBox(
+          constraints: const .new(maxWidth: 90),
+          child: Column(
+            mainAxisSize: .min,
+            children: [
+              _isLoading
+                  ? const SizedBox.square(
+                      dimension: ImmichIconSize.md,
+                      child: CircularProgressIndicator(
+                        strokeWidth: ImmichBorderWidth.lg,
+                      ),
+                    )
+                  : Icon(widget.icon, size: ImmichIconSize.md),
+              const SizedBox(height: ImmichSpacing.xs),
+              Text(
+                widget.label,
+                maxLines: 2,
+                textAlign: .center,
+                overflow: .ellipsis,
+                style: .new(
+                  fontSize: ImmichTextSize.label,
+                  fontWeight: .w500,
+                  fontFamily: labelFamily,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

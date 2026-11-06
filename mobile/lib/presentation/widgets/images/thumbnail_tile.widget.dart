@@ -4,13 +4,13 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/extensions/duration_extensions.dart';
-import 'package:immich_mobile/extensions/theme_extensions.dart';
 import 'package:immich_mobile/presentation/widgets/images/thumbnail.widget.dart';
 import 'package:immich_mobile/presentation/widgets/timeline/constants.dart';
 import 'package:immich_mobile/providers/asset_viewer/asset_viewer.provider.dart';
 import 'package:immich_mobile/providers/backup/asset_upload_progress.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/settings.provider.dart';
 import 'package:immich_mobile/providers/timeline/multiselect.provider.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class ThumbnailTile extends ConsumerStatefulWidget {
   const ThumbnailTile(
@@ -40,7 +40,6 @@ class ThumbnailTile extends ConsumerStatefulWidget {
 
 class _ThumbnailTileState extends ConsumerState<ThumbnailTile> {
   bool _hideIndicators = false;
-  bool _showSelectionContainer = false;
 
   @override
   void dispose() {
@@ -53,9 +52,7 @@ class _ThumbnailTileState extends ConsumerState<ThumbnailTile> {
     final heroIndex = widget.heroOffset ?? TabsRouterScope.of(context)?.controller.activeIndex ?? 0;
     final isCurrentAsset = ref.watch(assetViewerProvider.select((current) => current.currentAsset == asset));
 
-    final assetContainerColor = context.isDarkTheme
-        ? context.primaryColor.darken(amount: 0.4)
-        : context.primaryColor.lighten(amount: 0.75);
+    final assetContainerColor = context.colorScheme.surfaceContainerHighest;
 
     final isSelected = ref.watch(
       multiSelectProvider.select((multiselect) => multiselect.selectedAssets.contains(asset)),
@@ -68,156 +65,136 @@ class _ThumbnailTileState extends ConsumerState<ThumbnailTile> {
       _hideIndicators = false;
     }
 
-    if (isSelected) {
-      _showSelectionContainer = true;
-    }
-
     final uploadProgress = asset is LocalAsset
         ? ref.watch(assetUploadProgressProvider.select((map) => map[asset.id]))
         : null;
 
-    return Stack(
+    final selected = isSelected || widget.lockSelection;
+    final content = Stack(
       children: [
-        Container(
-          color: widget.lockSelection
-              ? context.colorScheme.surfaceContainerHighest
-              : _showSelectionContainer
-              ? assetContainerColor
-              : Colors.transparent,
-        ),
-        AnimatedContainer(
-          duration: Durations.short4,
-          curve: Curves.decelerate,
-          onEnd: () {
-            if (!isSelected) {
-              _showSelectionContainer = false;
-            }
-          },
-          padding: EdgeInsets.all(isSelected || widget.lockSelection ? 6 : 0),
-          child: TweenAnimationBuilder<double>(
-            tween: Tween<double>(begin: 0.0, end: (isSelected || widget.lockSelection) ? 15.0 : 0.0),
-            duration: Durations.short4,
-            curve: Curves.decelerate,
-            builder: (context, value, child) {
-              return ClipRRect(borderRadius: BorderRadius.all(Radius.circular(value)), child: child);
+        Positioned.fill(
+          child: Hero(
+            // This key resets the hero animation when the asset is changed in the asset viewer.
+            // It doesn't seem like the best solution, and only works to reset the hero, not prime the hero of the new active asset for animation,
+            // but other solutions have failed thus far.
+            key: ValueKey(isCurrentAsset),
+            tag: '${asset?.heroTag}_$heroIndex',
+            child: Thumbnail.fromAsset(asset: asset, size: widget.size, remoteSize: widget.remoteSize),
+            // Placeholderbuilder used to hide indicators on first hero animation, since flightShuttleBuilder isn't called until both source and destination hero exist in widget tree.
+            placeholderBuilder: (context, heroSize, child) {
+              if (!_hideIndicators) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() => _hideIndicators = true);
+                });
+              }
+              return const SizedBox();
             },
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: Hero(
-                    // This key resets the hero animation when the asset is changed in the asset viewer.
-                    // It doesn't seem like the best solution, and only works to reset the hero, not prime the hero of the new active asset for animation,
-                    // but other solutions have failed thus far.
-                    key: ValueKey(isCurrentAsset),
-                    tag: '${asset?.heroTag}_$heroIndex',
-                    child: Thumbnail.fromAsset(asset: asset, size: widget.size, remoteSize: widget.remoteSize),
-                    // Placeholderbuilder used to hide indicators on first hero animation, since flightShuttleBuilder isn't called until both source and destination hero exist in widget tree.
-                    placeholderBuilder: (context, heroSize, child) {
-                      if (!_hideIndicators) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          setState(() => _hideIndicators = true);
-                        });
-                      }
-                      return const SizedBox();
-                    },
-                    flightShuttleBuilder: (context, animation, direction, from, to) {
-                      void animationStatusListener(AnimationStatus status) {
-                        if (!mounted) {
-                          return;
-                        }
-                        final heroInFlight = status == AnimationStatus.forward || status == AnimationStatus.reverse;
-                        if (_hideIndicators != heroInFlight) {
-                          setState(() => _hideIndicators = heroInFlight);
-                        }
-                        if (status == AnimationStatus.completed || status == AnimationStatus.dismissed) {
-                          animation.removeStatusListener(animationStatusListener);
-                        }
-                      }
+            flightShuttleBuilder: (context, animation, direction, from, to) {
+              void animationStatusListener(AnimationStatus status) {
+                if (!mounted) {
+                  return;
+                }
+                final heroInFlight = status == AnimationStatus.forward || status == AnimationStatus.reverse;
+                if (_hideIndicators != heroInFlight) {
+                  setState(() => _hideIndicators = heroInFlight);
+                }
+                if (status == AnimationStatus.completed || status == AnimationStatus.dismissed) {
+                  animation.removeStatusListener(animationStatusListener);
+                }
+              }
 
-                      animation.addStatusListener(animationStatusListener);
-                      return direction == HeroFlightDirection.push ? from.widget : to.widget;
-                    },
-                  ),
-                ),
-                if (asset != null)
-                  AnimatedOpacity(
-                    opacity: _hideIndicators ? 0.0 : 1.0,
-                    duration: Durations.short4,
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          _AssetTypeIcons(asset: asset),
-                          if (widget.showStackIndicator) _StackIndicator(asset: asset),
-                        ],
-                      ),
+              animation.addStatusListener(animationStatusListener);
+              return direction == HeroFlightDirection.push ? from.widget : to.widget;
+            },
+          ),
+        ),
+        if (asset != null)
+          // One fade for every overlay icon instead of one per icon per tile.
+          Positioned.fill(
+            child: AnimatedOpacity(
+              opacity: _hideIndicators ? 0.0 : 1.0,
+              duration: AppMotion.of(context, AppMotion.fast),
+              curve: AppMotion.emphasized,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        _AssetTypeIcons(asset: asset),
+                        if (widget.showStackIndicator) _StackIndicator(asset: asset),
+                      ],
                     ),
                   ),
-                if (storageIndicator && asset != null)
-                  AnimatedOpacity(
-                    opacity: _hideIndicators ? 0.0 : 1.0,
-                    duration: Durations.short4,
-                    child: switch (asset.storage) {
-                      AssetState.local => const Align(
-                        alignment: Alignment.bottomRight,
-                        child: Padding(
-                          padding: EdgeInsets.only(right: 10.0, bottom: 6.0),
-                          child: _TileOverlayIcon(Icons.cloud_off_outlined),
-                        ),
+                  if (storageIndicator && asset.storage == AssetState.local)
+                    const Align(
+                      alignment: Alignment.bottomRight,
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 10.0, bottom: 6.0),
+                        child: _TileOverlayIcon(AppIcons.cloudOff),
                       ),
-                      AssetState.remote => const Align(
-                        alignment: Alignment.bottomRight,
-                        child: Padding(
-                          padding: EdgeInsets.only(right: 10.0, bottom: 6.0),
-                          child: _TileOverlayIcon(Icons.cloud_outlined),
-                        ),
-                      ),
-                      AssetState.merged => const Align(
-                        alignment: Alignment.bottomRight,
-                        child: Padding(
-                          padding: EdgeInsets.only(right: 10.0, bottom: 6.0),
-                          child: _TileOverlayIcon(Icons.cloud_done_outlined),
-                        ),
-                      ),
-                    },
-                  ),
-
-                if (asset != null && asset.isFavorite)
-                  AnimatedOpacity(
-                    duration: Durations.short4,
-                    opacity: _hideIndicators ? 0.0 : 1.0,
-                    child: const Align(
+                    ),
+                  if (asset.isFavorite)
+                    const Align(
                       alignment: Alignment.bottomLeft,
                       child: Padding(
                         padding: EdgeInsets.only(left: 10.0, bottom: 6.0),
-                        child: _TileOverlayIcon(Icons.favorite_rounded),
+                        child: _TileOverlayIcon(AppFilledIcons.heart),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        if (uploadProgress != null) _UploadProgressOverlay(progress: uploadProgress),
+      ],
+    );
+
+    return Stack(
+      children: [
+        Container(color: widget.lockSelection ? context.colorScheme.surfaceContainerHighest : Colors.transparent),
+        // A single tween drives everything that changes with selection. Only
+        // transforms, a clip radius and a 24px badge animate; the thumbnail
+        // subtree is built once and never re-laid-out. `begin` is omitted so
+        // tiles that scroll in already selected don't animate on mount.
+        TweenAnimationBuilder<double>(
+          tween: Tween<double>(end: selected ? 1.0 : 0.0),
+          duration: AppMotion.of(context, AppMotion.fast),
+          curve: AppMotion.emphasized,
+          child: content,
+          builder: (context, t, child) {
+            return Stack(
+              children: [
+                Positioned.fill(
+                  child: Transform.scale(
+                    scale: 1 - _kSelectedInset * t,
+                    child: ClipRRect(borderRadius: BorderRadius.all(Radius.circular(8 * t)), child: child),
+                  ),
+                ),
+                if (t > 0)
+                  Padding(
+                    padding: const EdgeInsets.all(3),
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Transform.scale(
+                        scale: 0.6 + 0.4 * t,
+                        alignment: Alignment.center,
+                        child: Opacity(
+                          opacity: t.clamp(0.0, 1.0),
+                          child: _SelectionIndicator(
+                            isLocked: widget.lockSelection,
+                            color: widget.lockSelection
+                                ? context.colorScheme.surfaceContainerHighest
+                                : assetContainerColor,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                if (uploadProgress != null) _UploadProgressOverlay(progress: uploadProgress),
               ],
-            ),
-          ),
-        ),
-        TweenAnimationBuilder<double>(
-          tween: Tween<double>(begin: 0.0, end: (isSelected || widget.lockSelection) ? 1.0 : 0.0),
-          duration: Durations.short4,
-          curve: Curves.decelerate,
-          builder: (context, value, child) {
-            return Padding(
-              padding: EdgeInsets.all((isSelected || widget.lockSelection) ? value * 3.0 : 3.0),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Opacity(
-                  opacity: (isSelected || widget.lockSelection) ? 1 : value,
-                  child: _SelectionIndicator(
-                    isLocked: widget.lockSelection,
-                    color: widget.lockSelection ? context.colorScheme.surfaceContainerHighest : assetContainerColor,
-                  ),
-                ),
-              ),
             );
           },
         ),
@@ -225,6 +202,9 @@ class _ThumbnailTileState extends ConsumerState<ThumbnailTile> {
     );
   }
 }
+
+/// Fraction a selected thumbnail shrinks by (about 6px each side on a 120px tile).
+const double _kSelectedInset = 0.1;
 
 class _SelectionIndicator extends StatelessWidget {
   final bool isLocked;
@@ -237,12 +217,15 @@ class _SelectionIndicator extends StatelessWidget {
     if (isLocked) {
       return DecoratedBox(
         decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-        child: const Icon(Icons.check_circle_rounded, color: Colors.grey),
+        child: const Icon(AppIcons.circleCheck, color: Colors.grey),
       );
     } else {
       return DecoratedBox(
-        decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-        child: Icon(Icons.check_circle_rounded, color: context.primaryColor),
+        decoration: BoxDecoration(shape: BoxShape.circle, color: context.primaryColor),
+        child: const Padding(
+          padding: EdgeInsets.all(3),
+          child: Icon(AppIcons.check, color: Colors.white, size: 20),
+        ),
       );
     }
   }
@@ -270,7 +253,7 @@ class _VideoIndicator extends StatelessWidget {
             shadows: [Shadow(blurRadius: 5.0, color: Color.fromRGBO(0, 0, 0, 0.6))],
           ),
         ),
-        const _TileOverlayIcon(Icons.play_circle_outline_rounded),
+        const _TileOverlayIcon(AppIcons.circlePlay),
       ],
     );
   }
@@ -308,12 +291,9 @@ class _AssetTypeIcons extends StatelessWidget {
         if (asset.isVideo)
           Padding(padding: const EdgeInsets.only(right: 10.0, top: 6.0), child: _VideoIndicator(asset.duration)),
         if (isLivePhoto)
-          const Padding(
-            padding: EdgeInsets.only(right: 10.0, top: 6.0),
-            child: _TileOverlayIcon(Icons.motion_photos_on_rounded),
-          ),
+          const Padding(padding: EdgeInsets.only(right: 10.0, top: 6.0), child: _TileOverlayIcon(AppIcons.circlePlay)),
         if (asset.isAnimatedImage)
-          const Padding(padding: EdgeInsets.only(right: 10.0, top: 6.0), child: _TileOverlayIcon(Icons.gif_rounded)),
+          const Padding(padding: EdgeInsets.only(right: 10.0, top: 6.0), child: _TileOverlayIcon(AppIcons.imagePlay)),
       ],
     );
   }
@@ -330,10 +310,7 @@ class _StackIndicator extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return const Padding(
-      padding: EdgeInsets.only(right: 10.0, top: 6.0),
-      child: _TileOverlayIcon(Icons.burst_mode_rounded),
-    );
+    return const Padding(padding: EdgeInsets.only(right: 10.0, top: 6.0), child: _TileOverlayIcon(AppIcons.images));
   }
 }
 
@@ -355,7 +332,7 @@ class _UploadProgressOverlay extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (isError)
-                const Icon(Icons.error_outline, color: Colors.white, size: 36)
+                const Icon(AppIcons.circleAlert, color: Colors.white, size: 36)
               else
                 SizedBox(
                   width: 36,

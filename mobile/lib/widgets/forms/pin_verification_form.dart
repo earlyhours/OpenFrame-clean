@@ -5,6 +5,7 @@ import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/providers/auth.provider.dart';
 import 'package:immich_mobile/widgets/forms/pin_input.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class PinVerificationForm extends HookConsumerWidget {
   final Function(String) onSuccess;
@@ -47,11 +48,13 @@ class PinVerificationForm extends HookConsumerWidget {
       child: Column(
         children: [
           AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
+            duration: AppMotion.of(context, AppMotion.fast),
+            switchInCurve: AppMotion.emphasized,
+            switchOutCurve: Curves.easeInCubic,
             child: isVerified.value
-                ? Icon(successIcon ?? Icons.lock_open_rounded, size: 64, color: Colors.green[300])
+                ? Icon(successIcon ?? AppIcons.lockOpen, size: 64, color: Colors.green[300])
                 : Icon(
-                    icon ?? Icons.lock_outline_rounded,
+                    icon ?? AppIcons.lockKeyhole,
                     size: 64,
                     color: hasError.value ? context.colorScheme.error : context.primaryColor,
                   ),

@@ -13,6 +13,7 @@ import 'package:immich_mobile/providers/infrastructure/db.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/remote_album.provider.dart';
 import 'package:immich_mobile/providers/user.provider.dart';
 import 'package:immich_mobile/widgets/common/user_circle_avatar.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 // TODO: Refactor this provider when we have user provider/service/repository pattern in place
 final usersProvider = FutureProvider.autoDispose<List<UserDto>>((ref) async {
@@ -61,7 +62,7 @@ class UserSelectionPage extends HookConsumerWidget {
 
     Widget buildTileIcon(UserDto user) {
       if (sharedUsersList.value.contains(user)) {
-        return CircleAvatar(backgroundColor: context.primaryColor, child: const Icon(Icons.check_rounded, size: 25));
+        return CircleAvatar(backgroundColor: context.primaryColor, child: const Icon(AppIcons.check, size: ImmichIconSize.md));
       } else {
         return UserCircleAvatar(user: user);
       }
@@ -123,7 +124,7 @@ class UserSelectionPage extends HookConsumerWidget {
         elevation: 0,
         centerTitle: false,
         leading: IconButton(
-          icon: const Icon(Icons.close_rounded),
+          icon: const Icon(AppIcons.x),
           onPressed: () {
             unawaited(context.maybePop(null));
           },

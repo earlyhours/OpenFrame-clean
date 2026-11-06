@@ -6,6 +6,7 @@ import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/models/cast/cast_manager_state.dart';
 import 'package:immich_mobile/providers/cast.provider.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class CastDialog extends ConsumerWidget {
   const CastDialog({super.key});
@@ -77,11 +78,11 @@ class CastDialog extends ConsumerWidget {
                       style: TextStyle(color: isCurrentDevice(deviceName) ? context.colorScheme.primary : null),
                     ),
                     leading: Icon(
-                      type == CastDestinationType.googleCast ? Icons.cast : Icons.cast_connected,
+                      type == CastDestinationType.googleCast ? AppIcons.cast : AppIcons.screenShare,
                       color: isCurrentDevice(deviceName) ? context.colorScheme.primary : null,
                     ),
                     trailing: isCurrentDevice(deviceName)
-                        ? Icon(Icons.check, color: context.colorScheme.primary)
+                        ? Icon(AppIcons.check, color: context.colorScheme.primary)
                         : isDeviceConnecting(deviceName)
                         ? const CircularProgressIndicator()
                         : null,

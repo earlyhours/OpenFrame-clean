@@ -13,6 +13,7 @@ import 'package:immich_mobile/providers/haptic_feedback.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/readonly_mode.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/timeline.provider.dart';
 import 'package:immich_mobile/providers/timeline/multiselect.provider.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class TimelineHeader extends HookWidget {
   final Bucket bucket;
@@ -61,11 +62,15 @@ class TimelineHeader extends HookWidget {
             if (isMonthHeader)
               Row(
                 children: [
-                  Text(
-                    toBeginningOfSentenceCase(_formatMonth(date)),
-                    style: context.textTheme.labelLarge?.copyWith(fontSize: 24),
-                  ),
+                  Text(toBeginningOfSentenceCase(_formatMonth(date)), style: context.textTheme.titleLarge),
                   const Spacer(),
+                  if (header == HeaderType.month) ...[
+                    Text(
+                      '${bucket.assetCount}',
+                      style: context.textTheme.labelSmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
                   if (header != HeaderType.monthAndDay) _BulkSelectIconButton(bucket: bucket, assetOffset: assetOffset),
                 ],
               ),
@@ -74,9 +79,17 @@ class TimelineHeader extends HookWidget {
                 children: [
                   Text(
                     toBeginningOfSentenceCase(_formatDay(date)),
-                    style: context.textTheme.labelLarge?.copyWith(fontSize: 15),
+                    style: context.textTheme.labelLarge?.copyWith(
+                      fontSize: 13,
+                      color: context.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                   const Spacer(),
+                  Text(
+                    '${bucket.assetCount}',
+                    style: context.textTheme.labelSmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
+                  ),
+                  const SizedBox(width: 8),
                   _BulkSelectIconButton(bucket: bucket, assetOffset: assetOffset),
                 ],
               ),
@@ -95,6 +108,10 @@ class _BulkSelectIconButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final selecting = ref.watch(multiSelectProvider.select((s) => s.isEnabled || s.forceEnable));
+    if (!selecting) {
+      return const SizedBox.shrink();
+    }
     List<BaseAsset> bucketAssets;
     try {
       bucketAssets = ref.watch(timelineServiceProvider).getAssets(assetOffset, bucket.assetCount);
@@ -117,8 +134,8 @@ class _BulkSelectIconButton extends ConsumerWidget {
               ref.read(hapticFeedbackProvider.notifier).heavyImpact();
             },
             icon: isAllSelected
-                ? Icon(Icons.check_circle_rounded, size: 26, color: context.primaryColor)
-                : Icon(Icons.check_circle_outline_rounded, size: 26, color: context.colorScheme.onSurfaceSecondary),
+                ? Icon(AppIcons.circleCheck, size: 26, color: context.primaryColor)
+                : Icon(AppIcons.circle, size: 26, color: context.colorScheme.onSurfaceSecondary),
           );
   }
 }

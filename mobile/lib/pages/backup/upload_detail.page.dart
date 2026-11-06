@@ -8,6 +8,7 @@ import 'package:immich_mobile/presentation/widgets/images/thumbnail.widget.dart'
 import 'package:immich_mobile/providers/backup/backup.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/db.provider.dart';
 import 'package:immich_mobile/utils/bytes_units.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:path/path.dart' as path;
 
 @RoutePage()
@@ -223,7 +224,7 @@ class _UploadDetailPageState extends ConsumerState<UploadDetailPage> {
                 color: context.colorScheme.tertiary.withValues(alpha: 0.2),
                 borderRadius: const BorderRadius.all(Radius.circular(8)),
               ),
-              child: Icon(Icons.cloud_download_rounded, size: 24, color: context.colorScheme.tertiary),
+              child: Icon(AppIcons.cloudDownload, size: 24, color: context.colorScheme.tertiary),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -347,7 +348,7 @@ class _UploadDetailPageState extends ConsumerState<UploadDetailPage> {
                 SizedBox(
                   width: 48,
                   child: isFailed
-                      ? Icon(Icons.error_rounded, color: context.colorScheme.error, size: 28)
+                      ? Icon(AppIcons.circleAlert, color: context.colorScheme.error, size: 28)
                       : Text(
                           "${progressPercentage.toStringAsFixed(0)}%",
                           textAlign: TextAlign.right,
@@ -404,7 +405,7 @@ class _UploadDetailPageState extends ConsumerState<UploadDetailPage> {
                 ),
               ),
               const SizedBox(width: 12),
-              Icon(Icons.error_rounded, color: context.colorScheme.error, size: 28),
+              Icon(AppIcons.circleAlert, color: context.colorScheme.error, size: 28),
             ],
           ),
         ),
@@ -434,11 +435,7 @@ class _UploadDetailPageState extends ConsumerState<UploadDetailPage> {
                     color: context.colorScheme.outline.withValues(alpha: 0.1),
                     borderRadius: const BorderRadius.all(Radius.circular(8)),
                   ),
-                  child: Icon(
-                    Icons.hourglass_empty_rounded,
-                    size: 24,
-                    color: context.colorScheme.outline.withValues(alpha: 0.3),
-                  ),
+                  child: Icon(AppIcons.hourglass, size: 24, color: context.colorScheme.outline.withValues(alpha: 0.3)),
                 ),
               ),
               const SizedBox(width: 12),
@@ -494,7 +491,7 @@ class _UploadDetailPageState extends ConsumerState<UploadDetailPage> {
   }
 
   Future<void> _showFileDetailDialog(BuildContext context, UploadStatus item) {
-    return showDialog(
+    return showAppDialog(
       context: context,
       builder: (context) => FileDetailDialog(uploadStatus: item),
     );
@@ -521,7 +518,7 @@ class _CurrentUploadThumbnail extends ConsumerWidget {
             clipBehavior: Clip.antiAlias,
             child: snapshot.data != null
                 ? Thumbnail.fromAsset(asset: snapshot.data, size: const Size(48, 48), fit: BoxFit.cover)
-                : Icon(Icons.image, size: 24, color: context.colorScheme.primary),
+                : Icon(AppIcons.image, size: 24, color: context.colorScheme.primary),
           ),
         );
       },
@@ -552,7 +549,7 @@ class FileDetailDialog extends ConsumerWidget {
       ),
       title: Row(
         children: [
-          Icon(Icons.info_outline, color: context.primaryColor, size: 24),
+          Icon(AppIcons.info, color: context.primaryColor, size: 24),
           const SizedBox(width: 8),
           Expanded(
             child: Text(

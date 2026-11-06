@@ -35,7 +35,7 @@
   id="sidebar"
   aria-label={ariaLabel}
   tabindex="-1"
-  class="relative z-1 w-0 immich-scrollbar overflow-x-hidden overflow-y-auto bg-light pt-8 transition-all duration-200 sidebar:w-64"
+  class="relative z-1 w-0 immich-scrollbar overflow-x-hidden overflow-y-auto bg-light transition-[width] duration-200 ease-out sidebar:w-64"
   class:shadow-2xl={isExpanded}
   class:dark:border-e-immich-dark-gray={isExpanded}
   class:border-r={isExpanded}
@@ -45,7 +45,7 @@
   use:clickOutside={{ onOutclick: closeSidebar, onEscape: isExpanded ? closeSidebar : undefined }}
   use:focusTrap={{ active: isExpanded }}
 >
-  <div class="flex h-max min-h-full flex-col gap-1 pe-6">
+  <div class="flex h-max min-h-full flex-col gap-0.5 pb-4">
     {@render children?.()}
   </div>
 </nav>

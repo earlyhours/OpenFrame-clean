@@ -18,10 +18,6 @@
   });
 </script>
 
-<div class="flex flex-col gap-4">
-  <p>
-    {$t('onboarding_privacy_description')}
-  </p>
-
+<div class="flex flex-col gap-3">
   <SettingSwitch title={$t('gcast_enabled')} subtitle={$t('gcast_enabled_description')} bind:checked={gCastEnabled} />
 </div>

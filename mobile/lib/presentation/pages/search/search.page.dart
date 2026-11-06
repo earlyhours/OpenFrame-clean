@@ -34,6 +34,7 @@ import 'package:immich_mobile/widgets/search/search_filter/people_picker.dart';
 import 'package:immich_mobile/widgets/search/search_filter/search_filter_chip.dart';
 import 'package:immich_mobile/widgets/search/search_filter/search_filter_utils.dart';
 import 'package:immich_mobile/widgets/search/search_filter/star_rating_picker.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 @RoutePage()
 class SearchPage extends HookConsumerWidget {
@@ -499,10 +500,10 @@ class SearchPage extends HookConsumerWidget {
     });
 
     IconData getSearchPrefixIcon() => switch (textSearchType.value) {
-      TextSearchType.context => Icons.image_search_rounded,
-      TextSearchType.filename => Icons.abc_rounded,
-      TextSearchType.description => Icons.text_snippet_outlined,
-      TextSearchType.ocr => Icons.document_scanner_outlined,
+      TextSearchType.context => AppIcons.search,
+      TextSearchType.filename => AppIcons.letterText,
+      TextSearchType.description => AppIcons.fileText,
+      TextSearchType.ocr => AppIcons.scanText,
     };
 
     return Scaffold(
@@ -511,15 +512,8 @@ class SearchPage extends HookConsumerWidget {
         automaticallyImplyLeading: true,
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16.0),
+            padding: const EdgeInsets.only(right: 8.0),
             child: MenuAnchor(
-              style: MenuStyle(
-                elevation: const WidgetStatePropertyAll(1),
-                shape: WidgetStateProperty.all(
-                  const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(24))),
-                ),
-                padding: const WidgetStatePropertyAll(EdgeInsets.all(4)),
-              ),
               builder: (BuildContext context, MenuController controller, Widget? child) {
                 return IconButton(
                   onPressed: () {
@@ -529,7 +523,7 @@ class SearchPage extends HookConsumerWidget {
                       controller.open();
                     }
                   },
-                  icon: const Icon(Icons.more_vert_rounded),
+                  icon: const Icon(AppIcons.ellipsisVertical),
                   tooltip: context.t.show_text_search_menu,
                 );
               },
@@ -538,7 +532,7 @@ class SearchPage extends HookConsumerWidget {
                   feature: (features) => features.smartSearch,
                   child: MenuItemButton(
                     child: ListTile(
-                      leading: const Icon(Icons.image_search_rounded),
+                      leading: const Icon(AppIcons.scanSearch),
                       title: Text(
                         context.t.search_by_context,
                         style: context.textTheme.bodyLarge?.copyWith(
@@ -557,7 +551,7 @@ class SearchPage extends HookConsumerWidget {
                 ),
                 MenuItemButton(
                   child: ListTile(
-                    leading: const Icon(Icons.abc_rounded),
+                    leading: const Icon(AppIcons.letterText),
                     title: Text(
                       context.t.search_filter_filename,
                       style: context.textTheme.bodyLarge?.copyWith(
@@ -575,7 +569,7 @@ class SearchPage extends HookConsumerWidget {
                 ),
                 MenuItemButton(
                   child: ListTile(
-                    leading: const Icon(Icons.text_snippet_outlined),
+                    leading: const Icon(AppIcons.fileText),
                     title: Text(
                       context.t.search_by_description,
                       style: context.textTheme.bodyLarge?.copyWith(
@@ -595,7 +589,7 @@ class SearchPage extends HookConsumerWidget {
                   feature: (features) => features.ocr,
                   child: MenuItemButton(
                     child: ListTile(
-                      leading: const Icon(Icons.document_scanner_outlined),
+                      leading: const Icon(AppIcons.scanText),
                       title: Text(
                         context.t.search_by_ocr,
                         style: context.textTheme.bodyLarge?.copyWith(
@@ -616,40 +610,27 @@ class SearchPage extends HookConsumerWidget {
             ),
           ),
         ],
-        title: DecoratedBox(
-          decoration: BoxDecoration(
-            border: Border.all(color: context.colorScheme.onSurface.withAlpha(0), width: 0),
-            borderRadius: const BorderRadius.all(Radius.circular(24)),
-            gradient: LinearGradient(
-              colors: [
-                context.colorScheme.primary.withValues(alpha: 0.075),
-                context.colorScheme.primary.withValues(alpha: 0.09),
-                context.colorScheme.primary.withValues(alpha: 0.075),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: SearchField(
-            hintText: searchHintText.value,
-            key: const Key('search_text_field'),
-            controller: textSearchController,
-            contentPadding: filter.value.assetId != null ? const EdgeInsets.only(left: 24) : const EdgeInsets.all(8),
-            prefixIcon: filter.value.assetId != null
-                ? null
-                : Icon(getSearchPrefixIcon(), color: context.colorScheme.primary),
-            onSubmitted: handleTextSubmitted,
-            focusNode: ref.watch(searchInputFocusProvider),
-          ),
+        title: SearchField(
+          hintText: searchHintText.value,
+          key: const Key('search_text_field'),
+          controller: textSearchController,
+          contentPadding: filter.value.assetId != null
+              ? const EdgeInsets.symmetric(horizontal: 16)
+              : const EdgeInsets.symmetric(vertical: 8),
+          prefixIcon: filter.value.assetId != null
+              ? null
+              : Icon(getSearchPrefixIcon(), size: ImmichIconSize.sm, color: context.colorScheme.onSurfaceVariant),
+          onSubmitted: handleTextSubmitted,
+          focusNode: ref.watch(searchInputFocusProvider),
         ),
       ),
       body: CustomScrollView(
         slivers: [
           SliverPadding(
-            padding: const EdgeInsets.only(top: 12.0, bottom: 4.0),
+            padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
             sliver: SliverToBoxAdapter(
               child: SizedBox(
-                height: 50,
+                height: 36,
                 child: ListView(
                   key: const Key('search_filter_chip_list'),
                   shrinkWrap: true,
@@ -657,52 +638,52 @@ class SearchPage extends HookConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   children: [
                     SearchFilterChip(
-                      icon: Icons.people_alt_outlined,
+                      icon: AppIcons.users,
                       onTap: showPeoplePicker,
                       label: context.t.people,
                       currentFilter: peopleCurrentFilterWidget.value,
                     ),
                     SearchFilterChip(
-                      icon: Icons.location_on_outlined,
+                      icon: AppIcons.mapPin,
                       onTap: showLocationPicker,
                       label: context.t.search_filter_location,
                       currentFilter: locationCurrentFilterWidget.value,
                     ),
                     if (userPreferences?.tagsEnabled ?? false)
                       SearchFilterChip(
-                        icon: Icons.sell_outlined,
+                        icon: AppIcons.tag,
                         onTap: showTagPicker,
                         label: context.t.tags,
                         currentFilter: tagCurrentFilterWidget.value,
                       ),
                     SearchFilterChip(
-                      icon: Icons.camera_alt_outlined,
+                      icon: AppIcons.camera,
                       onTap: showCameraPicker,
                       label: context.t.camera,
                       currentFilter: cameraCurrentFilterWidget.value,
                     ),
                     SearchFilterChip(
-                      icon: Icons.date_range_outlined,
+                      icon: AppIcons.calendarDays,
                       onTap: showQuickDatePicker,
                       label: context.t.search_filter_date,
                       currentFilter: dateRangeCurrentFilterWidget.value,
                     ),
                     SearchFilterChip(
                       key: const Key('media_type_chip'),
-                      icon: Icons.video_collection_outlined,
+                      icon: AppIcons.clapperboard,
                       onTap: showMediaTypePicker,
                       label: context.t.search_filter_media_type,
                       currentFilter: mediaTypeCurrentFilterWidget.value,
                     ),
                     if (userPreferences?.ratingsEnabled ?? false)
                       SearchFilterChip(
-                        icon: Icons.star_outline_rounded,
+                        icon: AppIcons.star,
                         onTap: showStarRatingPicker,
                         label: context.t.search_filter_star_rating,
                         currentFilter: ratingCurrentFilterWidget.value,
                       ),
                     SearchFilterChip(
-                      icon: Icons.display_settings_outlined,
+                      icon: AppIcons.monitorCog,
                       onTap: showDisplayOptionPicker,
                       label: context.t.search_filter_display_options,
                       currentFilter: displayOptionCurrentFilterWidget.value,
@@ -827,7 +808,7 @@ class _SearchNoResults extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.search_off_rounded, size: 72, color: context.colorScheme.onSurfaceVariant),
+            Icon(AppIcons.searchX, size: 72, color: context.colorScheme.onSurfaceVariant),
             const SizedBox(height: 24),
             Text(
               context.t.search_no_result,
@@ -851,12 +832,7 @@ class _SearchSuggestions extends StatelessWidget {
         shrinkWrap: true,
         children: [
           const SizedBox(height: 40),
-          Center(
-            child: Image.asset(
-              context.isDarkTheme ? 'assets/polaroid-dark.png' : 'assets/polaroid-light.png',
-              height: 125,
-            ),
-          ),
+          Center(child: Icon(AppIcons.search, size: 64, color: context.colorScheme.onSurfaceVariant)),
           const SizedBox(height: 16),
           Center(child: Text(context.t.search_page_search_photos_videos, style: context.textTheme.labelLarge)),
           const SizedBox(height: 32),
@@ -872,43 +848,36 @@ class _QuickLinkList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(20)),
-        border: Border.all(color: context.colorScheme.outline.withAlpha(10), width: 1),
-        gradient: LinearGradient(
-          colors: [
-            context.colorScheme.primary.withAlpha(10),
-            context.colorScheme.primary.withAlpha(15),
-            context.colorScheme.primary.withAlpha(20),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
+    return Material(
+      color: context.colorScheme.surfaceContainer,
+      shape: RoundedRectangleBorder(
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
+        side: BorderSide(color: context.colorScheme.outlineVariant),
       ),
+      clipBehavior: Clip.antiAlias,
       child: ListView(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         children: [
           _QuickLink(
             title: context.t.recently_taken,
-            icon: Icons.schedule_outlined,
+            icon: AppIcons.clock,
             isTop: true,
             onTap: () => context.pushRoute(const RecentlyTakenRoute()),
           ),
           _QuickLink(
             title: context.t.recently_added,
-            icon: Icons.upload_outlined,
+            icon: AppIcons.upload,
             onTap: () => context.pushRoute(const RecentlyAddedRoute()),
           ),
           _QuickLink(
             title: context.t.videos,
-            icon: Icons.play_circle_outline_rounded,
+            icon: AppIcons.circlePlay,
             onTap: () => context.pushRoute(const VideoRoute()),
           ),
           _QuickLink(
             title: context.t.favorites,
-            icon: Icons.favorite_border_rounded,
+            icon: AppIcons.heart,
             isBottom: true,
             onTap: () => context.pushRoute(const FavoriteRoute()),
           ),
@@ -936,10 +905,10 @@ class _QuickLink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderRadius = BorderRadius.only(
-      topLeft: Radius.circular(isTop ? 20 : 0),
-      topRight: Radius.circular(isTop ? 20 : 0),
-      bottomLeft: Radius.circular(isBottom ? 20 : 0),
-      bottomRight: Radius.circular(isBottom ? 20 : 0),
+      topLeft: Radius.circular(isTop ? 12 : 0),
+      topRight: Radius.circular(isTop ? 12 : 0),
+      bottomLeft: Radius.circular(isBottom ? 12 : 0),
+      bottomRight: Radius.circular(isBottom ? 12 : 0),
     );
 
     return ListTile(

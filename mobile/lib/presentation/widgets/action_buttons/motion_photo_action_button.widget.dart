@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/presentation/widgets/action_buttons/base_action_button.widget.dart';
 import 'package:immich_mobile/providers/asset_viewer/is_motion_video_playing.provider.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class MotionPhotoActionButton extends ConsumerWidget {
   const MotionPhotoActionButton({super.key, this.iconOnly = false, this.menuItem = false});
@@ -15,7 +16,7 @@ class MotionPhotoActionButton extends ConsumerWidget {
     final isPlaying = ref.watch(isPlayingMotionVideoProvider);
 
     return BaseActionButton(
-      iconData: isPlaying ? Icons.motion_photos_pause_outlined : Icons.play_circle_outline_rounded,
+      iconData: isPlaying ? AppIcons.circlePause : AppIcons.circlePlay,
       label: context.t.play_motion_photo,
       onPressed: ref.watch(isPlayingMotionVideoProvider.notifier).toggle,
       iconOnly: iconOnly,

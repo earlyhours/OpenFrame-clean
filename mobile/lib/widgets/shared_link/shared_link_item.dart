@@ -17,6 +17,7 @@ import 'package:immich_mobile/utils/url_helper.dart';
 import 'package:immich_mobile/widgets/common/confirm_dialog.dart';
 import 'package:immich_mobile/widgets/common/immich_toast.dart';
 import 'package:immich_mobile/widgets/search/thumbnail_with_info.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class SharedLinkItem extends ConsumerWidget {
   final SharedLink sharedLink;
@@ -27,12 +28,12 @@ class SharedLinkItem extends ConsumerWidget {
 
   Widget buildExpiryDuration(BuildContext context) {
     var expiresText = context.t.shared_link_expires_never;
-    IconData expiryIcon = Icons.schedule;
+    IconData expiryIcon = AppIcons.clock;
 
     if (sharedLink.expiresAt != null) {
       if (isExpired()) {
         expiresText = context.t.expired;
-        expiryIcon = Icons.timer_off_outlined;
+        expiryIcon = AppIcons.timerOff;
       }
 
       final difference = sharedLink.expiresAt!.difference(DateTime.now());
@@ -89,7 +90,7 @@ class SharedLinkItem extends ConsumerWidget {
       if (!context.mounted) {
         return;
       }
-      context.scaffoldMessenger.showSnackBar(
+      context.showSnackBar(
         SnackBar(
           content: Text(
             context.t.shared_link_clipboard_copied_massage,
@@ -107,13 +108,13 @@ class SharedLinkItem extends ConsumerWidget {
         child: thumbnailUrl == null
             ? const Card(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
-                child: Icon(Icons.image_not_supported_outlined),
+                child: Icon(AppIcons.imageOff),
               )
             : ThumbnailWithInfo(
                 imageUrl: thumbnailUrl,
                 key: key,
                 textInfo: '',
-                noImageIcon: Icons.image_not_supported_outlined,
+                noImageIcon: AppIcons.imageOff,
                 onTap: () => context.pushRoute(SharedLinkEditRoute(existingLink: sharedLink)),
               ),
       );
@@ -167,10 +168,10 @@ class SharedLinkItem extends ConsumerWidget {
         color: Theme.of(context).colorScheme.error,
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
-        child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
+        child: Icon(AppIcons.trash2, color: Theme.of(context).colorScheme.onError),
       ),
       confirmDismiss: (_) async {
-        final confirmed = await showDialog<bool>(
+        final confirmed = await showAppDialog<bool>(
           context: context,
           builder: (BuildContext context) => ConfirmDialog(
             title: context.t.delete_shared_link_dialog_title,

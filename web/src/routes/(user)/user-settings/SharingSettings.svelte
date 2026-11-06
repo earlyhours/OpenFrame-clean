@@ -335,7 +335,7 @@
     <SettingAccordion key="partners" title={$t('partners')} subtitle={$t('partners_description')}>
       {#if partners.length > 0}
         {#each partners as partner (partner.user.id)}
-          <div class="mt-6 rounded-2xl border border-gray-200 bg-slate-50 p-5 dark:border-gray-800 dark:bg-gray-900">
+          <div class="mt-6 rounded-xl border bg-(--of-panel-2) p-5">
             <div class="flex justify-between gap-4 rounded-lg pb-4 transition-all">
               <div class="flex gap-4">
                 <UserAvatar user={partner.user} size="md" />

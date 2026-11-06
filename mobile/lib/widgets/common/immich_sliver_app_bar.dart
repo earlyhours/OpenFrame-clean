@@ -19,8 +19,8 @@ import 'package:immich_mobile/providers/user.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/widgets/asset_viewer/cast_dialog.dart';
 import 'package:immich_mobile/widgets/common/app_bar_dialog/app_bar_dialog.dart';
-import 'package:immich_mobile/widgets/common/immich_title_text.dart';
 import 'package:immich_mobile/widgets/common/user_circle_avatar.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class ImmichSliverAppBar extends ConsumerWidget {
   final List<Widget>? actions;
@@ -29,6 +29,7 @@ class ImmichSliverAppBar extends ConsumerWidget {
   final bool pinned;
   final bool snap;
   final Widget? title;
+  final String? largeTitle;
   final double? expandedHeight;
 
   const ImmichSliverAppBar({
@@ -39,6 +40,7 @@ class ImmichSliverAppBar extends ConsumerWidget {
     this.pinned = false,
     this.snap = true,
     this.title,
+    this.largeTitle,
     this.expandedHeight,
   });
 
@@ -51,27 +53,22 @@ class ImmichSliverAppBar extends ConsumerWidget {
     return SliverIgnorePointer(
       ignoring: isMultiSelectEnabled,
       sliver: SliverAnimatedOpacity(
-        duration: Durations.medium1,
+        duration: AppMotion.of(context, AppMotion.base),
+        curve: AppMotion.emphasized,
         opacity: isMultiSelectEnabled ? 0 : 1,
-        sliver: SliverAppBar(
+        sliver: LargeTitleSliverAppBar(
+          title: largeTitle ?? context.t.photos,
+          largeTitle: title,
           backgroundColor: context.colorScheme.surface,
-          surfaceTintColor: context.colorScheme.surfaceTint,
-          elevation: 0,
-          scrolledUnderElevation: 1.0,
-          floating: floating,
-          pinned: pinned,
-          snap: snap,
-          expandedHeight: expandedHeight,
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(bottom: Radius.circular(5))),
+
           automaticallyImplyLeading: false,
-          centerTitle: false,
-          title: title ?? const _ImmichLogoWithText(),
+
           actions: [
             const _SyncStatusIndicator(),
             if (isCasting && !isReadonlyModeEnabled)
               IconButton(
-                onPressed: () => showDialog(context: context, builder: (context) => const CastDialog()),
-                icon: Icon(isCasting ? Icons.cast_connected_rounded : Icons.cast_rounded),
+                onPressed: () => showAppDialog(context: context, builder: (context) => const CastDialog()),
+                icon: Icon(isCasting ? AppIcons.screenShare : AppIcons.cast),
               ),
             ...?actions,
             if (showUploadButton && !isReadonlyModeEnabled) const _BackupIndicator(),
@@ -82,17 +79,6 @@ class ImmichSliverAppBar extends ConsumerWidget {
       ),
     );
   }
-}
-
-class _ImmichLogoWithText extends StatelessWidget {
-  const _ImmichLogoWithText();
-
-  @override
-  Widget build(BuildContext context) => AnimatedOpacity(
-    opacity: IconTheme.of(context).opacity ?? 1,
-    duration: kThemeChangeDuration,
-    child: const ImmichTitleText(fontSize: 24),
-  );
 }
 
 class _ProfileIndicator extends ConsumerWidget {
@@ -113,7 +99,7 @@ class _ProfileIndicator extends ConsumerWidget {
       final isReadonlyModeEnabled = ref.read(readonlyModeProvider);
       ref.read(readonlyModeProvider.notifier).toggleReadonlyMode();
 
-      context.scaffoldMessenger.showSnackBar(
+      context.showSnackBar(
         SnackBar(
           duration: const Duration(seconds: 2),
           content: Text(
@@ -125,7 +111,7 @@ class _ProfileIndicator extends ConsumerWidget {
     }
 
     return IconButton(
-      onPressed: () => showDialog(
+      onPressed: () => showAppDialog(
         context: context,
         useRootNavigator: false,
         barrierDismissible: !isIpad,
@@ -135,7 +121,7 @@ class _ProfileIndicator extends ConsumerWidget {
       icon: Badge(
         label: _BadgeLabel(
           Icon(
-            Icons.info,
+            AppIcons.info,
             color: serverInfoState.versionStatus == VersionStatus.error
                 ? context.colorScheme.error
                 : context.primaryColor,
@@ -148,7 +134,7 @@ class _ProfileIndicator extends ConsumerWidget {
         isLabelVisible: versionWarningPresent,
         offset: const Offset(-2, -12),
         child: user == null
-            ? const Icon(Icons.face_outlined, size: widgetSize)
+            ? const Icon(AppIcons.scanFace, size: widgetSize)
             : Semantics(
                 label: context.t.logged_in_as(user: user.name),
                 child: AbsorbPointer(
@@ -192,7 +178,7 @@ class _BackupIndicator extends ConsumerWidget {
         alignment: Alignment.bottomRight,
         isLabelVisible: indicatorIcon != null,
         offset: const Offset(-2, -12),
-        child: Icon(Icons.backup_rounded, size: _kBadgeWidgetSize, color: context.primaryColor),
+        child: Icon(AppIcons.cloudUpload, size: _kBadgeWidgetSize, color: context.primaryColor),
       ),
     );
   }
@@ -208,19 +194,14 @@ class _BackupIndicator extends ConsumerWidget {
 
     if (!backupEnabled) {
       return _BadgeLabel(
-        Icon(
-          Icons.cloud_off_rounded,
-          size: 9,
-          color: iconColor,
-          semanticLabel: context.t.backup_controller_page_backup,
-        ),
+        Icon(AppIcons.cloudOff, size: 9, color: iconColor, semanticLabel: context.t.backup_controller_page_backup),
       );
     }
 
     if (hasError) {
       return _BadgeLabel(
         Icon(
-          Icons.warning_rounded,
+          AppIcons.triangleAlert,
           size: 12,
           color: context.colorScheme.error,
           semanticLabel: context.t.backup_controller_page_backup,
@@ -249,7 +230,7 @@ class _BackupIndicator extends ConsumerWidget {
     }
 
     return _BadgeLabel(
-      Icon(Icons.check_outlined, size: 9, color: iconColor, semanticLabel: context.t.backup_controller_page_backup),
+      Icon(AppIcons.check, size: 9, color: iconColor, semanticLabel: context.t.backup_controller_page_backup),
     );
   }
 }
@@ -349,7 +330,7 @@ class _SyncStatusIndicatorState extends ConsumerState<_SyncStatusIndicator> with
                   transform: Matrix4.identity()
                     ..scaleByDouble(dismissalValue, dismissalValue, dismissalValue, 1.0)
                     ..rotateZ(-_rotationAnimation.value * 2 * math.pi),
-                  child: const Icon(Icons.sync),
+                  child: const Icon(AppIcons.refreshCw),
                 ),
               );
             },

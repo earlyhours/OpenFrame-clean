@@ -27,10 +27,9 @@ class VideoViewerSettings extends HookConsumerWidget {
       unawaited(ref.read(settingsProvider).write(.viewerLoadOriginalVideo, useOriginalVideo.value));
     });
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return SettingsSection(
+      title: context.t.videos,
       children: [
-        SettingGroupTitle(title: context.t.videos, icon: Icons.video_camera_back_outlined),
         SettingsSwitchListTile(
           valueNotifier: useAutoPlayVideo,
           title: context.t.setting_video_viewer_auto_play_title,

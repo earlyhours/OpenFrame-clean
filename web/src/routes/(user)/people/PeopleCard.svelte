@@ -34,9 +34,8 @@
 
 <div id="people-card" class="relative" role="group">
   <a href={Route.viewPerson(person, { previousRoute: Route.people() })} draggable="false" class="group">
-    <div class="@container relative size-full rounded-xl brightness-95 filter">
+    <div class="@container relative size-full rounded-xl">
       <ImageThumbnail
-        shadow
         url={getPeopleThumbnailUrl(person)}
         altText={person.name}
         title={person.name}

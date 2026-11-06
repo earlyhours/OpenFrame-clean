@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import ConnectMobileQr from '$lib/components/connect/ConnectMobileQr.svelte';
   import ChangePinCodeSettings from './PinCodeSettings.svelte';
   import DownloadSettings from './DownloadSettings.svelte';
   import FeatureSettings from './FeatureSettings.svelte';
@@ -20,6 +21,7 @@
     mdiFormTextboxPassword,
     mdiKeyOutline,
     mdiLockSmart,
+    mdiQrcodeScan,
     mdiServerOutline,
     mdiShieldKeyOutline,
     mdiTwoFactorAuthentication,
@@ -64,6 +66,15 @@
   subtitle={$t('user_usage_stats_description')}
 >
   <UserUsageStatistic />
+</SettingAccordion>
+
+<SettingAccordion
+  icon={mdiQrcodeScan}
+  key="connect-mobile"
+  title={$t('connect_phone_title')}
+  subtitle={$t('connect_phone_settings_subtitle')}
+>
+  <ConnectMobileQr />
 </SettingAccordion>
 
 <SettingAccordion icon={mdiApi} key="api-keys" title={$t('api_keys')} subtitle={$t('manage_your_api_keys')}>

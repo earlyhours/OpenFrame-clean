@@ -13,12 +13,6 @@
   import { searchManager } from '$lib/managers/search-manager.svelte';
   import { getSearchTypePlaceholder, isPopoverContent } from './search-bar-utils';
 
-  type Props = {
-    grayTheme: boolean;
-  };
-
-  let { grayTheme }: Props = $props();
-
   let showClearIcon = $derived(searchManager.filter.query.length > 0);
   let placeholder = $derived(
     searchStore.isSearchEnabled ? getSearchTypePlaceholder(searchManager.filter.queryType) : $t('search_your_photos'),
@@ -156,11 +150,7 @@
         type="text"
         name="q"
         id="main-search-bar"
-        class="w-full border-b py-4 ps-14 text-immich-fg/75 transition-all max-md:py-2 dark:text-immich-dark-fg
-        {showClearIcon ? 'pe-22.5' : 'pe-14'}
-        {grayTheme || showSuggestions ? 'dark:bg-immich-dark-gray' : 'dark:bg-immich-dark-bg'}
-        {showSuggestions ? 'rounded-t-3xl shadow-[0_8px_20px_rgba(0,0,0,0.12)]' : 'rounded-3xl bg-gray-200'}
-        {searchStore.isSearchEnabled ? 'border-light-200 bg-white dark:border-dark-600' : 'border-transparent'}"
+        class="w-full ps-12 text-sm {showClearIcon ? 'pe-20' : 'pe-12'}"
         {placeholder}
         required
         pattern="^(?!m:$).*$"

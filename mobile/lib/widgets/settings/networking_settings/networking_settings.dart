@@ -33,7 +33,7 @@ class NetworkingSettings extends HookConsumerWidget {
       bool? isGrantLocationAlwaysPermission;
 
       if (!hasLocationInUse) {
-        await showDialog(
+        await showAppDialog(
           context: context,
           builder: (context) {
             return AlertDialog(
@@ -63,7 +63,7 @@ class NetworkingSettings extends HookConsumerWidget {
       }
 
       if (!hasLocationAlways) {
-        isGrantLocationAlwaysPermission = await showDialog(
+        isGrantLocationAlwaysPermission = await showAppDialog(
           context: context,
           builder: (context) {
             return AlertDialog(
@@ -100,48 +100,38 @@ class NetworkingSettings extends HookConsumerWidget {
       return null;
     }, [featureEnabled.value]);
 
+    final success = context.themeData.extension<ImmichColors>()?.success ?? Colors.green;
+
     return ListView(
-      padding: const EdgeInsets.only(bottom: 96),
+      padding: EdgeInsets.only(top: 8, bottom: 32 + MediaQuery.paddingOf(context).bottom),
       children: <Widget>[
-        const SizedBox(height: 8),
-        SettingGroupTitle(
+        SettingsSection(
           title: context.t.current_server_address,
-          icon: (currentEndpoint?.startsWith('https') ?? false) ? Icons.https_outlined : Icons.http_outlined,
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Card(
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: const BorderRadius.all(Radius.circular(16)),
-              side: BorderSide(color: context.colorScheme.surfaceContainerHighest, width: 1),
-            ),
-            child: ListTile(
-              leading: currentEndpoint != null
-                  ? const Icon(Icons.check_circle_rounded, color: Colors.green)
-                  : const Icon(Icons.circle_outlined),
-              title: Text(
-                currentEndpoint ?? "--",
-                style: TextStyle(fontSize: 14, fontFamily: 'GoogleSansCode', color: context.primaryColor),
+          hasLeadingBadges: true,
+          children: [
+            SettingsTile(
+              icon: (currentEndpoint?.startsWith('https') ?? false) ? AppIcons.lockKeyhole : AppIcons.globe,
+              title: currentEndpoint ?? "--",
+              monoTitle: true,
+              trailing: Icon(
+                currentEndpoint != null ? AppIcons.circleCheck : AppIcons.circle,
+                size: 20,
+                color: currentEndpoint != null ? success : context.colorScheme.onSurfaceVariant,
               ),
             ),
-          ),
+          ],
         ),
-        Padding(
-          padding: const EdgeInsets.only(top: 10.0),
-          child: Divider(color: context.colorScheme.surfaceContainerHighest),
+        SettingsSection(
+          children: [
+            SettingsSwitchListTile(
+              enabled: true,
+              valueNotifier: featureEnabled,
+              title: context.t.automatic_endpoint_switching_title,
+              subtitle: context.t.automatic_endpoint_switching_subtitle,
+            ),
+          ],
         ),
-        SettingsSwitchListTile(
-          enabled: true,
-          valueNotifier: featureEnabled,
-          title: context.t.automatic_endpoint_switching_title,
-          subtitle: context.t.automatic_endpoint_switching_subtitle,
-        ),
-        const SizedBox(height: 8),
-        SettingGroupTitle(title: context.t.local_network, icon: Icons.home_outlined),
         LocalNetworkPreference(enabled: featureEnabled.value),
-        const SizedBox(height: 16),
-        SettingGroupTitle(title: context.t.external_network, icon: Icons.dns_outlined),
         ExternalNetworkPreference(enabled: featureEnabled.value),
       ],
     );
@@ -156,7 +146,12 @@ class NetworkStatusIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedSwitcher(duration: const Duration(milliseconds: 200), child: buildIcon(context));
+    return AnimatedSwitcher(
+      duration: AppMotion.of(context, AppMotion.fast),
+      switchInCurve: AppMotion.emphasized,
+      switchOutCurve: Curves.easeInCubic,
+      child: buildIcon(context),
+    );
   }
 
   Widget buildIcon(BuildContext context) => switch (status) {
@@ -170,16 +165,16 @@ class NetworkStatusIcon extends StatelessWidget {
     ),
     AuxCheckStatus.valid =>
       enabled
-          ? const Icon(Icons.check_circle_rounded, color: Colors.green, key: ValueKey('success'))
+          ? const Icon(AppIcons.circleCheck, color: Colors.green, key: ValueKey('success'))
           : Icon(
-              Icons.check_circle_rounded,
+              AppIcons.circleCheck,
               color: context.colorScheme.onSurface.withAlpha(100),
               key: const ValueKey('success'),
             ),
     AuxCheckStatus.error =>
       enabled
-          ? const Icon(Icons.error_rounded, color: Colors.red, key: ValueKey('error'))
-          : const Icon(Icons.error_rounded, color: Colors.grey, key: ValueKey('error')),
-    _ => const Icon(Icons.circle_outlined, key: ValueKey('unknown')),
+          ? const Icon(AppIcons.circleAlert, color: Colors.red, key: ValueKey('error'))
+          : const Icon(AppIcons.circleAlert, color: Colors.grey, key: ValueKey('error')),
+    _ => const Icon(AppIcons.circle, key: ValueKey('unknown')),
   };
 }

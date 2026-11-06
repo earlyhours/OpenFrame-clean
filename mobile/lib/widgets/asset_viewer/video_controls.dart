@@ -10,6 +10,7 @@ import 'package:immich_mobile/providers/asset_viewer/asset_viewer.provider.dart'
 import 'package:immich_mobile/providers/asset_viewer/video_player_provider.dart';
 import 'package:immich_mobile/providers/cast.provider.dart';
 import 'package:immich_mobile/widgets/asset_viewer/animated_play_pause.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class VideoControls extends ConsumerStatefulWidget {
   final String videoPlayerName;
@@ -114,7 +115,7 @@ class _VideoControlsState extends ConsumerState<VideoControls> {
                 padding: const EdgeInsets.all(12),
                 constraints: const BoxConstraints(),
                 icon: isFinished
-                    ? const Icon(Icons.replay, color: Colors.white, shadows: VideoControls._controlShadows)
+                    ? const Icon(AppIcons.rotateCcw, color: Colors.white, shadows: VideoControls._controlShadows)
                     : AnimatedPlayPause(
                         color: Colors.white,
                         playing: isPlaying,

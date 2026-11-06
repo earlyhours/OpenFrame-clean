@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/widgets/common/confirm_dialog.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:logging/logging.dart';
 
 class MapUtils {
@@ -23,7 +24,7 @@ class MapUtils {
       }
 
       if (!serviceEnabled && !silent) {
-        unawaited(showDialog(context: context, builder: (context) => _LocationServiceDisabledDialog()));
+        unawaited(showAppDialog(context: context, builder: (context) => _LocationServiceDisabledDialog()));
         return (null, LocationPermission.deniedForever);
       }
 
@@ -35,7 +36,7 @@ class MapUtils {
           return (null, LocationPermission.unableToDetermine);
         }
 
-        shouldRequestPermission = await showDialog(
+        shouldRequestPermission = await showAppDialog(
           context: context,
           builder: (context) => _LocationPermissionDisabledDialog(),
         );

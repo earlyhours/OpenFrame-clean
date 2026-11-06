@@ -101,6 +101,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>immich</string>
+          <string>openframe</string>
         </array>
       </dict>
     </array>
@@ -129,7 +130,7 @@
       <string>_CC1AD845._googlecast._tcp</string>
     </array>
     <key>NSCameraUsageDescription</key>
-    <string>We need to access the camera to let you take beautiful video using this app</string>
+    <string>OpenFrame uses the camera to scan a QR code and connect to your photo server.</string>
     <key>NSFaceIDUsageDescription</key>
     <string>We need to use FaceID to allow access to your locked folder</string>
     <key>NSLocalNetworkUsageDescription</key>

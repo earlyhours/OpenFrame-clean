@@ -8,6 +8,7 @@ import 'package:immich_mobile/presentation/actions/action.dart';
 import 'package:immich_mobile/presentation/pages/search/paginated_search.provider.dart';
 import 'package:immich_mobile/providers/asset_viewer/asset_viewer.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class SimilarPhotosAction extends ActionBuilder {
   final String assetId;
@@ -16,7 +17,7 @@ class SimilarPhotosAction extends ActionBuilder {
 
   @override
   ActionItem create(BuildContext context, WidgetRef ref) =>
-      .new(icon: Icons.compare, label: context.t.view_similar_photos, onAction: () => _search(context, ref));
+      .new(icon: AppIcons.scanSearch, label: context.t.view_similar_photos, onAction: () => _search(context, ref));
 
   Future<void> _search(BuildContext context, WidgetRef ref) async {
     ref.invalidate(assetViewerProvider);

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 enum CropAspectRatio {
-  free(icon: Icons.crop_free),
-  original(icon: Icons.crop_original),
+  free(icon: AppIcons.scan),
+  original(icon: AppIcons.image),
   ratio1x1(numerator: 1, denominator: 1),
   ratio16x9(numerator: 16, denominator: 9),
   ratio3x2(numerator: 3, denominator: 2),

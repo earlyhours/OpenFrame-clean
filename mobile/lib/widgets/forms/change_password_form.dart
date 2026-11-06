@@ -8,6 +8,7 @@ import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/providers/auth.provider.dart';
 import 'package:immich_mobile/providers/websocket.provider.dart';
 import 'package:immich_mobile/widgets/common/immich_toast.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class ChangePasswordForm extends HookConsumerWidget {
   const ChangePasswordForm({super.key});
@@ -97,7 +98,7 @@ class ChangePasswordForm extends HookConsumerWidget {
                       },
                     ),
                     TextButton.icon(
-                      icon: const Icon(Icons.arrow_back),
+                      icon: const Icon(AppIcons.arrowLeftDir),
                       onPressed: () => AutoRouter.of(context).back(),
                       label: Text(context.t.back),
                     ),

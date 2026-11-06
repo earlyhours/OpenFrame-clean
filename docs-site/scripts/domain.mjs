@@ -26,6 +26,9 @@ const slug = config.name.replace(/^a-site-/, '');
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.cpSync(path.join(ROOT, 'dist/public', slug), path.join(OUT, 'public'), { recursive: true });
 
+// Publish the installer from its source so deployments cannot leave a stale copy.
+fs.copyFileSync(path.join(ROOT, '../install.sh'), path.join(OUT, 'public/install.sh'));
+
 // The 404 page is pinned to /<slug>/ for a.yash0.in. On its own domain the site is at /.
 const notFound = path.join(OUT, 'public/404.html');
 fs.writeFileSync(notFound, fs.readFileSync(notFound, 'utf8').replaceAll(`="/${slug}/`, '="/'));

@@ -7,6 +7,7 @@ import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/extensions/maplibrecontroller_extensions.dart';
 import 'package:immich_mobile/widgets/map/asset_marker_icon.dart';
 import 'package:immich_mobile/widgets/map/map_theme_override.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
 /// A non-interactive thumbnail of a map in the given coordinates with optional markers
@@ -71,10 +72,7 @@ class MapThumbnail extends HookWidget {
       mapBuilder: (style) => AnimatedContainer(
         duration: Durations.medium2,
         curve: Curves.easeOut,
-        foregroundDecoration: BoxDecoration(
-          color: context.colorScheme.inverseSurface.withAlpha(styleLoaded.value ? 0 : 200),
-          borderRadius: const BorderRadius.all(Radius.circular(15)),
-        ),
+
         height: height,
         width: width,
         child: ClipRRect(
@@ -99,6 +97,13 @@ class MapThumbnail extends HookWidget {
                   attributionButtonMargins: showAttribution == false ? const Point(-100, 0) : null,
                 ),
               ),
+              if (!styleLoaded.value)
+                Positioned.fill(
+                  child: ColoredBox(
+                    color: context.colorScheme.surfaceContainer,
+                    child: Center(child: Icon(AppIcons.mapPin, color: context.colorScheme.onSurfaceVariant, size: 28)),
+                  ),
+                ),
               if (assetMarkerRemoteId != null && assetThumbhash != null)
                 Container(
                   width: width,

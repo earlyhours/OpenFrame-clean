@@ -1,0 +1,17 @@
+{
+  "name": "openframe-immich-site",
+  "account_id": "bb13c5aed893f0140aacff72cab0747b",
+  "compatibility_date": "2026-10-30",
+  "workers_dev": false,
+  "assets": {
+    "directory": "./public",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "routes": [
+    {
+      "pattern": "immich.yash0.in",
+      "custom_domain": true
+    }
+  ]
+}

@@ -33,7 +33,7 @@
 <div class="max-w-75">
   {#if showSettingDescription}
     <div>
-      <div class="flex h-6.5 place-items-center gap-1">
+      <div class="mb-1 flex min-h-6 place-items-center gap-2">
         <Label size="small">{$t('language')}</Label>
       </div>
 

@@ -240,8 +240,8 @@
 <svelte:head>
   <title>{page.data.meta?.title || 'Web'} - {APP_NAME}</title>
   <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
-  <meta name="theme-color" content="white" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="black" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#ece9e3" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0b0b0c" media="(prefers-color-scheme: dark)" />
 </svelte:head>
 
 <QueryClientProvider client={queryClient}>

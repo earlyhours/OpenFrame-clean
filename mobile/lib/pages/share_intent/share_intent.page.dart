@@ -10,6 +10,7 @@ import 'package:immich_mobile/pages/common/large_leading_tile.dart';
 import 'package:immich_mobile/providers/asset_viewer/share_intent_upload.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/utils/url_helper.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 @RoutePage()
 class ShareIntentPage extends ConsumerWidget {
@@ -69,7 +70,7 @@ class ShareIntentPage extends ConsumerWidget {
           onPressed: () {
             unawaited(context.navigateTo(const TabShellRoute()));
           },
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(AppIcons.arrowLeftDir),
         ),
       ),
       body: ListView.builder(
@@ -93,7 +94,7 @@ class ShareIntentPage extends ConsumerWidget {
                         : const SizedBox(
                             width: 64,
                             height: 64,
-                            child: Center(child: Icon(Icons.videocam, color: Colors.white)),
+                            child: Center(child: Icon(AppIcons.video, color: Colors.white)),
                           ),
                   ),
                   if (attachment.isImage)
@@ -101,7 +102,7 @@ class ShareIntentPage extends ConsumerWidget {
                       top: 8,
                       right: 8,
                       child: Icon(
-                        Icons.image,
+                        AppIcons.image,
                         color: Colors.white,
                         size: 20,
                         shadows: [Shadow(offset: Offset.zero, blurRadius: 8.0, color: Colors.black45)],
@@ -164,7 +165,7 @@ class UploadStatusIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!selected) {
       return Icon(
-        Icons.check_circle_outline_rounded,
+        AppIcons.circleCheck,
         color: context.colorScheme.onSurface.withAlpha(100),
         semanticLabel: context.t.not_selected,
       );
@@ -172,7 +173,7 @@ class UploadStatusIcon extends StatelessWidget {
 
     final statusIcon = switch (status) {
       UploadStatus.enqueued => Icon(
-        Icons.check_circle_rounded,
+        AppIcons.circleCheck,
         color: context.primaryColor,
         semanticLabel: context.t.enqueued,
       ),
@@ -199,12 +200,8 @@ class UploadStatusIcon extends StatelessWidget {
           ),
         ],
       ),
-      UploadStatus.complete => Icon(
-        Icons.check_circle_rounded,
-        color: Colors.green,
-        semanticLabel: context.t.completed,
-      ),
-      UploadStatus.failed => Icon(Icons.error_rounded, color: Colors.red, semanticLabel: context.t.failed),
+      UploadStatus.complete => Icon(AppIcons.circleCheck, color: Colors.green, semanticLabel: context.t.completed),
+      UploadStatus.failed => Icon(AppIcons.circleAlert, color: Colors.red, semanticLabel: context.t.failed),
     };
 
     return statusIcon;

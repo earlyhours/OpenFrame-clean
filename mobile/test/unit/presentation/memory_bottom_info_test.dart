@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/domain/models/memory.model.dart';
 import 'package:immich_mobile/presentation/widgets/memory/memory_bottom_info.widget.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 import '../factories/remote_asset_factory.dart';
 import 'presentation_context.dart';
@@ -53,7 +54,7 @@ void main() {
       await tester.pumpTestWidget(context, MemoryBottomInfo(memory: memory, asset: asset));
 
       expect(tester.takeException(), isNull);
-      expect(tester.getRect(find.byIcon(Icons.open_in_new)).right, lessThanOrEqualTo(360));
+      expect(tester.getRect(find.byIcon(AppIcons.externalLink)).right, lessThanOrEqualTo(360));
       expect(
         tester.getRect(find.textContaining('Amelia')).right,
         lessThanOrEqualTo(tester.getRect(find.byType(MaterialButton)).left),

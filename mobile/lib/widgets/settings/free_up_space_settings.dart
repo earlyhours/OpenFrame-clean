@@ -15,6 +15,7 @@ import 'package:immich_mobile/providers/haptic_feedback.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/album.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/utils/bytes_units.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -145,7 +146,7 @@ class _FreeUpSpaceSettingsState extends ConsumerState<FreeUpSpaceSettings> {
     }
 
     ref.read(hapticFeedbackProvider.notifier).mediumImpact();
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showAppDialog<bool>(
       context: context,
       builder: (ctx) =>
           _DeleteConfirmationDialog(assetCount: state.assetsToDelete.length, cutoffDate: state.selectedDate!),
@@ -160,7 +161,7 @@ class _FreeUpSpaceSettingsState extends ConsumerState<FreeUpSpaceSettings> {
     if (mounted && deletedCount > 0) {
       ref.read(hapticFeedbackProvider.notifier).heavyImpact();
 
-      await showDialog<void>(
+      await showAppDialog<void>(
         context: context,
         builder: (ctx) => _DeleteSuccessDialog(deletedCount: deletedCount),
       );
@@ -267,13 +268,13 @@ class _FreeUpSpaceSettingsState extends ConsumerState<FreeUpSpaceSettings> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(SettingsMetrics.pageInset),
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: context.colorScheme.surfaceContainerLow,
-                  borderRadius: const BorderRadius.all(Radius.circular(12)),
-                  border: Border.all(color: context.primaryColor.withValues(alpha: 0.25)),
+                  color: context.colorScheme.surfaceContainer,
+                  borderRadius: const BorderRadius.all(Radius.circular(SettingsMetrics.radius)),
+                  border: Border.all(color: context.colorScheme.outlineVariant.withValues(alpha: .6), width: .5),
                 ),
                 child: Text(context.t.free_up_space_description, style: context.textTheme.bodyMedium),
               ),
@@ -281,21 +282,21 @@ class _FreeUpSpaceSettingsState extends ConsumerState<FreeUpSpaceSettings> {
 
             // Keep on device settings card
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              padding: const EdgeInsets.symmetric(horizontal: SettingsMetrics.pageInset),
               child: Card(
                 elevation: 0,
+                margin: EdgeInsets.zero,
+                clipBehavior: Clip.antiAlias,
                 shape: RoundedRectangleBorder(
-                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  borderRadius: const BorderRadius.all(Radius.circular(SettingsMetrics.radius)),
                   side: BorderSide(
                     color: hasKeepSettings
                         ? context.colorScheme.primary.withValues(alpha: 0.5)
-                        : context.colorScheme.outlineVariant,
-                    width: hasKeepSettings ? 1.5 : 1,
+                        : context.colorScheme.outlineVariant.withValues(alpha: .6),
+                    width: hasKeepSettings ? 1 : .5,
                   ),
                 ),
-                color: hasKeepSettings
-                    ? context.colorScheme.primaryContainer.withValues(alpha: 0.15)
-                    : context.colorScheme.surfaceContainerLow,
+                color: context.colorScheme.surfaceContainer,
                 child: Theme(
                   data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
                   child: ExpansionTile(
@@ -304,7 +305,7 @@ class _FreeUpSpaceSettingsState extends ConsumerState<FreeUpSpaceSettings> {
                       setState(() => _isKeepSettingsExpanded = expanded);
                     },
                     leading: Icon(
-                      hasKeepSettings ? Icons.bookmark : Icons.bookmark_border,
+                      AppIcons.bookmark,
                       color: hasKeepSettings ? context.colorScheme.primary : context.colorScheme.onSurfaceVariant,
                     ),
                     title: Text(
@@ -364,12 +365,12 @@ class _FreeUpSpaceSettingsState extends ConsumerState<FreeUpSpaceSettings> {
                                 ButtonSegment(
                                   value: AssetKeepType.photosOnly,
                                   label: Text(context.t.photos),
-                                  icon: const Icon(Icons.photo),
+                                  icon: const Icon(AppIcons.image),
                                 ),
                                 ButtonSegment(
                                   value: AssetKeepType.videosOnly,
                                   label: Text(context.t.videos),
-                                  icon: const Icon(Icons.videocam),
+                                  icon: const Icon(AppIcons.video),
                                 ),
                               ],
                               selected: {state.keepMediaType},
@@ -487,14 +488,14 @@ class _FreeUpSpaceSettingsState extends ConsumerState<FreeUpSpaceSettings> {
                       const SizedBox(height: 16),
                       OutlinedButton.icon(
                         onPressed: _selectDate,
-                        icon: const Icon(Icons.calendar_today),
+                        icon: const Icon(AppIcons.calendar),
                         label: Text(context.t.custom_date),
                         style: OutlinedButton.styleFrom(minimumSize: const Size(double.infinity, 48)),
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton.icon(
                         onPressed: hasDate ? _goToScanStep : null,
-                        icon: const Icon(Icons.arrow_forward),
+                        icon: const Icon(AppIcons.arrowRightDir),
                         label: Text(context.t.continue$),
                         style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 48)),
                       ),
@@ -547,7 +548,7 @@ class _FreeUpSpaceSettingsState extends ConsumerState<FreeUpSpaceSettings> {
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.info_outline, color: context.colorScheme.primary),
+                              Icon(AppIcons.info, color: context.colorScheme.primary),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
@@ -571,7 +572,7 @@ class _FreeUpSpaceSettingsState extends ConsumerState<FreeUpSpaceSettings> {
                             )
                           : ElevatedButton.icon(
                               onPressed: state.isScanning ? null : _scanAssets,
-                              icon: const Icon(Icons.search),
+                              icon: const Icon(AppIcons.search),
                               label: Text(_hasScanned ? context.t.rescan : context.t.scan),
                               style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 48)),
                             ),
@@ -585,7 +586,7 @@ class _FreeUpSpaceSettingsState extends ConsumerState<FreeUpSpaceSettings> {
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.info, color: Colors.orange),
+                              const Icon(AppIcons.info, color: Colors.orange),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(context.t.cleanup_no_assets_found, style: context.textTheme.bodyMedium),
@@ -640,7 +641,7 @@ class _FreeUpSpaceSettingsState extends ConsumerState<FreeUpSpaceSettings> {
                       const SizedBox(height: 16),
                       OutlinedButton.icon(
                         onPressed: () => _showAssetsPreview(state.assetsToDelete),
-                        icon: const Icon(Icons.preview),
+                        icon: const Icon(AppIcons.eye),
                         label: Text(context.t.preview),
                         style: OutlinedButton.styleFrom(minimumSize: const Size(double.infinity, 48)),
                       ),
@@ -653,7 +654,7 @@ class _FreeUpSpaceSettingsState extends ConsumerState<FreeUpSpaceSettings> {
                                 height: 20,
                                 child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                               )
-                            : const Icon(Icons.delete_forever),
+                            : const Icon(AppIcons.trash2),
                         label: Text(state.isDeleting ? context.t.cleanup_deleting : context.t.move_to_device_trash),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colorScheme.error,
@@ -717,7 +718,7 @@ class _DeleteSuccessDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      icon: Icon(Icons.check_circle, color: context.colorScheme.primary, size: 48),
+      icon: Icon(AppIcons.circleCheck, color: context.colorScheme.primary, size: 48),
       title: Text(context.t.success),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -872,7 +873,7 @@ class _AlbumTile extends StatelessWidget {
       dense: true,
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
       leading: Icon(
-        isSelected ? Icons.check_circle : Icons.circle_outlined,
+        isSelected ? AppIcons.circleCheck : AppIcons.circle,
         color: isSelected ? context.colorScheme.primary : context.colorScheme.onSurfaceVariant,
         size: 20,
       ),

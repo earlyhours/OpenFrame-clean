@@ -6,6 +6,7 @@ import 'package:immich_mobile/presentation/actions/action.dart';
 import 'package:immich_mobile/providers/infrastructure/album.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/toast.provider.dart';
 import 'package:immich_mobile/utils/error_handler.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 final _stateProvider = Provider.family.autoDispose<List<String>?, ActionSource>((ref, source) {
   final assets = ref.watch(assetsActionProvider(source));
@@ -26,7 +27,7 @@ class RemoveFromAlbumAction extends AssetActionBuilder {
     }
 
     return .new(
-      icon: Icons.remove_circle_outline,
+      icon: AppIcons.circleMinus,
       label: context.t.remove_from_album,
       onAction: () => _remove(context, ref, assetIds),
     );

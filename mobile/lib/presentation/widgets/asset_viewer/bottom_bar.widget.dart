@@ -60,7 +60,9 @@ class ViewerBottomBar extends ConsumerWidget {
     ];
 
     return AnimatedSwitcher(
-      duration: Durations.short4,
+      duration: AppMotion.of(context, AppMotion.fast),
+      switchInCurve: AppMotion.emphasized,
+      switchOutCurve: Curves.easeInCubic,
       child: showingDetails
           ? const SizedBox.shrink()
           : Theme(
@@ -70,41 +72,24 @@ class ViewerBottomBar extends ConsumerWidget {
                   labelLarge: context.themeData.textTheme.labelLarge?.copyWith(color: Colors.white),
                 ),
               ),
-              child: Stack(
-                children: [
-                  const Positioned.fill(
-                    child: IgnorePointer(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: [Colors.black45, Colors.black12, Colors.transparent],
-                            stops: [0.0, 0.7, 1.0],
-                          ),
+              // The frosted bar behind this supplies the scrim, so no gradient.
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: ImmichSpacing.sm),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (asset.isImage) OcrToggleButton(asset: asset),
+                      if (asset.isVideo) VideoControls(videoPlayerName: asset.id),
+                      if (!isReadonlyModeEnabled)
+                        ImmichColorOverride(
+                          color: Colors.white,
+                          child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: actions),
                         ),
-                      ),
-                    ),
+                    ],
                   ),
-                  SafeArea(
-                    top: false,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 16),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (asset.isImage) OcrToggleButton(asset: asset),
-                          if (asset.isVideo) VideoControls(videoPlayerName: asset.id),
-                          if (!isReadonlyModeEnabled)
-                            ImmichColorOverride(
-                              color: Colors.white,
-                              child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: actions),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
     );

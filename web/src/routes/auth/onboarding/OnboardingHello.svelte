@@ -1,27 +1,48 @@
 <script lang="ts">
-  import { authManager } from '$lib/managers/auth-manager.svelte';
-  import { OnboardingRole } from '$lib/types';
-  import { Logo } from '@immich/ui';
+  import { Icon } from '@immich/ui';
   import { t } from 'svelte-i18n';
-  import { createPreloadedQuery } from '$lib/queries/client';
-  import { getServerConfigQuery } from '$lib/queries/server.query';
 
-  const query = createPreloadedQuery(getServerConfigQuery);
-  const serverConfig = $derived(query.data);
+  interface Props {
+    plan?: { title: string; icon: string }[];
+  }
 
-  let userRole = $derived(
-    authManager.user.isAdmin && !serverConfig.isOnboarded ? OnboardingRole.SERVER : OnboardingRole.USER,
-  );
+  let { plan = [] }: Props = $props();
 </script>
 
-<div class="gap-4">
-  <Logo variant="icon" size="giant" class="mb-2" />
-  <p class="mb-6 text-6xl font-medium text-primary">
-    {$t('onboarding_welcome_user', { values: { user: authManager.user.name } })}
-  </p>
-  <p class="pb-6 text-3xl font-light">
-    {userRole === OnboardingRole.SERVER
-      ? $t('onboarding_server_welcome_description')
-      : $t('onboarding_user_welcome_description')}
-  </p>
-</div>
+{#if plan.length > 0}
+  <section class="flex flex-col gap-4">
+    <p class="of-eyebrow">{$t('onboarding_plan_title')}</p>
+    <ol class="plan">
+      {#each plan as { title, icon }, i (title)}
+        <li>
+          <span class="w-6 font-mono text-xs text-muted">{String(i + 1).padStart(2, '0')}</span>
+          <Icon {icon} size="20" class="shrink-0 text-primary" />
+          <span class="min-w-0 truncate">{title}</span>
+        </li>
+      {/each}
+    </ol>
+    <p class="text-sm/6 text-muted">{$t('onboarding_time_estimate')}</p>
+  </section>
+{/if}
+
+<style>
+  .plan {
+    display: grid;
+    border: 1px solid var(--of-line);
+    border-radius: 16px;
+    background: var(--of-bg);
+  }
+
+  .plan li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .plan li + li {
+    border-top: 1px solid var(--of-line);
+  }
+</style>

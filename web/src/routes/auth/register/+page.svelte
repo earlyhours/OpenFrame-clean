@@ -1,14 +1,13 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import AuthPageLayout from '$lib/components/layouts/AuthPageLayout.svelte';
+  import AuthShell from '$lib/components/auth/AuthShell.svelte';
   import { queryClient } from '$lib/queries/client';
   import { getServerConfigQuery } from '$lib/queries/server.query';
   import { Route } from '$lib/route';
   import { handleError } from '$lib/utils/handle-error';
   import { signUpAdmin } from '@immich/sdk';
-  import { Alert, Button, Field, Input, PasswordInput, Text } from '@immich/ui';
+  import { Alert, Button, Field, Input, PasswordInput } from '@immich/ui';
   import { t } from 'svelte-i18n';
-  import type { PageData } from './$types';
 
   let email = $state('');
   let password = $state('');
@@ -19,12 +18,6 @@
     password === confirmPassword || confirmPassword.length === 0 ? '' : $t('password_does_not_match'),
   );
   const valid = $derived(password === confirmPassword && confirmPassword.length > 0);
-
-  interface Props {
-    data: PageData;
-  }
-
-  let { data }: Props = $props();
 
   const onSubmit = async (event: Event) => {
     event.preventDefault();
@@ -49,34 +42,32 @@
   };
 </script>
 
-<AuthPageLayout title={data.meta.title}>
+<AuthShell title={$t('auth_register_title')} subtitle={$t('auth_register_subtitle')}>
   <form onsubmit={onSubmit} method="post" class="flex flex-col gap-4">
-    <Alert color="primary" class="mb-2">
-      <Text>{$t('admin.registration_description')}</Text>
-    </Alert>
-
     <Field label={$t('admin_email')} required>
-      <Input bind:value={email} type="email" autocomplete="email" />
+      <Input bind:value={email} type="email" autocomplete="email" size="large" />
     </Field>
 
     <Field label={$t('admin_password')} required>
-      <PasswordInput bind:value={password} autocomplete="new-password" />
+      <PasswordInput bind:value={password} autocomplete="new-password" size="large" />
     </Field>
 
     <Field label={$t('confirm_admin_password')} required>
-      <PasswordInput bind:value={confirmPassword} autocomplete="new-password" />
+      <PasswordInput bind:value={confirmPassword} autocomplete="new-password" size="large" />
     </Field>
 
     <Field label={$t('name')} required>
-      <Input bind:value={name} type="text" autocomplete="name" />
+      <Input bind:value={name} type="text" autocomplete="name" size="large" />
     </Field>
 
     {#if errorMessage}
-      <Alert color="danger" title={errorMessage} size="medium" class="mt-4" />
+      <Alert color="danger" title={errorMessage} size="medium" />
     {/if}
 
-    <Button class="mt-4" type="submit" size="giant" shape="round" fullWidth disabled={!valid || loading} {loading}
+    <Button class="mt-2" type="submit" size="large" shape="round" fullWidth disabled={!valid || loading} {loading}
       >{$t('sign_up')}</Button
     >
+
+    <p class="text-sm/6 text-muted">{$t('admin.registration_description')}</p>
   </form>
-</AuthPageLayout>
+</AuthShell>

@@ -1,7 +1,11 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:immich_ui/extensions/build_context_extensions.dart';
-import 'package:immich_ui/extensions/theme_extensions.dart';
+import 'package:immich_ui/src/components/settings/settings_section.dart';
 
+/// A muted section header with optional explanatory [subtitle].
+///
+/// Prefer [SettingsSection.title] and [SettingsSection.footer]; this is for
+/// headers that sit outside a section.
 class SettingGroupTitle extends StatelessWidget {
   final String title;
   final String? subtitle;
@@ -13,25 +17,26 @@ class SettingGroupTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: contentPadding ?? const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 8.0),
+      padding:
+          contentPadding ?? const EdgeInsets.fromLTRB(SettingsMetrics.pageInset + 4, 0, SettingsMetrics.pageInset, 8),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               if (icon != null) ...[
-                Icon(icon, color: context.colorScheme.onSurfaceSecondary, size: 20),
-                const SizedBox(width: 8),
+                Icon(icon, color: context.colorScheme.onSurfaceVariant, size: 16),
+                const SizedBox(width: 6),
               ],
-              Text(title, style: context.textTheme.labelLarge?.copyWith(color: context.colorScheme.onSurfaceSecondary)),
+              Flexible(
+                child: Text(
+                  title,
+                  style: context.textTheme.labelMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
+                ),
+              ),
             ],
           ),
-          if (subtitle != null) ...[
-            const SizedBox(height: 8),
-            Text(
-              subtitle!,
-              style: context.textTheme.bodyMedium!.copyWith(color: context.colorScheme.onSurface.withAlpha(200)),
-            ),
-          ],
+          if (subtitle != null) ...[const SizedBox(height: 4), Text(subtitle!, style: context.textTheme.bodySmall)],
         ],
       ),
     );

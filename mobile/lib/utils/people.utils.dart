@@ -3,6 +3,7 @@ import 'package:immich_mobile/domain/models/person.model.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/presentation/widgets/people/person_edit_birthday_modal.widget.dart';
 import 'package:immich_mobile/presentation/widgets/people/person_edit_name_modal.widget.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 String? formatAge(DateTime birthDate, DateTime referenceDate) {
   final int ageInYears = _calculateAge(birthDate, referenceDate);
@@ -39,7 +40,7 @@ int _calculateAgeInMonths(DateTime birthDate, DateTime referenceDate) {
 }
 
 Future<String?> showNameEditModal(BuildContext context, Person person) {
-  return showDialog<String?>(
+  return showAppDialog<String?>(
     context: context,
     useRootNavigator: false,
     builder: (BuildContext context) {
@@ -49,7 +50,7 @@ Future<String?> showNameEditModal(BuildContext context, Person person) {
 }
 
 Future<DateTime?> showBirthdayEditModal(BuildContext context, Person person) {
-  return showDialog<DateTime?>(
+  return showAppDialog<DateTime?>(
     context: context,
     useRootNavigator: false,
     builder: (BuildContext context) {

@@ -17,7 +17,11 @@
 
     <script>
       try {
-        const preference = JSON.parse(localStorage.getItem('immich-ui-theme'));
+        const stored = localStorage.getItem('immich-ui-theme');
+        const preference = JSON.parse(stored ?? '"dark"');
+        if (stored === null) {
+          localStorage.setItem('immich-ui-theme', JSON.stringify(preference));
+        }
         const prefersDark = globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
         if (preference === 'light' || (preference !== 'dark' && !prefersDark)) {
           document.documentElement.classList.remove('dark');
@@ -38,11 +42,11 @@
       }
 
       html.dark {
-        background-color: black;
+        background-color: #0b0b0c;
       }
 
       html.light {
-        background-color: white;
+        background-color: #ece9e3;
       }
 
       body,

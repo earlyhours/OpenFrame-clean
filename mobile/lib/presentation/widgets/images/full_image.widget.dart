@@ -5,6 +5,7 @@ import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/presentation/widgets/images/image_provider.dart';
 import 'package:immich_mobile/presentation/widgets/images/progressive_image.widget.dart';
 import 'package:immich_mobile/widgets/asset_grid/thumbnail_placeholder.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:octo_image/octo_image.dart';
 
 class FullImage extends StatelessWidget {
@@ -37,7 +38,7 @@ class FullImage extends StatelessWidget {
         fit: fit,
         errorBuilder: (context, error, stackTrace) {
           unawaited(provider.evict());
-          return const Icon(Icons.image_not_supported_outlined, size: 32);
+          return const Icon(AppIcons.imageOff, size: 32);
         },
       ),
     );

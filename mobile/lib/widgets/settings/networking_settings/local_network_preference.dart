@@ -23,7 +23,7 @@ class LocalNetworkPreference extends HookConsumerWidget {
   }) {
     final controller = TextEditingController(text: initialValue);
 
-    return showDialog<String>(
+    return showAppDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(title),
@@ -131,93 +131,41 @@ class LocalNetworkPreference extends HookConsumerWidget {
       }
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Stack(
-        children: [
-          Container(
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(16)),
-              color: context.colorScheme.surfaceContainerLow,
-              border: Border.all(color: context.colorScheme.surfaceContainerHighest, width: 1),
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  bottom: -36,
-                  right: -36,
-                  child: Icon(Icons.home_outlined, size: 120, color: context.primaryColor.withValues(alpha: 0.05)),
-                ),
-                ListView(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  physics: const ClampingScrollPhysics(),
-                  shrinkWrap: true,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 24),
-                      child: Text(context.t.local_network_sheet_info, style: context.textTheme.bodyMedium),
-                    ),
-                    const SizedBox(height: 4),
-                    Divider(color: context.colorScheme.surfaceContainerHighest),
-                    ListTile(
-                      enabled: enabled,
-                      contentPadding: const EdgeInsets.only(left: 24, right: 8),
-                      leading: const Icon(Icons.wifi_rounded),
-                      title: Text(context.t.wifi_name),
-                      subtitle: wifiNameText.value.isEmpty
-                          ? Text(context.t.enter_wifi_name)
-                          : Text(
-                              wifiNameText.value,
-                              style: context.textTheme.labelLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: enabled ? context.primaryColor : context.colorScheme.onSurface.withAlpha(100),
-                                fontFamily: 'GoogleSansCode',
-                              ),
-                            ),
-                      trailing: IconButton(
-                        onPressed: enabled ? handleEditWifiName : null,
-                        icon: const Icon(Icons.edit_rounded),
-                      ),
-                    ),
-                    ListTile(
-                      enabled: enabled,
-                      contentPadding: const EdgeInsets.only(left: 24, right: 8),
-                      leading: const Icon(Icons.lan_rounded),
-                      title: Text(context.t.server_endpoint),
-                      subtitle: localEndpointText.value.isEmpty
-                          ? const Text("http://local-ip:2283")
-                          : Text(
-                              localEndpointText.value,
-                              style: context.textTheme.labelLarge?.copyWith(
-                                color: enabled ? context.primaryColor : context.colorScheme.onSurface.withAlpha(100),
-                                fontFamily: 'GoogleSansCode',
-                              ),
-                            ),
-                      trailing: IconButton(
-                        onPressed: enabled ? handleEditServerEndpoint : null,
-                        icon: const Icon(Icons.edit_rounded),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      child: SizedBox(
-                        height: 48,
-                        child: OutlinedButton.icon(
-                          icon: const Icon(Icons.wifi_find_rounded),
-                          label: Text(context.t.use_current_connection),
-                          onPressed: enabled ? autofillCurrentNetwork : null,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+    return SettingsSection(
+      title: context.t.local_network,
+      footer: context.t.local_network_sheet_info,
+      hasLeadingBadges: true,
+      children: [
+        SettingsTile(
+          enabled: enabled,
+          icon: AppIcons.wifi,
+          title: context.t.wifi_name,
+          subtitle: wifiNameText.value.isEmpty ? context.t.enter_wifi_name : wifiNameText.value,
+          monoSubtitle: wifiNameText.value.isNotEmpty,
+          trailing: Icon(AppIcons.pencil, size: 18, color: context.colorScheme.onSurfaceVariant),
+          onTap: handleEditWifiName,
+        ),
+        SettingsTile(
+          enabled: enabled,
+          icon: AppIcons.network,
+          title: context.t.server_endpoint,
+          subtitle: localEndpointText.value.isEmpty ? "http://local-ip:2283" : localEndpointText.value,
+          monoSubtitle: localEndpointText.value.isNotEmpty,
+          trailing: Icon(AppIcons.pencil, size: 18, color: context.colorScheme.onSurfaceVariant),
+          onTap: handleEditServerEndpoint,
+        ),
+        Padding(
+          padding: const EdgeInsets.all(SettingsMetrics.rowInset),
+          child: SizedBox(
+            height: 48,
+            child: OutlinedButton.icon(
+              icon: const Icon(AppIcons.wifi),
+              label: Text(context.t.use_current_connection),
+              onPressed: enabled ? autofillCurrentNetwork : null,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

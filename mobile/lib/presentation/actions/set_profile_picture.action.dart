@@ -7,6 +7,7 @@ import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/presentation/actions/action.dart';
 import 'package:immich_mobile/routing/router.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class SetProfilePictureAction extends ActionBuilder {
   final BaseAsset asset;
@@ -15,7 +16,7 @@ class SetProfilePictureAction extends ActionBuilder {
 
   @override
   ActionItem create(BuildContext context, WidgetRef ref) => .new(
-    icon: Icons.account_circle_outlined,
+    icon: AppIcons.circleUser,
     label: context.t.set_as_profile_picture,
     onAction: () async => unawaited(context.pushRoute(ProfilePictureCropRoute(asset: asset))),
   );

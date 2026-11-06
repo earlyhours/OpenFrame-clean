@@ -3,6 +3,7 @@ import 'package:immich_ui/src/components/form.dart';
 import 'package:immich_ui/src/components/password_input.dart';
 import 'package:immich_ui/src/components/text_input.dart';
 import 'package:immich_ui/src/constants.dart';
+import 'package:immich_ui/src/icons.dart';
 import 'package:immich_ui/src/previews.dart';
 
 @ImmichPreview(group: 'Form', name: 'Login Form')
@@ -34,7 +35,7 @@ class _PreviewLoginFormState extends State<_PreviewLoginForm> {
       children: [
         ImmichForm(
           submitText: 'Login',
-          submitIcon: Icons.login,
+          submitIcon: AppIcons.logIn,
           onSubmit: () async {
             await Future<void>.delayed(const Duration(seconds: 1));
             if (!mounted) {
@@ -51,12 +52,14 @@ class _PreviewLoginFormState extends State<_PreviewLoginForm> {
                 label: 'Email',
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
               ),
               ImmichPasswordInput(
                 label: 'Password',
                 controller: _passwordController,
-                validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
                 onSubmit: (_) => form.submit(),
               ),
             ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class BaseActionButton extends StatelessWidget {
   const BaseActionButton({
@@ -35,14 +36,20 @@ class BaseActionButton extends StatelessWidget {
     final iconTheme = IconTheme.of(context);
     final iconSize = iconTheme.size ?? 24.0;
     final textColor = context.themeData.textTheme.labelLarge?.color;
+    // Labels sit in a tight row, so swap the wide mono button face for the body face.
+    final labelFamily = context.themeData.textTheme.labelLarge?.fontFamily == 'GeistMono' ? 'Geist' : null;
 
     if (iconOnly) {
       final iconColor = this.iconColor ?? iconTheme.color ?? context.themeData.iconTheme.color;
 
-      return IconButton(
-        onPressed: onPressed,
-        onLongPress: onLongPressed,
-        icon: Icon(iconData, size: iconSize, color: iconColor),
+      return Pressable(
+        enabled: onPressed != null || onLongPressed != null,
+        scale: 0.92,
+        child: IconButton(
+          onPressed: onPressed,
+          onLongPress: onLongPressed,
+          icon: Icon(iconData, size: iconSize, color: iconColor),
+        ),
       );
     }
 
@@ -54,9 +61,9 @@ class BaseActionButton extends StatelessWidget {
         closeOnActivate: false,
         style: MenuItemButton.styleFrom(
           alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
-        leadingIcon: Icon(iconData, color: iconColor, size: 20),
+        leadingIcon: Icon(iconData, color: iconColor, size: 22),
         onPressed: onPressed == null
             ? null
             : () {
@@ -71,27 +78,39 @@ class BaseActionButton extends StatelessWidget {
 
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: maxWidth),
-      child: MaterialButton(
-        padding: const EdgeInsets.all(10),
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
-        textColor: textColor,
-        onPressed: onPressed,
-        onLongPress: onLongPressed,
-        minWidth: miniWidth,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(iconData, size: iconSize, color: iconColor),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500),
-              maxLines: 3,
-              textAlign: TextAlign.center,
-              softWrap: true,
-            ),
-          ],
+      child: Pressable(
+        enabled: onPressed != null || onLongPressed != null,
+        child: MaterialButton(
+          // Quiet press state: tint only, no ripple or raised elevation.
+          elevation: 0,
+          highlightElevation: 0,
+          splashColor: Colors.transparent,
+          padding: const EdgeInsets.symmetric(horizontal: ImmichSpacing.sm, vertical: ImmichSpacing.sm),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(ImmichRadius.lg))),
+          textColor: textColor,
+          onPressed: onPressed,
+          onLongPress: onLongPressed,
+          minWidth: miniWidth,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(iconData, size: iconSize, color: iconColor),
+              const SizedBox(height: ImmichSpacing.xs),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: ImmichTextSize.label,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: labelFamily,
+                  letterSpacing: 0,
+                ),
+                maxLines: 3,
+                textAlign: TextAlign.center,
+                softWrap: true,
+              ),
+            ],
+          ),
         ),
       ),
     );

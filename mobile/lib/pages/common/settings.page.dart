@@ -14,19 +14,20 @@ import 'package:immich_mobile/widgets/settings/language_settings.dart';
 import 'package:immich_mobile/widgets/settings/networking_settings/networking_settings.dart';
 import 'package:immich_mobile/widgets/settings/notification_setting.dart';
 import 'package:immich_mobile/widgets/settings/preference_settings/preference_setting.dart';
+import 'package:immich_mobile/widgets/settings/settings_profile_card.dart';
 import 'package:immich_ui/immich_ui.dart';
 
 enum SettingSection {
-  advanced(Icons.build_outlined),
-  assetViewer(Icons.image_outlined),
-  backup(Icons.cloud_upload_outlined),
-  freeUpSpace(Icons.cleaning_services_outlined),
-  languages(Icons.language),
-  networking(Icons.wifi),
-  notifications(Icons.notifications_none_rounded),
-  preferences(Icons.interests_outlined),
-  timeline(Icons.auto_awesome_mosaic_outlined),
-  beta(Icons.sync_outlined);
+  advanced(AppIcons.wrench),
+  assetViewer(AppIcons.image),
+  backup(AppIcons.cloudUpload),
+  freeUpSpace(AppIcons.brushCleaning),
+  languages(AppIcons.globe),
+  networking(AppIcons.wifi),
+  notifications(AppIcons.bell),
+  preferences(AppIcons.shapes),
+  timeline(AppIcons.layoutGrid),
+  beta(AppIcons.refreshCw);
 
   final IconData icon;
 
@@ -72,6 +73,25 @@ enum SettingSection {
   const SettingSection(this.icon);
 }
 
+/// The order of the settings list, grouped like Apple's Settings: each inner
+/// list is one inset group with an optional header.
+final List<({String Function(Translations t)? header, List<SettingSection> items})> _groups = [
+  (
+    header: (t) => t.library$,
+    items: [SettingSection.timeline, SettingSection.assetViewer, SettingSection.backup, SettingSection.freeUpSpace],
+  ),
+  (
+    header: (t) => t.general,
+    items: [
+      SettingSection.preferences,
+      SettingSection.notifications,
+      SettingSection.languages,
+      SettingSection.networking,
+    ],
+  ),
+  (header: (t) => t.advanced, items: [SettingSection.advanced, SettingSection.beta]),
+];
+
 @RoutePage()
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -79,7 +99,7 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: false, title: Text(context.t.settings)),
+      appBar: context.isMobile ? null : AppBar(centerTitle: false, title: Text(context.t.settings)),
       body: context.isMobile ? const _MobileLayout() : const _TabletLayout(),
     );
   }
@@ -87,72 +107,96 @@ class SettingsPage extends StatelessWidget {
 
 class _MobileLayout extends StatelessWidget {
   const _MobileLayout();
+
   @override
   Widget build(BuildContext context) {
-    final List<Widget> settings = SettingSection.values
-        .expand(
-          (setting) => setting == SettingSection.beta
-              ? [
-                  SettingsCard(
-                    icon: Icons.sync_outlined,
-                    title: context.t.sync_status,
-                    subtitle: context.t.sync_status_subtitle,
-                    onTap: () => context.pushRoute(const SyncStatusRoute()),
-                  ),
-                ]
-              : [
-                  SettingsCard(
-                    title: setting.title(context.t),
-                    subtitle: setting.subtitle(context.t),
-                    icon: setting.icon,
-                    onTap: () => context.pushRoute(SettingsSubRoute(section: setting)),
+    final t = context.t;
+
+    return CustomScrollView(
+      slivers: [
+        LargeTitleSliverAppBar(title: t.settings),
+        SliverToBoxAdapter(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SettingsProfileCard(),
+              for (final group in _groups)
+                SettingsSection(
+                  title: group.header?.call(t),
+                  hasLeadingBadges: true,
+                  children: [
+                    for (final section in group.items)
+                      SettingsTile(
+                        icon: section.icon,
+                        title: section.title(t),
+                        onTap: () => section == SettingSection.beta
+                            ? context.pushRoute(const SyncStatusRoute())
+                            : context.pushRoute(SettingsSubRoute(section: section)),
+                      ),
+                  ],
+                ),
+              SettingsSection(
+                title: t.about,
+                hasLeadingBadges: true,
+                children: [
+                  SettingsTile(
+                    icon: AppIcons.sparkles,
+                    title: t.whats_new,
+                    onTap: () => context.pushRoute(const WhatsNewRoute()),
                   ),
                 ],
-        )
-        .toList();
-    settings.add(
-      SettingsCard(
-        icon: Icons.auto_awesome_outlined,
-        title: context.t.whats_new,
-        subtitle: context.t.whats_new_settings_subtitle,
-        onTap: () => context.pushRoute(const WhatsNewRoute()),
-      ),
+              ),
+            ],
+          ),
+        ),
+        SliverToBoxAdapter(child: SizedBox(height: 32 + MediaQuery.paddingOf(context).bottom)),
+      ],
     );
-    return ListView(padding: const EdgeInsets.only(top: 10.0, bottom: 60), children: [...settings]);
   }
 }
 
 class _TabletLayout extends HookWidget {
   const _TabletLayout();
+
   @override
   Widget build(BuildContext context) {
     final selectedSection = useState<SettingSection>(SettingSection.values.first);
+    final t = context.t;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Expanded(
           flex: 2,
-          child: CustomScrollView(
-            slivers: [
-              ...SettingSection.values.map(
-                (s) => SliverToBoxAdapter(
-                  child: ListTile(
-                    title: Text(s.title(context.t)),
-                    leading: Icon(s.icon),
-                    selected: s.index == selectedSection.value.index,
-                    selectedColor: context.primaryColor,
-                    selectedTileColor: context.themeData.highlightColor,
-                    onTap: () => selectedSection.value = s,
+          child: ListView(
+            padding: const EdgeInsets.only(top: 8, bottom: 32),
+            children: [
+              const SettingsProfileCard(),
+              for (final group in _groups)
+                SettingsSection(
+                  title: group.header?.call(t),
+                  hasLeadingBadges: true,
+                  children: [
+                    for (final section in group.items)
+                      SettingsTile(
+                        icon: section.icon,
+                        title: section.title(t),
+                        showChevron: false,
+                        selected: section == selectedSection.value,
+                        onTap: () => selectedSection.value = section,
+                      ),
+                  ],
+                ),
+              SettingsSection(
+                title: t.about,
+                hasLeadingBadges: true,
+                children: [
+                  SettingsTile(
+                    icon: AppIcons.sparkles,
+                    title: t.whats_new,
+                    onTap: () => context.pushRoute(const WhatsNewRoute()),
                   ),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: ListTile(
-                  title: Text(context.t.whats_new),
-                  leading: const Icon(Icons.auto_awesome_outlined),
-                  onTap: () => context.pushRoute(const WhatsNewRoute()),
-                ),
+                ],
               ),
             ],
           ),

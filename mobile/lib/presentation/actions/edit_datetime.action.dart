@@ -11,6 +11,7 @@ import 'package:immich_mobile/providers/infrastructure/toast.provider.dart';
 import 'package:immich_mobile/utils/error_handler.dart';
 import 'package:immich_mobile/utils/timezone.dart';
 import 'package:immich_mobile/widgets/common/date_time_picker.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 typedef _State = ({List<String> assetIds, RemoteAsset? origin});
 
@@ -33,7 +34,7 @@ class EditDateTimeAction extends AssetActionBuilder {
     }
 
     return .new(
-      icon: Icons.edit_calendar_outlined,
+      icon: AppIcons.calendarCog,
       label: context.t.control_bottom_app_bar_edit_time,
       onAction: () => _edit(context, ref),
     );

@@ -17,10 +17,9 @@ class HapticSetting extends HookWidget {
       hapticFeedbackSetting.value = isEnabled;
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return SettingsSection(
+      title: context.t.haptic_feedback_title,
       children: [
-        SettingGroupTitle(title: context.t.haptic_feedback_title, icon: Icons.vibration_outlined),
         SettingsSwitchListTile(
           valueNotifier: isHapticFeedbackEnabled,
           title: context.t.enabled,

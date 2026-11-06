@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:immich_ui/extensions/theme_extensions.dart';
+import 'package:immich_ui/extensions/build_context_extensions.dart';
+import 'package:immich_ui/src/components/settings/settings_tile.dart';
 
+/// A tappable [SettingsTile] with an optional status pill (for example a
+/// permission state).
 class SettingsActionTile extends StatelessWidget {
   const SettingsActionTile({
     super.key,
@@ -9,9 +12,6 @@ class SettingsActionTile extends StatelessWidget {
     required this.onActionTap,
     this.statusText,
     this.statusColor,
-    this.contentPadding,
-    this.titleStyle,
-    this.subtitleStyle,
   });
 
   final String title;
@@ -19,55 +19,29 @@ class SettingsActionTile extends StatelessWidget {
   final String? statusText;
   final Color? statusColor;
   final VoidCallback onActionTap;
-  final EdgeInsets? contentPadding;
-  final TextStyle? titleStyle;
-  final TextStyle? subtitleStyle;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final color = statusColor ?? context.colorScheme.onSurfaceVariant;
 
-    return ListTile(
-      isThreeLine: true,
+    return SettingsTile(
+      title: title,
+      subtitle: subtitle,
       onTap: onActionTap,
-      titleAlignment: ListTileTitleAlignment.center,
-      title: Row(
-        children: [
-          Expanded(
-            child: Text(
-              title,
-              style: titleStyle ?? theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500, height: 1.5),
-            ),
-          ),
-          if (statusText != null)
-            Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: Chip(
-                label: Text(
-                  statusText!,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: statusColor ?? theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                backgroundColor: theme.colorScheme.surface,
-                side: BorderSide(color: statusColor ?? theme.colorScheme.outlineVariant),
-                shape: StadiumBorder(side: BorderSide(color: statusColor ?? theme.colorScheme.outlineVariant)),
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                visualDensity: VisualDensity.compact,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+      trailing: statusText == null
+          ? null
+          : Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(Radius.circular(100)),
+                color: color.withValues(alpha: .12),
+              ),
+              child: Text(
+                statusText!,
+                style: context.textTheme.labelSmall?.copyWith(color: color, fontWeight: FontWeight.w600),
               ),
             ),
-        ],
-      ),
-      subtitle: Padding(
-        padding: const EdgeInsets.only(top: 4.0, right: 18.0),
-        child: Text(
-          subtitle,
-          style: subtitleStyle ?? theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceSecondary),
-        ),
-      ),
-      trailing: Icon(Icons.arrow_forward_ios, size: 16, color: theme.colorScheme.onSurfaceVariant),
-      contentPadding: contentPadding ?? const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+      showChevron: true,
     );
   }
 }

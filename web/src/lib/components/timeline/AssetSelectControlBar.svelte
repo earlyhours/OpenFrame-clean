@@ -18,7 +18,7 @@
 
 <ControlAppBar {onClose} backIcon={mdiClose}>
   {#snippet leading()}
-    <div class="font-medium text-primary">
+    <div class="text-sm font-semibold text-primary">
       <p class="block sm:hidden">{assets.length}</p>
       <p class="hidden sm:block">{$t('selected_count', { values: { count: assets.length } })}</p>
     </div>

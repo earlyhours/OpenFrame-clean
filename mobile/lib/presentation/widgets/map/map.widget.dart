@@ -20,6 +20,7 @@ import 'package:immich_mobile/utils/async_mutex.dart';
 import 'package:immich_mobile/utils/debounce.dart';
 import 'package:immich_mobile/widgets/common/immich_toast.dart';
 import 'package:immich_mobile/widgets/map/map_theme_override.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
 class CustomSourceProperties implements SourceProperties {
@@ -273,7 +274,7 @@ class _DynamicMyLocationButton extends StatelessWidget {
             child: ElevatedButton(
               onPressed: onZoomToLocation,
               style: ElevatedButton.styleFrom(shape: const CircleBorder()),
-              child: const Icon(Icons.my_location),
+              child: const Icon(AppIcons.locateFixed),
             ),
           ),
         );

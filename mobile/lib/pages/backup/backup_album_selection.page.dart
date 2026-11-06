@@ -16,6 +16,7 @@ import 'package:immich_mobile/providers/infrastructure/settings.provider.dart';
 import 'package:immich_mobile/providers/user.provider.dart';
 import 'package:immich_mobile/widgets/backup/album_info_list_tile.dart';
 import 'package:immich_mobile/widgets/common/search_field.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:logging/logging.dart';
 
 final backupAlbumCountProvider = FutureProvider.autoDispose<int>((ref) async {
@@ -149,7 +150,7 @@ class _BackupAlbumSelectionPageState extends ConsumerState<BackupAlbumSelectionP
         appBar: AppBar(
           leading: IconButton(
             onPressed: () async => await context.maybePop(),
-            icon: const Icon(Icons.arrow_back_ios_rounded),
+            icon: const Icon(AppIcons.chevronLeftDir),
           ),
           title: _isSearchMode
               ? SearchField(
@@ -163,7 +164,7 @@ class _BackupAlbumSelectionPageState extends ConsumerState<BackupAlbumSelectionP
           actions: [
             if (!_isSearchMode)
               IconButton(
-                icon: const Icon(Icons.search),
+                icon: const Icon(AppIcons.search),
                 onPressed: () => setState(() {
                   _isSearchMode = true;
                   _searchQuery = '';
@@ -171,7 +172,7 @@ class _BackupAlbumSelectionPageState extends ConsumerState<BackupAlbumSelectionP
               )
             else
               IconButton(
-                icon: const Icon(Icons.close),
+                icon: const Icon(AppIcons.x),
                 onPressed: () => setState(() {
                   _isSearchMode = false;
                   _searchQuery = '';
@@ -222,10 +223,10 @@ class _BackupAlbumSelectionPageState extends ConsumerState<BackupAlbumSelectionP
                         ),
                         trailing: IconButton(
                           splashRadius: 16,
-                          icon: Icon(Icons.info, size: 20, color: context.primaryColor),
+                          icon: Icon(AppIcons.info, size: 20, color: context.primaryColor),
                           onPressed: () {
                             unawaited(
-                              showDialog(
+                              showAppDialog(
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
@@ -379,8 +380,8 @@ class _SelectedAlbumNameChips extends ConsumerWidget {
           child: GestureDetector(
             onTap: () => unawaited(removeSelection()),
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeInOut,
+              duration: AppMotion.of(context, AppMotion.fast),
+              curve: AppMotion.emphasized,
               child: Chip(
                 label: Text(
                   album.name,
@@ -392,7 +393,7 @@ class _SelectedAlbumNameChips extends ConsumerWidget {
                 ),
                 backgroundColor: context.primaryColor,
                 deleteIconColor: context.isDarkTheme ? Colors.black : Colors.white,
-                deleteIcon: const Icon(Icons.cancel_rounded, size: 15),
+                deleteIcon: const Icon(AppIcons.circleX, size: 15),
                 onDeleted: () => unawaited(removeSelection()),
               ),
             ),
@@ -423,8 +424,8 @@ class _ExcludedAlbumNameChips extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeInOut,
+              duration: AppMotion.of(context, AppMotion.fast),
+              curve: AppMotion.emphasized,
               child: Chip(
                 label: Text(
                   album.name,
@@ -432,7 +433,7 @@ class _ExcludedAlbumNameChips extends ConsumerWidget {
                 ),
                 backgroundColor: Colors.red[300],
                 deleteIconColor: context.scaffoldBackgroundColor,
-                deleteIcon: const Icon(Icons.cancel_rounded, size: 15),
+                deleteIcon: const Icon(AppIcons.circleX, size: 15),
                 onDeleted: () => unawaited(removeSelection()),
               ),
             ),
@@ -468,8 +469,13 @@ class _SelectAllButton extends ConsumerWidget {
                       }
                     }
                   : null,
-              icon: const Icon(Icons.select_all),
-              label: AnimatedSwitcher(duration: const Duration(milliseconds: 200), child: Text(context.t.select_all)),
+              icon: const Icon(AppIcons.squareCheck),
+              label: AnimatedSwitcher(
+                duration: AppMotion.of(context, AppMotion.fast),
+                switchInCurve: AppMotion.emphasized,
+                switchOutCurve: Curves.easeInCubic,
+                child: Text(context.t.select_all),
+              ),
               style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12.0)),
             ),
           ),
@@ -485,7 +491,7 @@ class _SelectAllButton extends ConsumerWidget {
                       }
                     }
                   : null,
-              icon: const Icon(Icons.deselect),
+              icon: const Icon(AppIcons.squareDashed),
               label: Text(context.t.deselect_all),
               style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12.0)),
             ),

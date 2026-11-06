@@ -28,6 +28,7 @@ import 'package:immich_mobile/presentation/actions/upload.action.dart';
 import 'package:immich_mobile/presentation/widgets/action_buttons/base_action_button.widget.dart';
 import 'package:immich_mobile/presentation/widgets/action_buttons/like_activity_action_button.widget.dart';
 import 'package:immich_mobile/routing/router.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class ActionButtonContext {
   final BaseAsset asset;
@@ -202,13 +203,13 @@ enum ActionButtonType {
       ActionButtonType.setProfilePicture => ActionMenuItem(action: SetProfilePictureAction(asset: context.asset)),
       ActionButtonType.openInfo => BaseActionButton(
         label: StaticTranslations.instance.info,
-        iconData: Icons.info_outline,
+        iconData: AppIcons.info,
         menuItem: true,
         onPressed: () => EventStream.shared.emit(const ViewerShowDetailsEvent()),
       ),
       ActionButtonType.viewInTimeline => BaseActionButton(
         label: StaticTranslations.instance.view_in_timeline,
-        iconData: Icons.image_search,
+        iconData: AppIcons.scanSearch,
         iconOnly: iconOnly,
         menuItem: menuItem,
         onPressed: buildContext == null

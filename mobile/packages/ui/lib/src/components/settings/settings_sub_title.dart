@@ -1,19 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:immich_ui/extensions/build_context_extensions.dart';
+import 'package:immich_ui/src/components/settings/settings_section.dart';
 
+/// A muted sub header. Same look as [SettingsSectionHeader].
 class SettingsSubTitle extends StatelessWidget {
   final String title;
 
   const SettingsSubTitle({super.key, required this.title});
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20),
-      child: Text(
-        title,
-        style: context.textTheme.bodyLarge?.copyWith(color: context.primaryColor, fontWeight: FontWeight.w700),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => SettingsSectionHeader(title: title);
 }

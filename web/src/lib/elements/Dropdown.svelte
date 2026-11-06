@@ -106,17 +106,17 @@
   <!-- DROP DOWN MENU -->
   {#if showMenu}
     <div
-      transition:fly={{ y: -30, duration: 250 }}
-      class="absolute z-1 flex max-h-[70vh] min-w-75 immich-scrollbar flex-col overflow-y-auto rounded-2xl bg-gray-100 py-2 text-sm font-medium text-black shadow-lg dark:bg-gray-700 dark:text-white {className} {getAlignClass(
+      transition:fly={{ y: -8, duration: 180 }}
+      class="absolute z-1 flex max-h-[70vh] min-w-75 immich-scrollbar flex-col overflow-y-auto rounded-xl border bg-subtle p-1 text-sm font-medium text-dark shadow-lg {className} {getAlignClass(
         position,
       )}"
     >
       {#each options as option (option)}
         {@const renderedOption = renderOption(option)}
-        {@const buttonStyle = renderedOption.disabled ? '' : 'transition-all hover:bg-gray-300 dark:hover:bg-gray-800'}
+        {@const buttonStyle = renderedOption.disabled ? '' : 'transition-colors duration-150 hover:bg-(--of-panel-2)'}
         <button
           type="button"
-          class="grid grid-cols-[36px_1fr] place-items-center p-2 disabled:opacity-40 {buttonStyle}"
+          class="grid min-h-10 grid-cols-[36px_1fr] place-items-center rounded-lg px-2 disabled:opacity-40 {buttonStyle}"
           disabled={renderedOption.disabled}
           onclick={() => !renderedOption.disabled && handleSelectOption(option)}
         >

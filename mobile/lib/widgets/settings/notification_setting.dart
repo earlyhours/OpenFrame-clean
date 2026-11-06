@@ -25,7 +25,7 @@ class NotificationSetting extends HookConsumerWidget {
     // allow them
     void showPermissionsDialog() {
       unawaited(
-        showDialog(
+        showAppDialog(
           context: context,
           builder: (ctx) => AlertDialog(
             content: Text(ctx.t.notification_permission_dialog_content),
@@ -41,7 +41,7 @@ class NotificationSetting extends HookConsumerWidget {
     final notificationSettings = [
       if (!hasPermission)
         SettingsButtonListTile(
-          icon: Icons.notifications_outlined,
+          icon: AppIcons.bell,
           title: context.t.notification_permission_list_tile_title,
           subtileText: context.t.notification_permission_list_tile_content,
           buttonText: context.t.notification_permission_list_tile_enable_button,
@@ -54,7 +54,7 @@ class NotificationSetting extends HookConsumerWidget {
         )
       else
         SettingsButtonListTile(
-          icon: Icons.notifications_active_outlined,
+          icon: AppIcons.bellRing,
           title: context.t.notification_enabled_list_tile_title,
           subtileText: context.t.notification_enabled_list_tile_content,
           buttonText: context.t.notification_enabled_list_tile_open_button,
@@ -62,6 +62,6 @@ class NotificationSetting extends HookConsumerWidget {
         ),
     ];
 
-    return SettingsSubPageScaffold(settings: notificationSettings);
+    return SettingsSubPageScaffold(settings: [SettingsSection(children: notificationSettings)]);
   }
 }

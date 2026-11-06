@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:immich_ui/src/motion.dart';
 
 extension ContextHelper on BuildContext {
   // Returns the current padding from MediaQuery
@@ -63,5 +64,7 @@ extension ContextHelper on BuildContext {
   FocusScopeNode get focusScope => FocusScope.of(this);
 
   // Show SnackBars from the current context
-  void showSnackBar(SnackBar snackBar) => ScaffoldMessenger.of(this).showSnackBar(snackBar);
+  void showSnackBar(SnackBar snackBar) => ScaffoldMessenger.of(
+    this,
+  ).showSnackBar(snackBar, snackBarAnimationStyle: AppMotion.styleOf(this, AppMotion.snackbar));
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/presentation/widgets/action_buttons/base_action_button.widget.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class RemoteAlbumOption extends StatelessWidget {
   const RemoteAlbumOption({
@@ -36,7 +37,12 @@ class RemoteAlbumOption extends StatelessWidget {
 
     if (onEditAlbum != null) {
       menuChildren.add(
-        BaseActionButton(label: context.t.edit_album, iconData: Icons.edit, onPressed: onEditAlbum, menuItem: true),
+        BaseActionButton(
+          label: context.t.edit_album,
+          iconData: AppIcons.pencil,
+          onPressed: onEditAlbum,
+          menuItem: true,
+        ),
       );
     }
 
@@ -44,7 +50,7 @@ class RemoteAlbumOption extends StatelessWidget {
       menuChildren.add(
         BaseActionButton(
           label: context.t.add_photos,
-          iconData: Icons.add_a_photo,
+          iconData: AppIcons.imagePlus,
           onPressed: onAddPhotos,
           menuItem: true,
         ),
@@ -55,7 +61,7 @@ class RemoteAlbumOption extends StatelessWidget {
       menuChildren.add(
         BaseActionButton(
           label: context.t.album_viewer_page_share_add_users,
-          iconData: Icons.group_add,
+          iconData: AppIcons.userPlus,
           onPressed: onAddUsers,
           menuItem: true,
         ),
@@ -66,7 +72,7 @@ class RemoteAlbumOption extends StatelessWidget {
       menuChildren.add(
         BaseActionButton(
           label: context.t.leave_album,
-          iconData: Icons.person_remove_rounded,
+          iconData: AppIcons.userMinus,
           onPressed: onLeaveAlbum,
           menuItem: true,
         ),
@@ -77,7 +83,7 @@ class RemoteAlbumOption extends StatelessWidget {
       menuChildren.add(
         BaseActionButton(
           label: context.t.change_display_order,
-          iconData: Icons.swap_vert_rounded,
+          iconData: AppIcons.arrowUpDown,
           onPressed: onToggleAlbumOrder,
           menuItem: true,
         ),
@@ -88,7 +94,7 @@ class RemoteAlbumOption extends StatelessWidget {
       menuChildren.add(
         BaseActionButton(
           label: context.t.create_shared_link,
-          iconData: Icons.link,
+          iconData: AppIcons.link,
           onPressed: onCreateSharedLink,
           menuItem: true,
         ),
@@ -97,7 +103,12 @@ class RemoteAlbumOption extends StatelessWidget {
 
     if (onShowOptions != null) {
       menuChildren.add(
-        BaseActionButton(label: context.t.options, iconData: Icons.settings, onPressed: onShowOptions, menuItem: true),
+        BaseActionButton(
+          label: context.t.options,
+          iconData: AppIcons.settings,
+          onPressed: onShowOptions,
+          menuItem: true,
+        ),
       );
     }
 
@@ -106,7 +117,7 @@ class RemoteAlbumOption extends StatelessWidget {
       menuChildren.add(
         BaseActionButton(
           label: context.t.delete_album,
-          iconData: Icons.delete,
+          iconData: AppIcons.trash2,
           iconColor: context.isDarkTheme ? Colors.red[400] : Colors.red[800],
           onPressed: onDeleteAlbum,
           menuItem: true,
@@ -137,7 +148,7 @@ class RemoteAlbumOption extends StatelessWidget {
       ],
       builder: (context, controller, child) {
         return IconButton(
-          icon: Icon(Icons.more_vert_rounded, color: iconColor ?? Colors.white, shadows: iconShadows),
+          icon: Icon(AppIcons.ellipsisVertical, color: iconColor ?? Colors.white, shadows: iconShadows),
           onPressed: () => controller.isOpen ? controller.close() : controller.open(),
         );
       },

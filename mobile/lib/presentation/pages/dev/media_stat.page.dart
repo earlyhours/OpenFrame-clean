@@ -7,6 +7,7 @@ import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/providers/infrastructure/db.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class _Stat {
   const _Stat({required this.name, required this.load});
@@ -33,7 +34,7 @@ class _Summary extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           subtitle = const CircularProgressIndicator();
         } else if (snapshot.hasError) {
-          subtitle = const Icon(Icons.error_rounded);
+          subtitle = const Icon(AppIcons.circleAlert);
         } else {
           subtitle = Text('${snapshot.data ?? 0}', style: ctx.textTheme.bodyLarge);
         }
@@ -99,7 +100,7 @@ class LocalMediaSummaryPage extends StatelessWidget {
                           .filter((f) => f.albumId.id.equals(album.id))
                           .count();
                       return _Summary(
-                        leading: const Icon(Icons.photo_album_rounded),
+                        leading: const Icon(AppIcons.libraryBig),
                         name: album.name,
                         countFuture: countFuture,
                         onTap: () => context.router.push(LocalTimelineRoute(album: album)),
@@ -179,7 +180,7 @@ class RemoteMediaSummaryPage extends StatelessWidget {
                           .filter((f) => f.albumId.id.equals(album.id))
                           .count();
                       return _Summary(
-                        leading: const Icon(Icons.photo_album_rounded),
+                        leading: const Icon(AppIcons.libraryBig),
                         name: album.name,
                         countFuture: countFuture,
                         onTap: () => context.router.push(RemoteAlbumRoute(album: album)),

@@ -10,6 +10,7 @@ import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/presentation/actions/edit_location.action.dart';
 import 'package:immich_mobile/presentation/widgets/asset_viewer/sheet_tile.widget.dart';
 import 'package:immich_mobile/widgets/asset_viewer/detail_panel/exif_map.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
 class LocationDetails extends ConsumerStatefulWidget {
@@ -77,7 +78,7 @@ class _LocationDetailsState extends ConsumerState<LocationDetails> {
           SheetTile(
             title: context.t.location,
             titleStyle: context.textTheme.labelLarge?.copyWith(color: context.colorScheme.onSurfaceSecondary),
-            trailing: hasCoordinates && editLocation != null ? const Icon(Icons.edit_location_alt, size: 20) : null,
+            trailing: hasCoordinates && editLocation != null ? const Icon(AppIcons.mapPinPen, size: 20) : null,
             onTap: editLocation?.onAction,
           ),
           if (hasCoordinates)
@@ -112,7 +113,7 @@ class _LocationDetailsState extends ConsumerState<LocationDetails> {
                 fontWeight: FontWeight.w600,
                 color: context.primaryColor,
               ),
-              leading: const Icon(Icons.location_off),
+              leading: const Icon(AppIcons.mapPinOff),
               onTap: editLocation?.onAction,
             ),
         ],

@@ -16,6 +16,7 @@ import 'package:immich_mobile/presentation/widgets/slideshow/slideshow_slide.wid
 import 'package:immich_mobile/providers/asset_viewer/video_player_provider.dart';
 import 'package:immich_mobile/providers/infrastructure/settings.provider.dart';
 import 'package:immich_mobile/widgets/common/immich_loading_indicator.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 import '../../unit/factories/remote_asset_factory.dart';
 import '../../unit/presentation/presentation_context.dart';
@@ -232,10 +233,10 @@ void main() {
 
       // Show AppBar and pause the app
       await tapScreen(tester);
-      await tester.tap(find.byIcon(Icons.pause));
+      await tester.tap(find.byIcon(AppIcons.pause));
       await tester.pump();
 
-      expect(find.byIcon(Icons.play_arrow), findsOneWidget);
+      expect(find.byIcon(AppIcons.play), findsOneWidget);
 
       final held = progressIndicatorProgress(tester);
       await tester.pump(slideDuration);
@@ -247,9 +248,9 @@ void main() {
       await tester.pump(slideDuration * 0.64);
 
       await tapScreen(tester);
-      await tester.tap(find.byIcon(Icons.pause));
+      await tester.tap(find.byIcon(AppIcons.pause));
       await tester.pump();
-      await tester.tap(find.byIcon(Icons.play_arrow));
+      await tester.tap(find.byIcon(AppIcons.play));
 
       // Resuming restarts the ticker, so this frame is its new baseline and elapses nothing
       await tester.pump();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:immich_mobile/extensions/build_context_extensions.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 enum ToastType { info, success, error }
 
@@ -15,38 +15,30 @@ class ImmichToast {
     final fToast = FToast();
     fToast.init(context);
 
-    Color getColor(ToastType type, BuildContext context) => switch (type) {
-      ToastType.info => context.primaryColor,
-      ToastType.success => const Color.fromARGB(255, 78, 140, 124),
-      ToastType.error => const Color.fromARGB(255, 220, 48, 85),
-    };
-
-    Icon getIcon(ToastType type) => switch (type) {
-      ToastType.info => Icon(Icons.info_outline_rounded, color: context.primaryColor),
-      ToastType.success => const Icon(Icons.check_circle_rounded, color: Color.fromARGB(255, 78, 140, 124)),
-      ToastType.error => const Icon(Icons.error_outline_rounded, color: Color.fromARGB(255, 240, 162, 156)),
-    };
+    final style = ToastStyle.of(context, switch (toastType) {
+      ToastType.info => SnackbarType.info,
+      ToastType.success => SnackbarType.success,
+      ToastType.error => SnackbarType.error,
+    });
 
     fToast.showToast(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(16.0)),
-          color: context.colorScheme.surfaceContainer,
-          border: Border.all(color: context.colorScheme.outline.withValues(alpha: .5), width: 1),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            getIcon(toastType),
-            const SizedBox(width: 12.0),
-            Flexible(
-              child: Text(
-                msg,
-                style: TextStyle(color: getColor(toastType, context), fontWeight: FontWeight.w600, fontSize: 14),
-              ),
-            ),
-          ],
+      child: _ToastEntrance(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(Radius.circular(14.0)),
+            color: style.background,
+            border: Border.fromBorderSide(style.border),
+            boxShadow: style.shadow,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(style.icon, color: style.iconColor, size: 20),
+              const SizedBox(width: 10.0),
+              Flexible(child: Text(msg, style: style.textStyle)),
+            ],
+          ),
         ),
       ),
       positionedToastBuilder: (context, child, gravity) {
@@ -61,6 +53,30 @@ class ImmichToast {
       },
       gravity: gravity,
       toastDuration: Duration(seconds: durationInSecond),
+      // The package fades with an ease-in curve; a short duration keeps it
+      // from feeling sluggish in either direction.
+      fadeDuration: AppMotion.of(context, const Duration(milliseconds: 200)),
+    );
+  }
+}
+
+/// Lifts the toast a few pixels into place while the package fades it in.
+class _ToastEntrance extends StatelessWidget {
+  final Widget child;
+
+  const _ToastEntrance({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    if (AppMotion.reduced(context)) {
+      return child;
+    }
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 1, end: 0),
+      duration: AppMotion.base,
+      curve: AppMotion.emphasized,
+      child: child,
+      builder: (context, t, child) => Transform.translate(offset: Offset(0, 14 * t), child: child),
     );
   }
 }

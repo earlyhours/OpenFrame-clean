@@ -82,19 +82,19 @@
 </script>
 
 <div class="mb-4 w-full">
-  <div class="flex place-items-center gap-1">
+  <div class="mb-1 flex place-items-center gap-2">
     {#if label}
-      <label class="min-h-6 text-sm font-medium text-primary" for={label}>{label}</label>
+      <label class="min-h-6 text-sm font-medium text-dark" for={label}>{label}</label>
     {/if}
 
     {#if required}
-      <div class="text-red-400">*</div>
+      <div class="text-danger">*</div>
     {/if}
 
     {#if isEdited}
       <div
         transition:fly={{ x: 10, duration: 200, easing: quintOut }}
-        class="rounded-full bg-orange-100 px-2 text-[10px] text-orange-900"
+        class="rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary"
       >
         {$t('unsaved_change')}
       </div>
@@ -116,7 +116,7 @@
       {#if inputType === SettingInputFieldType.COLOR}
         <input
           bind:this={input}
-          class="me-1 immich-form-input w-full rounded-none pb-2"
+          class="me-1 immich-form-input w-full rounded-none"
           aria-describedby={description ? `${label}-desc` : undefined}
           aria-labelledby="{label}-label"
           id={label}
@@ -135,7 +135,7 @@
 
       <input
         bind:this={input}
-        class="immich-form-input w-full min-w-[50px] pb-2"
+        class="immich-form-input w-full min-w-[50px]"
         class:color-picker={inputType === SettingInputFieldType.COLOR}
         aria-describedby={description ? `${label}-desc` : undefined}
         aria-labelledby="{label}-label"

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/constants/enums.dart';
 import 'package:immich_mobile/domain/models/album/album.model.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
-import 'package:immich_mobile/extensions/theme_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/models/albums/album_search.model.dart';
 import 'package:immich_mobile/presentation/widgets/album/album_tile.dart';
@@ -25,6 +23,7 @@ import 'package:immich_mobile/utils/album_filter.utils.dart';
 import 'package:immich_mobile/widgets/common/confirm_dialog.dart';
 import 'package:immich_mobile/widgets/common/immich_toast.dart';
 import 'package:immich_mobile/widgets/common/search_field.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 typedef AlbumSelectorCallback = void Function(RemoteAlbum album);
@@ -284,13 +283,6 @@ class _SortButtonState extends ConsumerState<_SortButton> {
     final effectiveOrder = albumSortOption.effectiveOrder(albumSortIsReverse);
     return MenuAnchor(
       controller: widget.controller,
-      style: MenuStyle(
-        elevation: const WidgetStatePropertyAll(1),
-        shape: WidgetStateProperty.all(
-          const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(24))),
-        ),
-        padding: const WidgetStatePropertyAll(EdgeInsets.all(4)),
-      ),
       consumeOutsideTap: true,
       menuChildren: AlbumSortMode.values
           .map(
@@ -298,18 +290,18 @@ class _SortButtonState extends ConsumerState<_SortButton> {
               leadingIcon: albumSortOption == sortMode
                   ? effectiveOrder == SortOrder.desc
                         ? Icon(
-                            Icons.keyboard_arrow_down,
+                            AppIcons.chevronDown,
                             color: albumSortOption == sortMode
                                 ? context.colorScheme.onPrimary
                                 : context.colorScheme.onSurface,
                           )
                         : Icon(
-                            Icons.keyboard_arrow_up_rounded,
+                            AppIcons.chevronUp,
                             color: albumSortOption == sortMode
                                 ? context.colorScheme.onPrimary
                                 : context.colorScheme.onSurface,
                           )
-                  : const Icon(Icons.abc, color: Colors.transparent),
+                  : const Icon(AppIcons.letterText, color: Colors.transparent),
               onPressed: () => onMenuTapped(sortMode),
               style: ButtonStyle(
                 padding: WidgetStateProperty.all(const EdgeInsets.fromLTRB(12, 12, 24, 12)),
@@ -317,7 +309,7 @@ class _SortButtonState extends ConsumerState<_SortButton> {
                   albumSortOption == sortMode ? context.colorScheme.primary : Colors.transparent,
                 ),
                 shape: WidgetStateProperty.all(
-                  const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+                  const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(ImmichRadius.sm))),
                 ),
               ),
               child: Text(
@@ -345,8 +337,8 @@ class _SortButtonState extends ConsumerState<_SortButton> {
               Padding(
                 padding: const EdgeInsets.only(right: 5),
                 child: effectiveOrder == SortOrder.desc
-                    ? Icon(Icons.keyboard_arrow_down, color: context.colorScheme.onSurface)
-                    : Icon(Icons.keyboard_arrow_up_rounded, color: context.colorScheme.onSurface),
+                    ? Icon(AppIcons.chevronDown, color: context.colorScheme.onSurface)
+                    : Icon(AppIcons.chevronUp, color: context.colorScheme.onSurface),
               ),
               Text(
                 albumSortOption.label(context.t),
@@ -388,36 +380,22 @@ class _SearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
       sliver: SliverToBoxAdapter(
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            border: Border.all(color: context.colorScheme.onSurface.withAlpha(0), width: 0),
-            borderRadius: const BorderRadius.all(Radius.circular(24)),
-            gradient: LinearGradient(
-              colors: [
-                context.colorScheme.primary.withValues(alpha: 0.075),
-                context.colorScheme.primary.withValues(alpha: 0.09),
-                context.colorScheme.primary.withValues(alpha: 0.075),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              transform: const GradientRotation(0.5 * pi),
-            ),
-          ),
-          child: SearchField(
-            autofocus: false,
-            contentPadding: const EdgeInsets.all(16),
-            hintText: context.t.search_albums,
-            prefixIcon: const Icon(Icons.search_rounded),
-            suffixIcon: searchController.text.isNotEmpty
-                ? IconButton(icon: const Icon(Icons.clear_rounded), onPressed: onClearSearch)
-                : null,
-            controller: searchController,
-            onChanged: (_) => onSearch(searchController.text, filterMode),
-            focusNode: searchFocusNode,
-            onTapOutside: (_) => searchFocusNode.unfocus(),
-          ),
+        child: SearchField(
+          autofocus: false,
+          hintText: context.t.search_albums,
+          prefixIcon: const Icon(AppIcons.search, size: ImmichIconSize.sm),
+          suffixIcon: searchController.text.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(AppIcons.x, size: ImmichIconSize.sm),
+                  onPressed: onClearSearch,
+                )
+              : null,
+          controller: searchController,
+          onChanged: (_) => onSearch(searchController.text, filterMode),
+          focusNode: searchFocusNode,
+          onTapOutside: (_) => searchFocusNode.unfocus(),
         ),
       ),
     );
@@ -443,8 +421,8 @@ class _QuickFilterButtonRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       sliver: SliverToBoxAdapter(
         child: Wrap(
-          spacing: 4,
-          runSpacing: 4,
+          spacing: 8,
+          runSpacing: 8,
           children: [
             _QuickFilterButton(
               label: context.t.all,
@@ -489,20 +467,19 @@ class _QuickFilterButton extends StatelessWidget {
     return TextButton(
       onPressed: onTap,
       style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(isSelected ? context.colorScheme.primary : Colors.transparent),
-        shape: WidgetStateProperty.all(
-          RoundedRectangleBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(20)),
-            side: BorderSide(color: context.colorScheme.onSurface.withAlpha(25), width: 1),
-          ),
+        backgroundColor: WidgetStateProperty.all(
+          isSelected ? context.colorScheme.primaryContainer : Colors.transparent,
         ),
+        shape: WidgetStateProperty.all(
+          StadiumBorder(side: BorderSide(color: context.colorScheme.outlineVariant, width: .5)),
+        ),
+        padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 14)),
+        minimumSize: const WidgetStatePropertyAll(Size(0, 36)),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
       child: Text(
         label,
-        style: TextStyle(
-          color: isSelected ? context.colorScheme.onPrimary : context.colorScheme.onSurface,
-          fontSize: 14,
-        ),
+        style: TextStyle(color: isSelected ? context.primaryColor : context.colorScheme.onSurface, fontSize: 14),
       ),
     );
   }
@@ -541,8 +518,8 @@ class _QuickSortAndViewMode extends StatelessWidget {
             ),
             IconButton(
               icon: Icon(
-                isGrid ? Icons.view_list_outlined : Icons.grid_view_outlined,
-                size: 24,
+                isGrid ? AppIcons.list : AppIcons.layoutGrid,
+                size: ImmichIconSize.md,
                 color: context.colorScheme.onSurface,
               ),
               onPressed: onToggleViewMode,
@@ -587,11 +564,11 @@ class _AlbumList extends ConsumerWidget {
                   color: context.colorScheme.error,
                   alignment: Alignment.centerRight,
                   padding: const EdgeInsets.only(right: 16),
-                  child: Icon(Icons.delete, color: context.colorScheme.onError),
+                  child: Icon(AppIcons.trash2, color: context.colorScheme.onError),
                 ),
                 direction: DismissDirection.endToStart,
                 confirmDismiss: (direction) {
-                  return showDialog<bool>(
+                  return showAppDialog<bool>(
                     context: context,
                     builder: (context) => ConfirmDialog(
                       onOk: () => true,
@@ -666,22 +643,18 @@ class _GridAlbumCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final albumThumbnailAsset = ref.watch(assetServiceProvider).getRemoteAsset(album.thumbnailAssetId ?? "");
 
-    return GestureDetector(
+    return Pressable(
       onTap: () => onAlbumSelected(album),
       child: Card(
         elevation: 0,
-        color: context.colorScheme.surfaceBright,
-        shape: RoundedRectangleBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(16)),
-          side: BorderSide(color: context.colorScheme.onSurface.withAlpha(25), width: 1),
-        ),
+        color: Colors.transparent,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               flex: 2,
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+                borderRadius: const BorderRadius.all(Radius.circular(ImmichRadius.lg)),
                 child: SizedBox(
                   width: double.infinity,
                   child: FutureBuilder(
@@ -694,37 +667,38 @@ class _GridAlbumCard extends ConsumerWidget {
                         );
                       }
 
+                      // Only show the "no cover" glyph once we know there is none;
+                      // flashing it while the cover loads reads as a glitch.
                       return ColoredBox(
                         color: context.colorScheme.surfaceContainerHighest,
-                        child: const Icon(Icons.photo_album_rounded, size: 40, color: Colors.grey),
+                        child: snapshot.connectionState == ConnectionState.done
+                            ? Icon(
+                                AppIcons.libraryBig,
+                                size: ImmichIconSize.lg,
+                                color: context.colorScheme.onSurfaceVariant,
+                              )
+                            : null,
                       );
                     },
                   ),
                 ),
               ),
             ),
-            Expanded(
-              flex: 1,
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(
-                      album.name,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-                    ),
-                    Text(
-                      '${context.t.items_count(count: album.assetCount)} • ${album.ownerId != userId ? context.t.shared_by_user(user: album.ownerName) : context.t.owned}',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.textTheme.labelMedium?.copyWith(color: context.colorScheme.onSurfaceSecondary),
-                    ),
-                  ],
-                ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(ImmichSpacing.xs, ImmichSpacing.sm, ImmichSpacing.xs, 0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(album.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: context.textTheme.titleSmall),
+                  const SizedBox(height: ImmichSpacing.xs),
+                  Text(
+                    '${context.t.items_count(count: album.assetCount)} • ${album.ownerId != userId ? context.t.shared_by_user(user: album.ownerName) : context.t.owned}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.textTheme.labelSmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
+                  ),
+                ],
               ),
             ),
           ],
@@ -740,7 +714,7 @@ class AddToAlbumHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     Future<void> onCreateAlbum() async {
-      final albumName = await showDialog<String?>(context: context, builder: (context) => const NewAlbumNameModal());
+      final albumName = await showAppDialog<String?>(context: context, builder: (context) => const NewAlbumNameModal());
       if (albumName == null || !context.mounted) {
         return;
       }
@@ -777,7 +751,7 @@ class AddToAlbumHeader extends ConsumerWidget {
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap, // remove extra height
               ),
               onPressed: onCreateAlbum,
-              icon: Icon(Icons.add, color: context.primaryColor),
+              icon: Icon(AppIcons.plus, color: context.primaryColor),
               label: Text(
                 context.t.common_create_new_album,
                 style: TextStyle(color: context.primaryColor, fontWeight: FontWeight.bold, fontSize: 14),
@@ -796,7 +770,7 @@ class CreateAlbumButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     Future<void> onCreateAlbum() async {
-      final albumName = await showDialog<String?>(context: context, builder: (context) => const NewAlbumNameModal());
+      final albumName = await showAppDialog<String?>(context: context, builder: (context) => const NewAlbumNameModal());
       if (albumName == null || !context.mounted) {
         return;
       }
@@ -846,7 +820,7 @@ class CreateAlbumButton extends ConsumerWidget {
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
               onPressed: onCreateAlbum,
-              icon: Icon(Icons.add, color: context.primaryColor),
+              icon: Icon(AppIcons.plus, color: context.primaryColor),
               label: Text(
                 context.t.common_create_new_album,
                 style: TextStyle(color: context.primaryColor, fontWeight: FontWeight.bold, fontSize: 14),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart' hide Store;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:immich_mobile/demo/demo_mode.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/extensions/theme_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
@@ -12,6 +13,7 @@ import 'package:immich_mobile/providers/server_info.provider.dart';
 import 'package:immich_mobile/providers/user.provider.dart';
 import 'package:immich_mobile/utils/url_helper.dart';
 import 'package:immich_mobile/widgets/common/app_bar_dialog/server_update_notification.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class AppBarServerInfo extends HookConsumerWidget {
@@ -56,6 +58,10 @@ class AppBarServerInfo extends HookConsumerWidget {
           ),
           divider,
           _ServerInfoItem(label: context.t.server_info_box_server_url, text: getServerUrl() ?? '--', tooltip: true),
+          if (kDemoMode) ...[
+            divider,
+            const _ServerInfoItem(label: 'Server', text: 'OpenFrame demo (on-device)', tooltip: true),
+          ],
           if (serverInfoState.latestVersion != null) ...[
             divider,
             _ServerInfoItem(
@@ -63,7 +69,7 @@ class AppBarServerInfo extends HookConsumerWidget {
               text: serverInfoState.latestVersion!.major > 0 ? "${serverInfoState.latestVersion!}" : "--",
               tooltip: true,
               icon: serverInfoState.versionStatus == VersionStatus.serverOutOfDate
-                  ? const Icon(Icons.info, color: Color.fromARGB(255, 243, 188, 106), size: 12)
+                  ? const Icon(AppIcons.info, color: Color.fromARGB(255, 243, 188, 106), size: 12)
                   : null,
             ),
           ],

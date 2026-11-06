@@ -4,6 +4,7 @@ import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/providers/timeline/multiselect.provider.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class SelectionSliverAppBar extends ConsumerStatefulWidget {
   const SelectionSliverAppBar({super.key});
@@ -36,7 +37,7 @@ class _SelectionSliverAppBarState extends ConsumerState<SelectionSliverAppBar> {
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
       automaticallyImplyLeading: false,
       leading: IconButton(
-        icon: const Icon(Icons.close_rounded),
+        icon: const Icon(AppIcons.x),
         onPressed: () {
           ref.read(multiSelectProvider.notifier).reset();
           context.pop<Set<BaseAsset>>(null);

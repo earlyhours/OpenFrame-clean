@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
-import 'package:immich_mobile/extensions/theme_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/platform/network_api.g.dart';
 import 'package:immich_mobile/providers/infrastructure/platform.provider.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:logging/logging.dart';
 
 class SslClientCertSettings extends StatefulWidget {
@@ -40,29 +40,24 @@ class _SslClientCertSettingsState extends State<SslClientCertSettings> {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-      horizontalTitleGap: 20,
-      isThreeLine: true,
-      title: Text(
-        context.t.client_cert_title,
-        style: context.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
-      ),
-      subtitle: Column(
+    return Padding(
+      padding: const EdgeInsets.all(SettingsMetrics.rowInset),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            context.t.client_cert_subtitle,
-            style: context.textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceSecondary),
-          ),
-          const SizedBox(height: 6),
+          Text(context.t.client_cert_title, style: context.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
+          const SizedBox(height: 2),
+          Text(context.t.client_cert_subtitle, style: context.textTheme.bodySmall),
+          const SizedBox(height: 12),
           Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            spacing: 12,
             children: [
-              ElevatedButton(onPressed: importCert, child: Text(context.t.client_cert_import)),
-              ElevatedButton(onPressed: !isCertExist ? null : removeCert, child: Text(context.t.remove)),
+              Expanded(
+                child: ElevatedButton(onPressed: importCert, child: Text(context.t.client_cert_import)),
+              ),
+              Expanded(
+                child: OutlinedButton(onPressed: !isCertExist ? null : removeCert, child: Text(context.t.remove)),
+              ),
             ],
           ),
         ],

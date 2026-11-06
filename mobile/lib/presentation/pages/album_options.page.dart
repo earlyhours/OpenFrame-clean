@@ -20,6 +20,7 @@ import 'package:immich_mobile/providers/user.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/widgets/common/immich_toast.dart';
 import 'package:immich_mobile/widgets/common/user_circle_avatar.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 @RoutePage()
 class AlbumOptionsPage extends HookConsumerWidget {
@@ -106,18 +107,14 @@ class AlbumOptionsPage extends HookConsumerWidget {
 
       if (user.id == userId) {
         actions = [
-          ListTile(
-            leading: const Icon(Icons.exit_to_app_rounded),
-            title: Text(context.t.leave_album),
-            onTap: leaveAlbum,
-          ),
+          ListTile(leading: const Icon(AppIcons.logOut), title: Text(context.t.leave_album), onTap: leaveAlbum),
         ];
       }
 
       if (isOwner) {
         actions = [
           ListTile(
-            leading: const Icon(Icons.person_remove_rounded),
+            leading: const Icon(AppIcons.userMinus),
             title: Text(context.t.remove_user),
             onTap: () => removeUserFromAlbum(user),
           ),
@@ -126,13 +123,15 @@ class AlbumOptionsPage extends HookConsumerWidget {
 
       unawaited(
         showModalBottomSheet(
+          sheetAnimationStyle: AppMotion.styleOf(context, AppMotion.sheet),
           backgroundColor: context.colorScheme.surfaceContainer,
           isScrollControlled: false,
+          showDragHandle: true,
           context: context,
           builder: (context) {
             return SafeArea(
               child: Padding(
-                padding: const EdgeInsets.only(top: 24.0),
+                padding: EdgeInsets.zero,
                 child: Column(mainAxisSize: MainAxisSize.min, children: [...actions]),
               ),
             );
@@ -186,7 +185,7 @@ class AlbumOptionsPage extends HookConsumerWidget {
               leading: UserCircleAvatar(user: user),
               title: Text(user.name, style: const TextStyle(fontWeight: FontWeight.w500)),
               subtitle: Text(user.email, style: TextStyle(color: context.colorScheme.onSurfaceSecondary)),
-              trailing: userId == user.id || isOwner ? const Icon(Icons.more_horiz_rounded) : const SizedBox(),
+              trailing: userId == user.id || isOwner ? const Icon(AppIcons.ellipsis) : const SizedBox(),
               onTap: userId == user.id || isOwner ? () => handleUserClick(user) : null,
             );
           },
@@ -206,10 +205,7 @@ class AlbumOptionsPage extends HookConsumerWidget {
       overrides: [currentRemoteAlbumScopedProvider.overrideWithValue(album)],
       child: Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded),
-            onPressed: () => context.maybePop(null),
-          ),
+          leading: IconButton(icon: const Icon(AppIcons.chevronLeftDir), onPressed: () => context.maybePop(null)),
           centerTitle: true,
           title: Text(context.t.options),
         ),
@@ -237,7 +233,7 @@ class AlbumOptionsPage extends HookConsumerWidget {
             buildSectionTitle(context.t.shared_album_section_people_title),
             if (isOwner) ...[
               ListTile(
-                leading: const Icon(Icons.person_add_rounded),
+                leading: const Icon(AppIcons.userPlus),
                 title: Text(context.t.invite_people),
                 onTap: () async => addUsers(),
               ),

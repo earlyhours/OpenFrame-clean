@@ -11,6 +11,7 @@ import 'package:immich_mobile/extensions/theme_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/services/immich_logger.service.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:intl/intl.dart';
 
 @RoutePage()
@@ -57,12 +58,7 @@ class AppLogPage extends HookWidget {
         elevation: 2,
         actions: [
           IconButton(
-            icon: Icon(
-              Icons.delete_outline_rounded,
-              color: context.primaryColor,
-              semanticLabel: "Clear logs",
-              size: 20.0,
-            ),
+            icon: Icon(AppIcons.trash2, color: context.primaryColor, semanticLabel: "Clear logs", size: 20.0),
             onPressed: () {
               unawaited(immichLogger.clearLogs());
               shouldReload.value = !shouldReload.value;
@@ -71,7 +67,7 @@ class AppLogPage extends HookWidget {
           Builder(
             builder: (BuildContext iconContext) {
               return IconButton(
-                icon: Icon(Icons.share_rounded, color: context.primaryColor, semanticLabel: "Share logs", size: 20.0),
+                icon: Icon(AppIcons.share2, color: context.primaryColor, semanticLabel: "Share logs", size: 20.0),
                 onPressed: () {
                   unawaited(ImmichLogger.shareLogs(iconContext));
                 },
@@ -83,7 +79,7 @@ class AppLogPage extends HookWidget {
           onPressed: () {
             unawaited(context.maybePop());
           },
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20.0),
+          icon: const Icon(AppIcons.chevronLeftDir, size: 20.0),
         ),
         centerTitle: true,
       ),
@@ -96,14 +92,14 @@ class AppLogPage extends HookWidget {
           final logMessage = logMessages.data![index];
           return ListTile(
             onTap: () => context.pushRoute(AppLogDetailRoute(logMessage: logMessage)),
-            trailing: const Icon(Icons.arrow_forward_ios_rounded),
+            trailing: const Icon(AppIcons.chevronRightDir),
             visualDensity: VisualDensity.compact,
             dense: true,
             tileColor: getTileColor(logMessage.level),
             minLeadingWidth: 10,
             title: Text(
               truncateLogMessage(logMessage.message, 4),
-              style: TextStyle(fontSize: 14.0, color: context.colorScheme.onSurface, fontFamily: "GoogleSansCode"),
+              style: TextStyle(fontSize: 14.0, color: context.colorScheme.onSurface, fontFamily: "GeistMono"),
             ),
             subtitle: Text(
               "at ${DateFormat("HH:mm:ss.SSS", resolvedDateTimeLocale()).format(logMessage.createdAt)} in ${logMessage.logger}",

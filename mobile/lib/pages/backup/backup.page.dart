@@ -112,14 +112,14 @@ class _BackupPageState extends ConsumerState<BackupPage> {
             unawaited(context.maybePop(true));
           },
           splashRadius: 24,
-          icon: const Icon(Icons.arrow_back_ios_rounded),
+          icon: const Icon(AppIcons.chevronLeftDir),
         ),
         actions: [
           IconButton(
             onPressed: () {
               unawaited(context.pushRoute(const BackupOptionsRoute()));
             },
-            icon: const Icon(Icons.settings_outlined),
+            icon: const Icon(AppIcons.settings),
             tooltip: context.t.backup_options,
           ),
         ],
@@ -153,7 +153,7 @@ class _BackupPageState extends ConsumerState<BackupPage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Icon(Icons.warning_rounded, color: context.colorScheme.error, fill: 1),
+                          Icon(AppIcons.triangleAlert, color: context.colorScheme.error, fill: 1),
                           const SizedBox(width: 8),
                           Flexible(
                             child: Text(
@@ -206,7 +206,7 @@ class _BackupFooterState extends ConsumerState<_BackupFooter> with WidgetsBindin
   }
 
   Future<void> showPermissionsDialog() {
-    return showDialog(
+    return showAppDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         content: Text(context.t.notification_permission_dialog_content),
@@ -232,7 +232,7 @@ class _BackupFooterState extends ConsumerState<_BackupFooter> with WidgetsBindin
   }
 
   Future<void> showBatteryOptimizationInfo() {
-    return showDialog<void>(
+    return showAppDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext ctx) {
@@ -271,7 +271,7 @@ class _BackupFooterState extends ConsumerState<_BackupFooter> with WidgetsBindin
           if (notificationStatus != PermissionStatus.granted)
             TextButton.icon(
               iconAlignment: .end,
-              icon: Icon(Icons.open_in_new_outlined, color: context.colorScheme.onSurfaceSecondary),
+              icon: Icon(AppIcons.externalLink, color: context.colorScheme.onSurfaceSecondary),
               label: Text(
                 context.t.notification_backup_reliability,
                 textAlign: TextAlign.left,
@@ -292,7 +292,7 @@ class _BackupFooterState extends ConsumerState<_BackupFooter> with WidgetsBindin
           if (batteryOptimizationStatus != PermissionStatus.granted)
             TextButton.icon(
               iconAlignment: .end,
-              icon: Icon(Icons.open_in_new_outlined, color: context.colorScheme.onSurfaceSecondary),
+              icon: Icon(AppIcons.externalLink, color: context.colorScheme.onSurfaceSecondary),
               label: Text(
                 context.t.battery_optimization_backup_reliability,
                 textAlign: TextAlign.left,
@@ -302,7 +302,7 @@ class _BackupFooterState extends ConsumerState<_BackupFooter> with WidgetsBindin
             ),
         ],
         TextButton.icon(
-          icon: const Icon(Icons.info_outline_rounded),
+          icon: const Icon(AppIcons.info),
           onPressed: () => context.pushRoute(const UploadDetailRoute()),
           label: Text(context.t.view_details),
         ),
@@ -527,7 +527,7 @@ class _RemainderCard extends ConsumerWidget {
               context.t.view_details,
               style: context.textTheme.labelLarge?.copyWith(color: context.colorScheme.onSurface.withAlpha(200)),
             ),
-            trailing: Icon(Icons.arrow_forward_ios, size: 16, color: context.colorScheme.onSurfaceVariant),
+            trailing: Icon(AppIcons.chevronRightDir, size: 16, color: context.colorScheme.onSurfaceVariant),
           ),
         ],
       ),

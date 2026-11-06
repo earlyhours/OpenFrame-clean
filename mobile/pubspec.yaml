@@ -44,8 +44,10 @@ dependencies:
   immich_ui:
     path: './packages/ui'
   intl: ^0.20.2
+  lucide_icons_flutter: ^4.0.1
   local_auth: ^2.3.0
   logging: ^1.3.0
+  mobile_scanner: ^7.4.2
   maplibre_gl: ^0.27.0
   native_video_player:
     git:
@@ -128,7 +130,35 @@ flutter:
   assets:
     - assets/
     - assets/feature_message/
+    - assets/demo/
+    - assets/demo/thumb/
+    - assets/demo/preview/
+    - assets/demo/people/
+    - assets/demo/video/
   fonts:
+    - family: Geist
+      fonts:
+        - asset: fonts/Geist/Geist.ttf
+          weight: 400
+        - asset: fonts/Geist/Geist.ttf
+          weight: 500
+        - asset: fonts/Geist/Geist.ttf
+          weight: 600
+        - asset: fonts/Geist/Geist.ttf
+          weight: 700
+        - asset: fonts/Geist/Geist-Italic.ttf
+          style: italic
+    - family: GeistMono
+      fonts:
+        - asset: fonts/GeistMono/GeistMono.ttf
+          weight: 400
+        - asset: fonts/GeistMono/GeistMono.ttf
+          weight: 500
+        - asset: fonts/GeistMono/GeistMono.ttf
+          weight: 600
+    - family: GeistPixel
+      fonts:
+        - asset: fonts/GeistPixel/GeistPixel-Square.ttf
     - family: GoogleSans
       fonts:
         - asset: fonts/GoogleSans/GoogleSans-Regular.ttf

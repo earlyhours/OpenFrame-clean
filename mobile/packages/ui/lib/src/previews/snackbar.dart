@@ -20,9 +20,18 @@ class _SnackbarDemo extends StatelessWidget {
             spacing: ImmichSpacing.md,
             runSpacing: ImmichSpacing.md,
             children: [
-              ElevatedButton(onPressed: () => snackbar.info('Info message'), child: const Text('Info')),
-              ElevatedButton(onPressed: () => snackbar.success('Saved'), child: const Text('Success')),
-              ElevatedButton(onPressed: () => snackbar.error('Something failed'), child: const Text('Error')),
+              ElevatedButton(
+                onPressed: () => snackbar.info('Info message'),
+                child: const Text('Info'),
+              ),
+              ElevatedButton(
+                onPressed: () => snackbar.success('Saved'),
+                child: const Text('Success'),
+              ),
+              ElevatedButton(
+                onPressed: () => snackbar.error('Something failed'),
+                child: const Text('Error'),
+              ),
             ],
           ),
         ),

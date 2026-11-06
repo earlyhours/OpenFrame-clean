@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:immich_mobile/demo/demo_mode.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/pages/common/large_leading_tile.dart';
@@ -10,6 +11,7 @@ import 'package:immich_mobile/providers/infrastructure/asset.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/widgets/common/search_field.dart';
 import 'package:immich_mobile/widgets/map/map_thumbnail.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
 @RoutePage()
@@ -68,7 +70,7 @@ class _PlaceSliverAppBar extends HookWidget {
           : Text(context.t.places),
       actions: [
         IconButton(
-          icon: Icon(search.value != null ? Icons.close : Icons.search),
+          icon: Icon(search.value != null ? AppIcons.x : AppIcons.search),
           onPressed: () {
             search.value = search.value == null ? '' : null;
           },
@@ -96,7 +98,9 @@ class _Map extends StatelessWidget {
                 child: MapThumbnail(
                   onTap: (_, _) => context.pushRoute(MapRoute(initialLocation: currentLocation)),
                   zoom: 8,
-                  centre: currentLocation ?? const LatLng(21.44950, -157.91959),
+                  centre:
+                      currentLocation ??
+                      (kDemoMode ? const LatLng(37.7694, -122.4862) : const LatLng(21.44950, -157.91959)),
                   showAttribution: false,
                   themeMode: context.isDarkTheme ? ThemeMode.dark : ThemeMode.light,
                 ),

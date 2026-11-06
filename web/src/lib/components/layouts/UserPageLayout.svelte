@@ -17,6 +17,8 @@
     title?: string | undefined;
     description?: string | undefined;
     scrollbar?: boolean;
+    /** Overrides the default content padding. Timeline pages and full-bleed pages (map) opt out of the roomy default. */
+    contentClass?: string;
     use?: ActionArray;
     actions?: Array<HeaderButtonActionItem | MenuItemType>;
     sidebar?: Snippet;
@@ -29,6 +31,7 @@
     title = undefined,
     description = undefined,
     scrollbar = true,
+    contentClass,
     use = [],
     actions = [],
     sidebar,
@@ -43,7 +46,9 @@
   );
 
   let scrollbarClass = $derived(scrollbar ? 'immich-scrollbar' : 'scrollbar-hidden');
-  let hasTitleClass = $derived(title ? 'top-16 h-[calc(100%-(--spacing(16)))]' : 'top-0 h-full');
+  let hasTitleClass = $derived(title ? 'top-18 h-[calc(100%-(--spacing(18)))]' : 'top-0 h-full');
+  // Timeline pages hide the scrollbar and lay out their own grid, so they keep the tight gutter.
+  let paddingClass = $derived(contentClass ?? (scrollbar ? 'p-4 md:p-6' : 'p-2'));
 </script>
 
 <header>
@@ -65,18 +70,18 @@
   {/if}
 
   <main class="relative">
-    <div class="{scrollbarClass} absolute {hasTitleClass} w-full overflow-y-auto p-2" use:useActions={use}>
+    <div class="{scrollbarClass} absolute {hasTitleClass} w-full overflow-y-auto {paddingClass}" use:useActions={use}>
       {@render children?.()}
     </div>
 
     {#if title || buttons}
-      <div class="absolute flex h-16 w-full place-items-center justify-between border-b p-2 text-dark">
-        <div class="flex items-center gap-2">
+      <div class="absolute flex h-18 w-full place-items-center justify-between gap-4 border-b px-4 text-dark md:px-6">
+        <div class="flex min-w-0 items-baseline gap-3">
           {#if title}
-            <div class="pe-8 outline-none" tabindex="-1" id={headerId}>{title}</div>
+            <h1 class="of-page-title truncate outline-none" tabindex="-1" id={headerId}>{title}</h1>
           {/if}
           {#if description}
-            <p class="text-sm text-gray-400 dark:text-gray-600">{description}</p>
+            <p class="truncate text-sm text-muted">{description}</p>
           {/if}
         </div>
 

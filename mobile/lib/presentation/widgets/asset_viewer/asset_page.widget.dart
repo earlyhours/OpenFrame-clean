@@ -26,6 +26,7 @@ import 'package:immich_mobile/providers/infrastructure/timeline.provider.dart';
 import 'package:immich_mobile/providers/view_intent/view_intent_file_path.provider.dart';
 import 'package:immich_mobile/widgets/common/immich_loading_indicator.dart';
 import 'package:immich_mobile/widgets/photo_view/photo_view.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 enum _DragIntent { none, scroll, dismiss }
 
@@ -519,7 +520,8 @@ class _AssetPageState extends ConsumerState<AssetPage> {
                         onVerticalDragCancel: _onDragCancel,
                         child: AnimatedOpacity(
                           opacity: _showingDetails ? 1.0 : 0.0,
-                          duration: Durations.short2,
+                          duration: AppMotion.of(context, AppMotion.fast),
+                          curve: AppMotion.emphasized,
                           child: _showingDetails
                               ? AssetDetails(asset: displayAsset, minHeight: viewportHeight - snapTarget)
                               : SizedBox(height: viewportHeight - snapTarget),

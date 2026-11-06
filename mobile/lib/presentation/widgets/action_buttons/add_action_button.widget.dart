@@ -54,7 +54,7 @@ class _AddActionButtonState extends ConsumerState<AddActionButton> {
         child: Text(context.t.add_to_bottom_bar, style: context.textTheme.labelMedium),
       ),
       BaseActionButton(
-        iconData: Icons.photo_album_outlined,
+        iconData: AppIcons.libraryBig,
         label: context.t.album,
         menuItem: true,
         onPressed: () => _handleMenuSelection(AddToMenuItem.album),
@@ -86,6 +86,7 @@ class _AddActionButtonState extends ConsumerState<AddActionButton> {
 
     unawaited(
       showModalBottomSheet(
+        sheetAnimationStyle: AppMotion.styleOf(context, AppMotion.sheet),
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
@@ -181,7 +182,7 @@ class _AddActionButtonState extends ConsumerState<AddActionButton> {
           : _buildMenuChildren(),
       builder: (context, controller, child) {
         return BaseActionButton(
-          iconData: Icons.add,
+          iconData: AppIcons.plus,
           label: context.t.add_to_bottom_bar,
           onPressed: () => controller.isOpen ? controller.close() : controller.open(),
         );

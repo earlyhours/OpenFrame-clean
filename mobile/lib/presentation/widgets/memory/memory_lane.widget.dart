@@ -34,6 +34,7 @@ class MemoryLane extends ConsumerWidget {
       height: 200,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         itemExtent: 170.0,
         itemCount: memories.length,
         itemBuilder: (context, index) => Padding(
@@ -42,7 +43,7 @@ class MemoryLane extends ConsumerWidget {
           child: Material(
             color: Colors.black,
             elevation: 2,
-            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(24))),
+            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
             clipBehavior: Clip.antiAlias,
             child: Stack(
               fit: StackFit.expand,

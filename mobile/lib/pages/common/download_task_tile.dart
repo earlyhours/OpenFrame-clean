@@ -2,6 +2,7 @@ import 'package:background_downloader/background_downloader.dart';
 import 'package:flutter/material.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class DownloadTaskTile extends StatelessWidget {
   final double progress;
@@ -41,11 +42,11 @@ class DownloadTaskTile extends StatelessWidget {
         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
         child: ListTile(
           minVerticalPadding: 18,
-          leading: const Icon(Icons.video_file_outlined),
+          leading: const Icon(AppIcons.fileVideo),
           title: Text(getStatusText(), style: context.textTheme.labelLarge),
           trailing: IconButton(
             icon: Icon(
-              isComplete ? Icons.download_done : Icons.close,
+              isComplete ? AppIcons.cloudCheck : AppIcons.x,
               color: isComplete ? context.colorScheme.primary : context.colorScheme.onError,
             ),
             onPressed: onCancelDownload,

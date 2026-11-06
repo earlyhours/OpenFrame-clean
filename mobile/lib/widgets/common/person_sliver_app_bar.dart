@@ -16,6 +16,7 @@ import 'package:immich_mobile/providers/infrastructure/timeline.provider.dart';
 import 'package:immich_mobile/providers/timeline/multiselect.provider.dart';
 import 'package:immich_mobile/utils/image_url_builder.dart';
 import 'package:immich_mobile/utils/people.utils.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class PersonSliverAppBar extends ConsumerStatefulWidget {
   const PersonSliverAppBar({
@@ -56,7 +57,12 @@ class _MesmerizingSliverAppBarState extends ConsumerState<PersonSliverAppBar> {
     final isMultiSelectEnabled = ref.watch(multiSelectProvider.select((s) => s.isEnabled));
     Widget hideWhenSelecting(Widget child) => IgnorePointer(
       ignoring: isMultiSelectEnabled,
-      child: AnimatedOpacity(duration: Durations.medium1, opacity: isMultiSelectEnabled ? 0 : 1, child: child),
+      child: AnimatedOpacity(
+        duration: AppMotion.of(context, AppMotion.base),
+        curve: AppMotion.emphasized,
+        opacity: isMultiSelectEnabled ? 0 : 1,
+        child: child,
+      ),
     );
     final Color? actionIconColor = Color.lerp(Colors.white, context.primaryColor, _scrollProgress);
     final List<Shadow> actionIconShadows = [
@@ -75,7 +81,7 @@ class _MesmerizingSliverAppBarState extends ConsumerState<PersonSliverAppBar> {
       leading: hideWhenSelecting(
         IconButton(
           icon: Icon(
-            Platform.isIOS ? Icons.arrow_back_ios_new_rounded : Icons.arrow_back,
+            Platform.isIOS ? AppIcons.chevronLeftDir : AppIcons.arrowLeftDir,
             color: Color.lerp(Colors.white, context.primaryColor, _scrollProgress),
             shadows: [
               _scrollProgress < 0.95
@@ -91,7 +97,7 @@ class _MesmerizingSliverAppBarState extends ConsumerState<PersonSliverAppBar> {
       actions: [
         hideWhenSelecting(
           IconButton(
-            icon: Icon(Icons.more_vert, color: actionIconColor, shadows: actionIconShadows),
+            icon: Icon(AppIcons.ellipsisVertical, color: actionIconColor, shadows: actionIconShadows),
             onPressed: widget.onShowOptions,
           ),
         ),
@@ -113,7 +119,9 @@ class _MesmerizingSliverAppBarState extends ConsumerState<PersonSliverAppBar> {
           return FlexibleSpaceBar(
             centerTitle: true,
             title: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
+              duration: AppMotion.of(context, AppMotion.fast),
+              switchInCurve: AppMotion.emphasized,
+              switchOutCurve: Curves.easeInCubic,
               child: scrollProgress > 0.95
                   ? Text(
                       widget.person.name,
@@ -290,7 +298,7 @@ class _ExpandedBackgroundState extends ConsumerState<_ExpandedBackground> with S
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.cake_rounded, color: Colors.white, size: 14),
+                            const Icon(AppIcons.cake, color: Colors.white, size: 14),
                             const SizedBox(width: 4),
 
                             if (widget.person.birthDate != null)

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class SearchDropdown<T> extends StatelessWidget {
   const SearchDropdown({
@@ -54,8 +55,8 @@ class SearchDropdown<T> extends StatelessWidget {
           dropdownMenuEntries: styledEntries,
           label: label,
           menuStyle: menuStyle,
-          trailingIcon: const Icon(Icons.arrow_drop_down_rounded),
-          selectedTrailingIcon: const Icon(Icons.arrow_drop_up_rounded),
+          trailingIcon: const Icon(AppIcons.chevronDown),
+          selectedTrailingIcon: const Icon(AppIcons.chevronUp),
           onSelected: onSelected,
         );
       },

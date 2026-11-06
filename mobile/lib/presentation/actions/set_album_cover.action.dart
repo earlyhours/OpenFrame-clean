@@ -7,6 +7,7 @@ import 'package:immich_mobile/presentation/actions/action.dart';
 import 'package:immich_mobile/providers/infrastructure/album.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/toast.provider.dart';
 import 'package:immich_mobile/utils/error_handler.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 final _stateProvider = Provider.family.autoDispose<String?, ActionSource>((ref, source) {
   final assets = ref.watch(assetsActionProvider(source));
@@ -26,7 +27,7 @@ class SetAlbumCoverAction extends AssetActionBuilder {
     }
 
     return .new(
-      icon: Icons.image_outlined,
+      icon: AppIcons.image,
       label: context.t.set_as_album_cover,
       onAction: () => _setCover(context, ref, assetId),
     );

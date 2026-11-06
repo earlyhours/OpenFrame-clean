@@ -11,6 +11,7 @@ import 'package:immich_mobile/providers/backup/backup_album.provider.dart';
 import 'package:immich_mobile/providers/haptic_feedback.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/widgets/common/immich_toast.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class AlbumInfoListTile extends HookConsumerWidget {
   final LocalAlbum album;
@@ -34,14 +35,14 @@ class AlbumInfoListTile extends HookConsumerWidget {
 
     Icon buildIcon() {
       if (isSelected) {
-        return Icon(Icons.check_circle_rounded, color: context.colorScheme.primary);
+        return Icon(AppIcons.circleCheck, color: context.colorScheme.primary);
       }
 
       if (isExcluded) {
-        return Icon(Icons.remove_circle_rounded, color: context.colorScheme.error);
+        return Icon(AppIcons.circleMinus, color: context.colorScheme.error);
       }
 
-      return Icon(Icons.circle, color: context.colorScheme.surfaceContainerHighest);
+      return Icon(AppIcons.circle, color: context.colorScheme.surfaceContainerHighest);
     }
 
     Widget buildSubtitle() {
@@ -89,7 +90,7 @@ class AlbumInfoListTile extends HookConsumerWidget {
           onPressed: () {
             unawaited(context.pushRoute(LocalTimelineRoute(album: album)));
           },
-          icon: Icon(Icons.image_outlined, color: context.primaryColor, size: 24),
+          icon: Icon(AppIcons.image, color: context.primaryColor, size: 24),
           splashRadius: 25,
         ),
       ),

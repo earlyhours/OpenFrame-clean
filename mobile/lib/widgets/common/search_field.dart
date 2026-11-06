@@ -12,7 +12,7 @@ class SearchField extends StatelessWidget {
     this.onChanged,
     this.onSubmitted,
     this.onTapOutside,
-    this.contentPadding = const EdgeInsets.only(left: 24),
+    this.contentPadding = const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     this.prefixIcon,
     this.suffixIcon,
     this.filled = false,
@@ -30,6 +30,11 @@ class SearchField extends StatelessWidget {
   final bool autofocus;
   final bool filled;
 
+  static const _border = OutlineInputBorder(
+    borderRadius: BorderRadius.all(Radius.circular(12)),
+    borderSide: BorderSide.none,
+  );
+
   @override
   Widget build(BuildContext context) {
     return TextField(
@@ -41,25 +46,15 @@ class SearchField extends StatelessWidget {
       onSubmitted: onSubmitted,
       decoration: InputDecoration(
         contentPadding: contentPadding,
-        filled: filled,
-        fillColor: context.primaryColor.withValues(alpha: 0.1),
+        // Borderless tinted field, like the system search bars: no outline at
+        // rest and no focus ring, the caret is enough.
+        filled: true,
+        fillColor: context.colorScheme.surfaceContainerHigh,
         hintStyle: context.textTheme.bodyLarge?.copyWith(color: context.themeData.colorScheme.onSurfaceSecondary),
-        border: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(25)),
-          borderSide: BorderSide(color: context.colorScheme.surfaceDim),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(25)),
-          borderSide: BorderSide(color: context.colorScheme.surfaceContainer),
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(25)),
-          borderSide: BorderSide(color: context.colorScheme.surfaceDim),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(25)),
-          borderSide: BorderSide(color: context.colorScheme.primary.withAlpha(100)),
-        ),
+        border: _border,
+        enabledBorder: _border,
+        disabledBorder: _border,
+        focusedBorder: _border,
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
         hintText: hintText,

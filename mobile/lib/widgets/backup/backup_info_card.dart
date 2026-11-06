@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/extensions/theme_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class BackupInfoCard extends StatelessWidget {
   final String title;
@@ -95,7 +96,7 @@ class BackupInfoCard extends StatelessWidget {
                 context.t.view_details,
                 style: context.textTheme.labelLarge?.copyWith(color: context.colorScheme.onSurface.withAlpha(200)),
               ),
-              trailing: Icon(Icons.arrow_forward_ios, size: 16, color: context.colorScheme.onSurfaceVariant),
+              trailing: Icon(AppIcons.chevronRightDir, size: 16, color: context.colorScheme.onSurfaceVariant),
             ),
           ],
         ],

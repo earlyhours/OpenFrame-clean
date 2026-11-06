@@ -12,10 +12,10 @@
 
   let { onClick = undefined, text, fullWidth = false, src = empty1Url, title, class: className }: Props = $props();
 
-  let width = $derived(fullWidth ? 'w-full' : 'w-1/2');
+  let width = $derived(fullWidth ? 'w-full' : 'w-full max-w-lg');
 
   const hoverClasses = onClick
-    ? `border dark:border-immich-dark-gray hover:bg-immich-primary/5 dark:hover:bg-immich-dark-primary/25`
+    ? 'transition-colors duration-200 ease-out hover:border-(--of-line-2) hover:bg-(--of-panel-2)'
     : '';
 </script>
 
@@ -23,12 +23,12 @@
 <svelte:element
   this={onClick ? 'button' : 'div'}
   onclick={onClick}
-  class="{width} {className} flex flex-col place-content-center place-items-center rounded-3xl bg-gray-50 p-5 dark:bg-immich-dark-gray {hoverClasses}"
+  class="{width} {className} flex flex-col place-content-center place-items-center rounded-2xl border border-dashed p-10 {hoverClasses}"
 >
-  <img {src} alt="" width="500" draggable="false" />
+  <img {src} alt="" class="max-h-48 w-auto opacity-60" width="280" draggable="false" />
 
   {#if title}
-    <h2 class="my-4 text-xl font-medium">{title}</h2>
+    <h2 class="mt-6 text-xl font-semibold text-dark">{title}</h2>
   {/if}
-  <p class="text-immich-text-gray-500 text-center font-light dark:text-immich-dark-fg">{text}</p>
+  <p class="text-center text-muted {title ? 'mt-1 text-sm' : 'mt-6 text-base'}">{text}</p>
 </svelte:element>

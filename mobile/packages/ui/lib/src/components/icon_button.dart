@@ -44,10 +44,12 @@ class _ImmichIconButtonState extends State<ImmichIconButton> {
     }
   }
 
-  VoidCallback? get _onPressed => _isDisabled ? null : () => _runAction(widget.onPressed);
+  VoidCallback? get _onPressed =>
+      _isDisabled ? null : () => _runAction(widget.onPressed);
 
-  VoidCallback? get _onLongPress =>
-      _isDisabled || widget.onLongPress == null ? null : () => _runAction(widget.onLongPress!);
+  VoidCallback? get _onLongPress => _isDisabled || widget.onLongPress == null
+      ? null
+      : () => _runAction(widget.onLongPress!);
 
   @override
   Widget build(BuildContext context) {
@@ -74,16 +76,29 @@ class _ImmichIconButtonState extends State<ImmichIconButton> {
           },
         };
 
-    return IconButton(
-      icon: _isLoading
-          ? const SizedBox.square(
-              dimension: ImmichIconSize.sm,
-              child: CircularProgressIndicator(strokeWidth: ImmichBorderWidth.md),
-            )
-          : Icon(widget.icon),
-      onPressed: _onPressed,
-      onLongPress: _onLongPress,
-      style: IconButton.styleFrom(backgroundColor: background, foregroundColor: foreground),
+    return Pressable(
+      enabled: !_isDisabled,
+      scale: 0.92,
+      child: IconButton(
+        icon: AnimatedSwitcher(
+          duration: AppMotion.of(context, AppMotion.fast),
+          child: _isLoading
+              ? const SizedBox.square(
+                  key: ValueKey('loading'),
+                  dimension: ImmichIconSize.sm,
+                  child: CircularProgressIndicator(
+                    strokeWidth: ImmichBorderWidth.md,
+                  ),
+                )
+              : Icon(widget.icon, key: const ValueKey('icon')),
+        ),
+        onPressed: _onPressed,
+        onLongPress: _onLongPress,
+        style: IconButton.styleFrom(
+          backgroundColor: background,
+          foregroundColor: foreground,
+        ),
+      ),
     );
   }
 }

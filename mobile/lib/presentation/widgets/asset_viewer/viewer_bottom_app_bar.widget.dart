@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/presentation/widgets/asset_viewer/bottom_bar.widget.dart';
 import 'package:immich_mobile/providers/asset_viewer/asset_viewer.provider.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class ViewerBottomAppBar extends ConsumerWidget {
   const ViewerBottomAppBar({super.key});
@@ -14,7 +15,11 @@ class ViewerBottomAppBar extends ConsumerWidget {
 
     return IgnorePointer(
       ignoring: opacity < 1.0,
-      child: AnimatedOpacity(opacity: opacity, duration: Durations.short2, child: const ViewerBottomBar()),
+      child: AnimatedOpacity(
+        opacity: opacity,
+        duration: Durations.short2,
+        child: const FrostedBar(color: Colors.black, opacity: .55, child: ViewerBottomBar()),
+      ),
     );
   }
 }

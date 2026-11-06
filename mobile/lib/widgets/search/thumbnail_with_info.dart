@@ -3,6 +3,7 @@ import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/presentation/widgets/images/remote_image_provider.dart';
 import 'package:immich_mobile/presentation/widgets/images/thumbnail.widget.dart';
 import 'package:immich_mobile/widgets/search/thumbnail_with_info_container.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class ThumbnailWithInfo extends StatelessWidget {
   const ThumbnailWithInfo({
@@ -32,7 +33,7 @@ class ThumbnailWithInfo extends StatelessWidget {
               borderRadius: BorderRadius.circular(borderRadius),
               child: Thumbnail(imageProvider: RemoteImageProvider(url: imageUrl!)),
             )
-          : Center(child: Icon(noImageIcon ?? Icons.not_listed_location, color: textAndIconColor)),
+          : Center(child: Icon(noImageIcon ?? AppIcons.mapPinOff, color: textAndIconColor)),
     );
   }
 }

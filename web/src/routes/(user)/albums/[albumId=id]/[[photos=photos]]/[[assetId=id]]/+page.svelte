@@ -362,7 +362,7 @@
                 <button
                   type="button"
                   onclick={() => (viewMode = AlbumPageViewMode.SELECT_ASSETS)}
-                  class="mt-5 flex w-full place-items-center gap-6 rounded-2xl border bg-subtle p-8 text-immich-fg transition-all hover:bg-gray-100 hover:text-immich-primary dark:border-none dark:text-immich-dark-fg dark:hover:bg-gray-500/20 dark:hover:text-immich-dark-primary"
+                  class="mt-5 flex w-full place-items-center gap-6 rounded-xl border border-dashed p-8 text-dark transition-colors duration-200 ease-out hover:border-primary hover:bg-primary/5 hover:text-primary"
                 >
                   <span class="text-primary">
                     <Icon icon={mdiPlus} size="24" />

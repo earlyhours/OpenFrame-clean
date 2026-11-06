@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/data/store.dart';
+import 'package:immich_mobile/demo/demo_mode.dart';
 import 'package:immich_mobile/domain/models/user.model.dart';
 import 'package:immich_mobile/extensions/asyncvalue_extensions.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
@@ -19,6 +20,7 @@ import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/utils/image_url_builder.dart';
 import 'package:immich_mobile/widgets/common/immich_sliver_app_bar.dart';
 import 'package:immich_mobile/widgets/map/map_thumbnail.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
 @RoutePage()
@@ -27,13 +29,20 @@ class LibraryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: CustomScrollView(
         slivers: [
-          ImmichSliverAppBar(snap: false, floating: false, pinned: true, showUploadButton: false),
-          _ActionButtonGrid(),
-          _CollectionCards(),
-          _QuickAccessButtonList(),
+          ImmichSliverAppBar(
+            largeTitle: context.t.library$,
+            snap: false,
+            floating: false,
+            pinned: true,
+            showUploadButton: false,
+          ),
+          const _ActionButtonGrid(),
+          const _CollectionCards(),
+          const _QuickAccessButtonList(),
+          const SliverToBoxAdapter(child: SizedBox(height: 100)),
         ],
       ),
     );
@@ -48,37 +57,37 @@ class _ActionButtonGrid extends ConsumerWidget {
     final isTrashEnable = ref.watch(serverInfoProvider.select((state) => state.serverFeatures.trash));
 
     return SliverPadding(
-      padding: const EdgeInsets.only(left: 16, top: 16, right: 16, bottom: 12),
+      padding: const EdgeInsets.fromLTRB(ImmichSpacing.lg, ImmichSpacing.sm, ImmichSpacing.lg, ImmichSpacing.md),
       sliver: SliverToBoxAdapter(
         child: Column(
           children: [
             Row(
               children: [
                 _ActionButton(
-                  icon: Icons.favorite_outline_rounded,
+                  icon: AppIcons.heart,
                   onTap: () => context.pushRoute(const FavoriteRoute()),
                   label: context.t.favorites,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: ImmichSpacing.sm),
                 _ActionButton(
-                  icon: Icons.archive_outlined,
+                  icon: AppIcons.archive,
                   onTap: () => context.pushRoute(const ArchiveRoute()),
                   label: context.t.archived,
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: ImmichSpacing.sm),
             Row(
               children: [
                 _ActionButton(
-                  icon: Icons.link_outlined,
+                  icon: AppIcons.link,
                   onTap: () => context.pushRoute(const SharedLinkRoute()),
                   label: context.t.shared_links,
                 ),
-                isTrashEnable ? const SizedBox(width: 8) : const SizedBox.shrink(),
+                isTrashEnable ? const SizedBox(width: ImmichSpacing.sm) : const SizedBox.shrink(),
                 isTrashEnable
                     ? _ActionButton(
-                        icon: Icons.delete_outline_rounded,
+                        icon: AppIcons.trash2,
                         onTap: () => context.pushRoute(const TrashRoute()),
                         label: context.t.trash,
                       )
@@ -105,20 +114,23 @@ class _ActionButton extends StatelessWidget {
       child: FilledButton.icon(
         onPressed: onTap,
         label: Padding(
-          padding: const EdgeInsets.only(left: 4.0),
-          child: Text(label, style: TextStyle(color: context.colorScheme.onSurface, fontSize: 15)),
+          padding: const EdgeInsets.only(left: ImmichSpacing.xs),
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: context.textTheme.titleSmall?.copyWith(color: context.colorScheme.onSurface),
+          ),
         ),
         style: FilledButton.styleFrom(
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          backgroundColor: context.colorScheme.surfaceContainerLow,
+          minimumSize: const Size(0, 56),
+          padding: const EdgeInsets.symmetric(horizontal: ImmichSpacing.lg, vertical: ImmichSpacing.md),
+          backgroundColor: context.colorScheme.surfaceContainer,
           alignment: Alignment.centerLeft,
-          shape: RoundedRectangleBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(25)),
-            side: BorderSide(color: context.colorScheme.onSurface.withAlpha(10), width: 1),
-          ),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(ImmichRadius.lg))),
         ),
-        icon: Icon(icon, color: context.primaryColor),
+        icon: Icon(icon, size: ImmichIconSize.md, color: context.colorScheme.onSurfaceVariant),
       ),
     );
   }
@@ -130,11 +142,11 @@ class _CollectionCards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const SliverPadding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: ImmichSpacing.lg),
       sliver: SliverToBoxAdapter(
         child: Wrap(
-          spacing: 8,
-          runSpacing: 8,
+          spacing: ImmichSpacing.sm,
+          runSpacing: ImmichSpacing.sm,
           children: [
             _PeopleCollectionCard(),
             _PlacesCollectionCard(),
@@ -147,6 +159,80 @@ class _CollectionCards extends StatelessWidget {
   }
 }
 
+/// A square preview tile with its title underneath. The tile is two to a row
+/// on phones and four on tablets, inside the page's 16 gutters and 8 gap.
+class _CollectionCard extends StatelessWidget {
+  const _CollectionCard({required this.title, required this.onTap, required this.child});
+
+  final String title;
+  final VoidCallback onTap;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isTablet = constraints.maxWidth > 600;
+        final columns = isTablet ? 4 : 2;
+        final size = (context.width - ImmichSpacing.lg * 2 - ImmichSpacing.sm * (columns - 1)) / columns;
+
+        return Pressable(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: onTap,
+            child: SizedBox(
+              width: size,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox.square(
+                    dimension: size,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.all(Radius.circular(ImmichRadius.lg)),
+                        color: context.colorScheme.surfaceContainer,
+                      ),
+                      child: ClipRRect(borderRadius: BorderRadius.circular(ImmichRadius.lg), child: child),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(ImmichSpacing.xs, ImmichSpacing.sm, ImmichSpacing.xs, 0),
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.textTheme.titleSmall?.copyWith(color: context.colorScheme.onSurface),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// 2x2 preview grid inside a [_CollectionCard].
+class _PreviewGrid extends StatelessWidget {
+  const _PreviewGrid({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      crossAxisCount: 2,
+      padding: const EdgeInsets.all(ImmichSpacing.md),
+      crossAxisSpacing: ImmichSpacing.sm,
+      mainAxisSpacing: ImmichSpacing.sm,
+      physics: const NeverScrollableScrollPhysics(),
+      children: children,
+    );
+  }
+}
+
 class _PeopleCollectionCard extends ConsumerWidget {
   const _PeopleCollectionCard();
 
@@ -154,62 +240,20 @@ class _PeopleCollectionCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final people = ref.watch(Store.people.all());
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isTablet = constraints.maxWidth > 600;
-        final widthFactor = isTablet ? 0.25 : 0.5;
-        final size = context.width * widthFactor - 20.0;
-
-        return GestureDetector(
-          onTap: () => context.pushRoute(const PeopleCollectionRoute()),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: size,
-                width: size,
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(20)),
-                  gradient: LinearGradient(
-                    colors: [context.colorScheme.primary.withAlpha(30), context.colorScheme.primary.withAlpha(25)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
-                child: people.widgetWhen(
-                  onLoading: () => const Center(child: CircularProgressIndicator()),
-                  onData: (people) {
-                    return GridView.count(
-                      crossAxisCount: 2,
-                      padding: const EdgeInsets.all(12),
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: people.take(4).map((person) {
-                        return CircleAvatar(
-                          backgroundImage: RemoteImageProvider(
-                            url: getFaceThumbnailUrl(person.id, updatedAt: person.updatedAt),
-                          ),
-                        );
-                      }).toList(),
-                    );
-                  },
-                ),
+    return _CollectionCard(
+      title: context.t.people,
+      onTap: () => context.pushRoute(const PeopleCollectionRoute()),
+      child: people.widgetWhen(
+        onLoading: () => const Center(child: CircularProgressIndicator()),
+        onData: (people) => _PreviewGrid(
+          children: [
+            for (final person in people.take(4))
+              CircleAvatar(
+                backgroundImage: RemoteImageProvider(url: getFaceThumbnailUrl(person.id, updatedAt: person.updatedAt)),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  context.t.people,
-                  style: context.textTheme.titleSmall?.copyWith(
-                    color: context.colorScheme.onSurface,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }
@@ -219,49 +263,17 @@ class _PlacesCollectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isTablet = constraints.maxWidth > 600;
-        final widthFactor = isTablet ? 0.25 : 0.5;
-        final size = context.width * widthFactor - 20.0;
-
-        return GestureDetector(
-          onTap: () => context.pushRoute(PlaceRoute(currentLocation: null)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: size,
-                width: size,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(20)),
-                    color: context.colorScheme.secondaryContainer.withAlpha(100),
-                  ),
-                  child: IgnorePointer(
-                    child: MapThumbnail(
-                      zoom: 8,
-                      centre: const LatLng(21.44950, -157.91959),
-                      showAttribution: false,
-                      themeMode: context.isDarkTheme ? ThemeMode.dark : ThemeMode.light,
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  context.t.places,
-                  style: context.textTheme.titleSmall?.copyWith(
-                    color: context.colorScheme.onSurface,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+    return _CollectionCard(
+      title: context.t.places,
+      onTap: () => context.pushRoute(PlaceRoute(currentLocation: null)),
+      child: IgnorePointer(
+        child: MapThumbnail(
+          zoom: 8,
+          centre: (kDemoMode ? const LatLng(37.7694, -122.4862) : const LatLng(21.44950, -157.91959)),
+          showAttribution: false,
+          themeMode: context.isDarkTheme ? ThemeMode.dark : ThemeMode.light,
+        ),
+      ),
     );
   }
 }
@@ -272,66 +284,20 @@ class _LocalAlbumsCollectionCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final albums = ref.watch(localAlbumProvider);
+    final placeholder = Center(
+      child: Icon(AppIcons.smartphone, color: context.colorScheme.onSurfaceVariant, size: ImmichIconSize.lg),
+    );
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isTablet = constraints.maxWidth > 600;
-        final widthFactor = isTablet ? 0.25 : 0.5;
-        final size = context.width * widthFactor - 20.0;
-
-        return GestureDetector(
-          onTap: () => context.pushRoute(const LocalAlbumsRoute()),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: size,
-                width: size,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(20)),
-                    gradient: LinearGradient(
-                      colors: [context.colorScheme.primary.withAlpha(30), context.colorScheme.primary.withAlpha(25)],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
-                  ),
-                  child: GridView.count(
-                    crossAxisCount: 2,
-                    padding: const EdgeInsets.all(12),
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: albums.when(
-                      data: (data) {
-                        return data.take(4).map((album) {
-                          return LocalAlbumThumbnail(albumId: album.id);
-                        }).toList();
-                      },
-                      error: (error, _) {
-                        return [Center(child: Text(context.t.error_saving_image(error: error.toString())))];
-                      },
-                      loading: () {
-                        return [const Center(child: CircularProgressIndicator())];
-                      },
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  context.t.on_this_device,
-                  style: context.textTheme.titleSmall?.copyWith(
-                    color: context.colorScheme.onSurface,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+    return _CollectionCard(
+      title: context.t.on_this_device,
+      onTap: () => context.pushRoute(const LocalAlbumsRoute()),
+      child: albums.when(
+        data: (data) => data.isEmpty
+            ? placeholder
+            : _PreviewGrid(children: [for (final album in data.take(4)) LocalAlbumThumbnail(albumId: album.id)]),
+        error: (error, _) => Center(child: Text(context.t.error_saving_image(error: error.toString()))),
+        loading: () => const Center(child: CircularProgressIndicator()),
+      ),
     );
   }
 }
@@ -343,65 +309,25 @@ class _MemoriesCollectionCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final memories = ref.watch(allMemoriesProvider(false));
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isTablet = constraints.maxWidth > 600;
-        final widthFactor = isTablet ? 0.25 : 0.5;
-        final size = context.width * widthFactor - 20.0;
-
-        return GestureDetector(
-          onTap: () => context.pushRoute(const MemoryListRoute()),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: size,
-                width: size,
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(20)),
-                  gradient: LinearGradient(
-                    colors: [context.colorScheme.primary.withAlpha(30), context.colorScheme.primary.withAlpha(25)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
-                child: memories.widgetWhen(
-                  onLoading: () => const Center(child: CircularProgressIndicator()),
-                  onData: (memories) {
-                    return GridView.count(
-                      crossAxisCount: 2,
-                      padding: const EdgeInsets.all(12),
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: memories.take(4).map((memory) {
-                        return ClipRRect(
-                          borderRadius: const BorderRadius.all(Radius.circular(10)),
-                          child: Thumbnail.remote(
-                            remoteId: memory.assets[0].id,
-                            thumbhash: memory.assets[0].thumbHash ?? "",
-                            fit: BoxFit.cover,
-                          ),
-                        );
-                      }).toList(),
-                    );
-                  },
+    return _CollectionCard(
+      title: context.t.memories,
+      onTap: () => context.pushRoute(const MemoryListRoute()),
+      child: memories.widgetWhen(
+        onLoading: () => const Center(child: CircularProgressIndicator()),
+        onData: (memories) => _PreviewGrid(
+          children: [
+            for (final memory in memories.take(4))
+              ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(ImmichRadius.sm)),
+                child: Thumbnail.remote(
+                  remoteId: memory.assets[0].id,
+                  thumbhash: memory.assets[0].thumbHash ?? "",
+                  fit: BoxFit.cover,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  context.t.memories,
-                  style: context.textTheme.titleSmall?.copyWith(
-                    color: context.colorScheme.onSurface,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }
@@ -429,7 +355,7 @@ class _QuickAccessItem {
 class _QuickAccessButtonList extends ConsumerWidget {
   const _QuickAccessButtonList();
 
-  static const _tileRadius = 20.0;
+  static const _tileRadius = ImmichRadius.lg;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -438,23 +364,23 @@ class _QuickAccessButtonList extends ConsumerWidget {
 
     final items = [
       _QuickAccessItem(
-        leading: const Icon(Icons.folder_outlined, size: 26),
+        leading: const Icon(AppIcons.folder, size: ImmichIconSize.md),
         title: context.t.folders,
         onTap: () => context.pushRoute(FolderRoute()),
       ),
       _QuickAccessItem(
-        leading: const Icon(Icons.lock_outline_rounded, size: 26),
+        leading: const Icon(AppIcons.lockKeyhole, size: ImmichIconSize.md),
         title: context.t.locked_folder,
         onTap: () => context.pushRoute(const LockedFolderRoute()),
       ),
       _QuickAccessItem(
-        leading: const Icon(Icons.group_outlined, size: 26),
+        leading: const Icon(AppIcons.users, size: ImmichIconSize.md),
         title: context.t.partners,
         onTap: () => context.pushRoute(const PartnerRoute()),
       ),
       for (final partner in partners)
         _QuickAccessItem(
-          contentPadding: const EdgeInsets.only(left: 12.0, right: 18.0),
+          contentPadding: const EdgeInsets.symmetric(horizontal: ImmichSpacing.lg),
           leading: PartnerUserAvatar(userId: partner.id, name: partner.name),
           title: context.t.partner_list_user_photos(user: partner.name),
           onTap: () => context.pushRoute(PartnerDetailRoute(partner: partner)),
@@ -462,21 +388,13 @@ class _QuickAccessButtonList extends ConsumerWidget {
     ];
 
     return SliverPadding(
-      padding: const EdgeInsets.only(left: 16, top: 12, right: 16, bottom: 32),
+      padding: const EdgeInsets.fromLTRB(ImmichSpacing.lg, ImmichSpacing.lg, ImmichSpacing.lg, ImmichSpacing.xl),
       sliver: SliverToBoxAdapter(
         child: DecoratedBox(
           decoration: BoxDecoration(
-            border: Border.all(color: context.colorScheme.onSurface.withAlpha(10), width: 1),
+            border: Border.all(color: context.colorScheme.outlineVariant, width: .5),
             borderRadius: const BorderRadius.all(Radius.circular(_tileRadius)),
-            gradient: LinearGradient(
-              colors: [
-                context.colorScheme.primary.withAlpha(10),
-                context.colorScheme.primary.withAlpha(15),
-                context.colorScheme.primary.withAlpha(20),
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
+            color: context.colorScheme.surfaceContainer,
           ),
           child: ListView.builder(
             shrinkWrap: true,
@@ -498,7 +416,7 @@ class _QuickAccessButtonList extends ConsumerWidget {
                 ),
                 contentPadding: item.contentPadding,
                 leading: item.leading,
-                title: Text(item.title, style: context.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500)),
+                title: Text(item.title, style: context.textTheme.titleSmall),
                 onTap: item.onTap,
               );
             },

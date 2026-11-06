@@ -8,6 +8,7 @@ import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/presentation/widgets/images/thumbnail.widget.dart';
 import 'package:immich_mobile/providers/album/pending_album_uploads.provider.dart';
 import 'package:immich_mobile/providers/backup/asset_upload_progress.provider.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 /// Pinned banner sliver that surfaces in-flight album uploads directly under
 /// the album app bar. Renders nothing while the queue is empty. Tapping the
@@ -49,6 +50,7 @@ class PendingUploadsBanner extends ConsumerWidget {
 
   static Future<void> _openSheet(BuildContext context, String albumId) {
     return showModalBottomSheet(
+      sheetAnimationStyle: AppMotion.styleOf(context, AppMotion.sheet),
       context: context,
       showDragHandle: true,
       builder: (_) => _PendingUploadsSheet(albumId: albumId),
@@ -124,9 +126,9 @@ class _PendingUploadsBannerContent extends StatelessWidget {
                     if (hasFailures)
                       Padding(
                         padding: const EdgeInsets.only(left: 8),
-                        child: Icon(Icons.error_outline, color: context.colorScheme.error, size: 20),
+                        child: Icon(AppIcons.circleAlert, color: context.colorScheme.error, size: 20),
                       ),
-                    Icon(Icons.chevron_right_rounded, color: context.colorScheme.onSurfaceVariant),
+                    Icon(AppIcons.chevronRightDir, color: context.colorScheme.onSurfaceVariant),
                   ],
                 ),
               ),
@@ -195,14 +197,14 @@ class _PendingUploadsSheet extends ConsumerWidget {
                         ref.read(manualUploadCancelTokenProvider.notifier).state = null;
                         ref.read(pendingAlbumUploadsProvider(albumId).notifier).clear();
                       },
-                      icon: const Icon(Icons.stop_circle_outlined, size: 18),
+                      icon: const Icon(AppIcons.circleStop, size: 18),
                       label: Text(context.t.cancel),
                       style: TextButton.styleFrom(foregroundColor: context.colorScheme.error),
                     )
                   else if (failedCount > 0)
                     TextButton.icon(
                       onPressed: () => ref.read(pendingAlbumUploadsProvider(albumId).notifier).clearFailed(),
-                      icon: const Icon(Icons.clear_rounded, size: 18),
+                      icon: const Icon(AppIcons.x, size: 18),
                       label: Text(context.t.clear_failed_count(count: failedCount)),
                       style: TextButton.styleFrom(foregroundColor: context.colorScheme.error),
                     ),
@@ -246,7 +248,7 @@ class _PendingUploadTile extends StatelessWidget {
                 color: entry.failed ? Colors.red.withValues(alpha: 0.6) : Colors.black54,
                 child: Center(
                   child: entry.failed
-                      ? const Icon(Icons.error_outline, color: Colors.white, size: 28)
+                      ? const Icon(AppIcons.circleAlert, color: Colors.white, size: ImmichIconSize.md)
                       : SizedBox(
                           width: 32,
                           height: 32,

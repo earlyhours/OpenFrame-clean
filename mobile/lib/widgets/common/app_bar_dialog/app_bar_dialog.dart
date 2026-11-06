@@ -21,6 +21,7 @@ import 'package:immich_mobile/widgets/common/app_bar_dialog/app_bar_server_info.
 import 'package:immich_mobile/widgets/common/confirm_dialog.dart';
 import 'package:immich_mobile/widgets/common/immich_logo.dart';
 import 'package:immich_mobile/widgets/common/immich_title_text.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -52,11 +53,11 @@ class ImmichAppBarDialog extends HookConsumerWidget {
           children: [
             IconButton(
               onPressed: () => ContextHelper(context).pop(),
-              icon: Icon(Icons.close, size: 20, color: context.colorScheme.onSurfaceVariant),
+              icon: Icon(AppIcons.x, size: 20, color: context.colorScheme.onSurfaceVariant),
             ),
-            Align(
+            const Align(
               alignment: Alignment.center,
-              child: Padding(padding: const EdgeInsets.only(bottom: 4), child: const ImmichTitleText(fontSize: 16)),
+              child: Padding(padding: EdgeInsets.only(bottom: 4), child: ImmichTitleText(fontSize: 16)),
             ),
           ],
         ),
@@ -80,16 +81,12 @@ class ImmichAppBarDialog extends HookConsumerWidget {
     }
 
     ListTile buildSettingButton() {
-      return buildActionButton(
-        Icons.settings_outlined,
-        context.t.settings,
-        () => context.pushRoute(const SettingsRoute()),
-      );
+      return buildActionButton(AppIcons.settings, context.t.settings, () => context.pushRoute(const SettingsRoute()));
     }
 
     ListTile buildFreeUpSpaceButton() {
       return buildActionButton(
-        Icons.cleaning_services_outlined,
+        AppIcons.brushCleaning,
         context.t.free_up_space,
         () => context.pushRoute(SettingsSubRoute(section: SettingSection.freeUpSpace)),
       );
@@ -97,7 +94,7 @@ class ImmichAppBarDialog extends HookConsumerWidget {
 
     ListTile buildAppLogButton() {
       return buildActionButton(
-        Icons.assignment_outlined,
+        AppIcons.clipboardList,
         context.t.profile_drawer_app_logs,
         () => context.pushRoute(const AppLogRoute()),
       );
@@ -105,7 +102,7 @@ class ImmichAppBarDialog extends HookConsumerWidget {
 
     ListTile buildSignOutButton() {
       return buildActionButton(
-        Icons.logout_rounded,
+        AppIcons.logOut,
         context.t.sign_out,
         () async {
           if (isLoggingOut.value) {
@@ -113,13 +110,13 @@ class ImmichAppBarDialog extends HookConsumerWidget {
           }
 
           unawaited(
-            showDialog(
+            showAppDialog(
               context: context,
               builder: (BuildContext ctx) {
                 return ConfirmDialog(
                   title: context.t.app_bar_signout_dialog_title,
                   content: context.t.app_bar_signout_dialog_content,
-                  ok: context.t.yes,
+                  ok: context.t.sign_out,
                   onOk: () async {
                     isLoggingOut.value = true;
                     await ref.read(authProvider.notifier).logout().whenComplete(() => isLoggingOut.value = false);

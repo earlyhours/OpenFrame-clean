@@ -1,8 +1,10 @@
 <script lang="ts">
+  import AuthShell from '$lib/components/auth/AuthShell.svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import OnboardingBackup from './OnboardingBackup.svelte';
   import OnboardingCard from './OnboardingCard.svelte';
+  import OnboardingConnect from './OnboardingConnect.svelte';
   import OnboardingHello from './OnboardingHello.svelte';
   import OnboardingLocale from './OnboardingLanguage.svelte';
   import OnboardingMobileApp from './OnboardingMobileApp.svelte';
@@ -19,6 +21,7 @@
     mdiCloudCheckOutline,
     mdiHarddisk,
     mdiIncognito,
+    mdiQrcodeScan,
     mdiThemeLightDark,
     mdiTranslate,
   } from '@mdi/js';
@@ -38,19 +41,39 @@
       | typeof OnboardingServerPrivacy
       | typeof OnboardingUserPrivacy
       | typeof OnboardingMobileApp
+      | typeof OnboardingConnect
       | typeof OnboardingLocale;
     role: OnboardingRole;
+    /** Short name, shown in the plan and used as the page heading unless `heading` is set. */
     title?: string;
+    heading?: string;
+    description?: string;
     icon?: string;
+    logo?: boolean;
   }
 
+  let userRole = $derived(
+    authManager.user.isAdmin && !serverConfig.isOnboarded ? OnboardingRole.SERVER : OnboardingRole.USER,
+  );
+
   const onboardingSteps: OnboardingStep[] = $derived([
-    { name: 'hello', component: OnboardingHello, role: OnboardingRole.USER },
+    {
+      name: 'hello',
+      component: OnboardingHello,
+      role: OnboardingRole.USER,
+      heading: $t('onboarding_welcome_user', { values: { user: authManager.user.name } }),
+      description:
+        userRole === OnboardingRole.SERVER
+          ? $t('onboarding_server_welcome_description')
+          : $t('onboarding_user_welcome_description'),
+      logo: true,
+    },
     {
       name: 'theme',
       component: OnboardingTheme,
       role: OnboardingRole.USER,
       title: $t('theme'),
+      description: $t('onboarding_theme_description'),
       icon: mdiThemeLightDark,
     },
     {
@@ -58,6 +81,7 @@
       component: OnboardingLocale,
       role: OnboardingRole.USER,
       title: $t('language'),
+      description: $t('onboarding_locale_description'),
       icon: mdiTranslate,
     },
     {
@@ -65,6 +89,7 @@
       component: OnboardingServerPrivacy,
       role: OnboardingRole.SERVER,
       title: $t('server_privacy'),
+      description: $t('onboarding_privacy_description'),
       icon: mdiIncognito,
     },
     {
@@ -72,6 +97,7 @@
       component: OnboardingUserPrivacy,
       role: OnboardingRole.USER,
       title: $t('user_privacy'),
+      description: $t('onboarding_privacy_description'),
       icon: mdiIncognito,
     },
     {
@@ -79,6 +105,7 @@
       component: OnboardingStorageTemplate,
       role: OnboardingRole.SERVER,
       title: $t('admin.storage_template_settings'),
+      description: $t('admin.storage_template_onboarding_description_v3'),
       icon: mdiHarddisk,
     },
     {
@@ -93,7 +120,16 @@
       component: OnboardingMobileApp,
       role: OnboardingRole.USER,
       title: $t('mobile_app'),
+      description: $t('mobile_app_download_onboarding_note'),
       icon: mdiCellphoneArrowDownVariant,
+    },
+    {
+      name: 'connect_mobile',
+      component: OnboardingConnect,
+      role: OnboardingRole.USER,
+      title: $t('connect_phone_title'),
+      description: $t('connect_phone_description'),
+      icon: mdiQrcodeScan,
     },
   ]);
 
@@ -102,9 +138,6 @@
     const temporaryIndex = onboardingSteps.findIndex((step) => step.name === stepState);
     return temporaryIndex === -1 ? 0 : temporaryIndex;
   });
-  let userRole = $derived(
-    authManager.user.isAdmin && !serverConfig.isOnboarded ? OnboardingRole.SERVER : OnboardingRole.USER,
-  );
 
   let onboardingStepCount = $derived(onboardingSteps.filter((step) => shouldRunStep(step.role, userRole)).length);
   let onboardingProgress = $derived(
@@ -126,6 +159,13 @@
     onboardingSteps.findIndex((step, i) => shouldRunStep(step.role, userRole) && i > index),
   );
 
+  let direction = $state<1 | -1>(1);
+
+  const goToStep = async (name: string, nextDirection: 1 | -1) => {
+    direction = nextDirection;
+    await goto(Route.onboarding({ step: name }));
+  };
+
   const handleNextClicked = async () => {
     if (nextStepIndex === -1) {
       if (authManager.user.isAdmin) {
@@ -139,7 +179,7 @@
 
       await goto(Route.photos());
     } else {
-      await goto(Route.onboarding({ step: onboardingSteps[nextStepIndex].name }));
+      await goToStep(onboardingSteps[nextStepIndex].name, 1);
     }
   };
 
@@ -148,31 +188,101 @@
       return;
     }
 
-    await goto(Route.onboarding({ step: onboardingSteps[previousStepIndex].name }));
+    await goToStep(onboardingSteps[previousStepIndex].name, -1);
   };
 
-  const OnboardingStep = $derived(onboardingSteps[index].component);
+  const currentStep = $derived(onboardingSteps[index]);
+  const OnboardingStep = $derived(currentStep.component);
+  const activeSteps = $derived(onboardingSteps.filter((step) => shouldRunStep(step.role, userRole)));
+  const plan = $derived(activeSteps.flatMap(({ title, icon }) => (title && icon ? [{ title, icon }] : [])));
 </script>
 
-<section id="onboarding-page" class="flex min-h-dvh min-w-dvw p-4">
-  <div class="flex w-full flex-col">
-    <div class="h-2 rounded-md bg-gray-300 dark:bg-gray-600">
-      <div
-        class="progress-bar h-2 rounded-md bg-primary transition-all duration-200 ease-out"
-        style="width: {(onboardingProgress / onboardingStepCount) * 100}%"
-      ></div>
-    </div>
-    <div class="m-auto flex w-[min(100%,800px)] place-content-center place-items-center py-8">
-      <OnboardingCard
-        title={onboardingSteps[index].title}
-        icon={onboardingSteps[index].icon}
-        onNext={handleNextClicked}
-        onPrevious={handlePrevious}
-        previousTitle={onboardingSteps[previousStepIndex]?.title}
-        nextTitle={onboardingSteps[nextStepIndex]?.title}
-      >
-        <OnboardingStep />
-      </OnboardingCard>
-    </div>
-  </div>
-</section>
+<AuthShell width="wide">
+  {#snippet top()}
+    <nav id="onboarding-page" class="progress" aria-label={$t('steps')}>
+      <div class="flex items-baseline justify-between gap-4 font-mono text-xs text-muted">
+        <span
+          >{$t('onboarding_step_of', { values: { current: onboardingProgress + 1, total: onboardingStepCount } })}</span
+        >
+        {#if currentStep.title}
+          <span class="truncate">{currentStep.title}</span>
+        {/if}
+      </div>
+      <ol class="flex gap-2">
+        {#each activeSteps as step, i (step.name)}
+          <li class="flex-1">
+            <button
+              type="button"
+              class="segment {i <= onboardingProgress ? 'done' : ''}"
+              aria-label={step.title ?? $t('onboarding')}
+              aria-current={i === onboardingProgress ? 'step' : undefined}
+              disabled={i >= onboardingProgress}
+              onclick={() => goToStep(step.name, -1)}
+            ></button>
+          </li>
+        {/each}
+      </ol>
+    </nav>
+  {/snippet}
+
+  <OnboardingCard
+    stepKey={index}
+    {direction}
+    title={currentStep.heading ?? currentStep.title}
+    description={currentStep.description}
+    icon={currentStep.icon}
+    logo={currentStep.logo}
+    onNext={handleNextClicked}
+    onPrevious={handlePrevious}
+    previousTitle={onboardingSteps[previousStepIndex]?.title ?? (previousStepIndex === -1 ? undefined : $t('back'))}
+    nextTitle={onboardingSteps[nextStepIndex]?.title}
+  >
+    {#if index === 0}
+      <OnboardingHello {plan} />
+    {:else}
+      <OnboardingStep />
+    {/if}
+  </OnboardingCard>
+</AuthShell>
+
+<style>
+  .progress {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .segment {
+    display: block;
+    width: 100%;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--of-line-2);
+    transition:
+      background-color 240ms var(--of-ease),
+      opacity 160ms;
+  }
+
+  .segment.done {
+    background: var(--of-accent);
+  }
+
+  .segment:not(:disabled):hover {
+    opacity: 0.7;
+  }
+
+  .segment:disabled {
+    cursor: default;
+  }
+
+  .segment:focus-visible {
+    outline: 2px solid var(--of-accent);
+    outline-offset: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .segment {
+      transition: none;
+    }
+  }
+</style>

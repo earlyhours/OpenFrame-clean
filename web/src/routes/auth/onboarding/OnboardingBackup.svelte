@@ -1,7 +1,6 @@
 <script lang="ts">
   import FormatMessage from '$lib/elements/FormatMessage.svelte';
-  import { Icon, Link, Stack } from '@immich/ui';
-  import { mdiAlertCircleOutline } from '@mdi/js';
+  import { Link } from '@immich/ui';
   import type { Translations } from 'svelte-i18n';
 
   const messageKeys = [
@@ -11,46 +10,68 @@
   ];
 </script>
 
-<div class="flex flex-col">
-  <Stack gap={2}>
-    <div class="my-10 flex items-start gap-4 rounded-xl border border-gray-700/50 bg-gray-100 p-6 dark:bg-gray-800/40">
-      <Icon icon={mdiAlertCircleOutline} size="36" class="mt-0.5 shrink-0 text-warning" />
-      <div class="leading-relaxed text-gray-800 dark:text-gray-300">
-        <FormatMessage key="admin.backup_onboarding_description">
-          {#snippet children({ message })}
-            <Link href="https://www.backblaze.com/blog/the-3-2-1-backup-strategy/">
-              {message}
-            </Link>
-          {/snippet}
-        </FormatMessage>
-      </div>
-    </div>
+<p class="text-base/6 text-muted">
+  <FormatMessage key="admin.backup_onboarding_description">
+    {#snippet children({ message })}
+      <Link href="https://www.backblaze.com/blog/the-3-2-1-backup-strategy/">
+        {message}
+      </Link>
+    {/snippet}
+  </FormatMessage>
+</p>
 
-    <div class="space-y-1">
-      <h2 class="mb-6"><FormatMessage key="admin.backup_onboarding_parts_title" /></h2>
+<section class="flex flex-col gap-4">
+  <h2 class="of-eyebrow"><FormatMessage key="admin.backup_onboarding_parts_title" /></h2>
 
-      <div class="space-y-6">
-        {#each messageKeys as keyString, index (index)}
-          <div class="flex items-start gap-6">
-            <div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/90">
-              <span class="text-xl font-semibold text-light">{3 - index}</span>
-            </div>
-            <div class="pt-2 leading-relaxed">
-              <FormatMessage key={keyString as Translations} />
-            </div>
-          </div>
-        {/each}
-      </div>
-    </div>
+  <ol class="parts">
+    {#each messageKeys as keyString, index (index)}
+      <li>
+        <span class="count font-display">{3 - index}</span>
+        <span class="text-sm/6">
+          <FormatMessage key={keyString as Translations} />
+        </span>
+      </li>
+    {/each}
+  </ol>
+</section>
 
-    <div class="mt-4 text-sm/relaxed text-gray-600 dark:text-gray-400">
-      <p>
-        <FormatMessage key="admin.backup_onboarding_footer">
-          {#snippet children({ message })}
-            <Link href="https://docs.immich.app/administration/backup-and-restore/">{message}</Link>
-          {/snippet}
-        </FormatMessage>
-      </p>
-    </div>
-  </Stack>
-</div>
+<p class="text-sm/6 text-muted">
+  <FormatMessage key="admin.backup_onboarding_footer">
+    {#snippet children({ message })}
+      <Link href="https://docs.immich.app/administration/backup-and-restore/">{message}</Link>
+    {/snippet}
+  </FormatMessage>
+</p>
+
+<style>
+  .parts {
+    display: grid;
+    border: 1px solid var(--of-line);
+    border-radius: 16px;
+    background: var(--of-bg);
+  }
+
+  .parts li {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .parts li + li {
+    border-top: 1px solid var(--of-line);
+  }
+
+  .count {
+    display: flex;
+    width: 32px;
+    height: 32px;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--of-accent-soft);
+    color: var(--of-accent);
+    font-size: 16px;
+  }
+</style>

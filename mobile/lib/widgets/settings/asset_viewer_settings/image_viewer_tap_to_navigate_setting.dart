@@ -17,10 +17,9 @@ class ImageViewerTapToNavigateSetting extends HookConsumerWidget {
       unawaited(ref.read(settingsProvider).write(.viewerTapToNavigate, tapToNavigate.value));
     });
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return SettingsSection(
+      title: context.t.setting_image_navigation_title,
       children: [
-        SettingsSubTitle(title: context.t.setting_image_navigation_title),
         SettingsSwitchListTile(
           valueNotifier: tapToNavigate,
           title: context.t.setting_image_navigation_enable_title,

@@ -16,6 +16,7 @@ usage() {
 ${bold}openframe${reset} - manage a native OpenFrame installation
 
 ${bold}Everyday${reset}
+  connect [--url URL] Show the app connection QR code (default; alias: qr)
   status             Show whether each service is running and reachable
   logs [service]     Follow live logs (server, ml, db or redis; default: server and ml)
   restart            Restart all services
@@ -596,8 +597,74 @@ update_openframe() {
   say ''
 }
 
-action="${1:-help}"
+action="${1:-connect}"
 case "$action" in
+  connect|qr)
+    override=''
+    if (($#)); then shift; fi
+    while (($#)); do
+      case "$1" in
+        --url) [[ $# -ge 2 && -n "$2" ]] || fail 'Usage: openframe connect [--url URL]'; override="$2"; shift 2 ;;
+        *) fail 'Usage: openframe connect [--url URL]' ;;
+      esac
+    done
+    load_env
+    need node
+    connection_info="$(node "$ROOT/scripts/native/connect.mjs" "$override")" || exit 1
+    mapfile -t connection_lines <<< "$connection_info"
+    server_url="${connection_lines[0]}" lan_ip="${connection_lines[1]}" payload="${connection_lines[2]}"
+    local_color=false
+    [[ ! -t 1 || -n "${NO_COLOR:-}" ]] || local_color=true
+    accent='' muted='' faint='' off='' pill_on=''
+    if "$local_color"; then
+      accent=$'\033[38;5;202m' muted=$'\033[38;5;247m' faint=$'\033[38;5;240m' off=$'\033[0m'
+      pill_on=$'\033[48;5;202;38;5;232;1m'
+    fi
+    rail='│'; diamond='◆'; finish='└'
+    case "${LC_ALL:-${LC_CTYPE:-${LANG:-}}}" in
+      *[Uu][Tt][Ff]-8*|*[Uu][Tt][Ff]8*) ;;
+      *) rail='|'; diamond='>'; finish='+' ;;
+    esac
+    cols="$(tput cols 2>/dev/null || printf '80')"
+    WORDMARK=(
+      '                               ⣾⠟⠃'
+      '⢀⣴⠶⠶⣦⡀ ⢰⣆⠴⠶⢶⣄  ⢀⣴⠶⠶⣦⡀ ⢰⣦⠶⠶⢦⣄ ⠰⠶⣿⠶⠆ ⣶⡴⠶⠆ ⣠⡴⠶⠶⣤  ⣶⡴⠶⣦⡤⠶⢶⣄  ⣠⡶⠶⢶⣄'
+      '⣾⠁  ⠈⣷ ⢸⡏   ⢹⡆ ⣾⣁⣀⣀⣈⣷ ⢸⡇   ⣿   ⣿   ⣿    ⠉⢀⣀⣀⣼⡇ ⣿  ⢸⡇  ⣿ ⢰⣏⣀⣀⣀⣹⡆'
+      '⢿⡀  ⢀⡿ ⢸⣇   ⣸⠇ ⢿⡉⠉⠉⠉⣉ ⢸⡇   ⣿   ⣿   ⣿    ⣾⠋⠉⠉⢸⡇ ⣿  ⢸⡇  ⣿ ⠸⣏⠉⠉⠉⢉⡁'
+      '⠈⠻⠶⠶⠟⠁ ⢸⡏⠲⠶⠾⠋  ⠈⠻⠶⠶⠞⠋ ⠸⠇   ⠿   ⠿   ⠿    ⠙⠶⠶⠖⠙⠇ ⠿  ⠸⠇  ⠿  ⠙⠷⠶⠶⠛⠁'
+      '       ⠸⠇'
+    )
+    printf '\n'
+    if [[ -t 1 && "$rail" == '│' ]] && ((cols >= 90)); then
+      for line in "${WORDMARK[@]}"; do printf '  %s%s%s%s%s\n' "$bold" "${line:0:28}" "$accent" "${line:28}" "$off"; done
+    else
+      printf '  %sopen%sframe%s\n' "$bold" "$accent" "$off"
+    fi
+    printf '\n  %s%s%s  %sConnect your phone%s\n' "$accent" "$diamond" "$off" "$bold" "$off"
+    printf '  %s%s  %sOpen OpenFrame on your phone → Scan QR%s\n' "$faint" "$rail" "$muted" "$off"
+    printf '  %s%s%s\n' "$faint" "$rail" "$off"
+    printf '  %s%s%s  %s  %s  %s\n' "$faint" "$rail" "$off" "$pill_on" "$server_url" "$off"
+    printf '  %s%s  %sIP  %s%s\n' "$faint" "$rail" "$muted" "$lan_ip" "$off"
+    printf '  %s%s%s\n' "$faint" "$rail" "$off"
+    if [[ -t 1 ]]; then
+      if qr_output="$(node "$ROOT/scripts/native/connect.mjs" render "$payload" "$cols" 2>/dev/null)"; then
+        printf '  %s%s%s\n' "$faint" "$rail" "$off"
+        while IFS= read -r line; do
+          printf '  %s%s%s  %s\n' "$faint" "$rail" "$off" "$line"
+        done <<< "$qr_output"
+        printf '  %s%s%s\n' "$faint" "$rail" "$off"
+      else
+        printf '  %s%s  %sInstall qrencode to show a QR code; use the address above for now.%s\n' "$faint" "$rail" "$muted" "$off"
+      fi
+    fi
+    if ((${#connection_lines[@]} > 3)); then
+      printf '  %s%s  %sOther server addresses%s\n' "$faint" "$rail" "$muted" "$off"
+      for candidate in "${connection_lines[@]:3}"; do
+        printf '  %s%s%s  %s\n' "$faint" "$rail" "$off" "$candidate"
+      done
+    fi
+    printf '  %s%s  %sSame Wi-Fi required.%s\n\n' "$faint" "$finish" "$muted" "$off"
+    ;;
   init)
     [[ ! -e "$OPENFRAME_CONFIG" ]] || fail "Configuration already exists: $OPENFRAME_CONFIG"
     umask 077

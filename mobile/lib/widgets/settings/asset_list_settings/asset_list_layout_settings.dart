@@ -18,10 +18,9 @@ class LayoutSettings extends HookConsumerWidget {
       unawaited(ref.read(settingsProvider).write(.timelineTilesPerRow, tilesPerRow.value));
     });
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return SettingsSection(
+      title: context.t.asset_list_layout_sub_title,
       children: [
-        SettingGroupTitle(title: context.t.asset_list_layout_sub_title, icon: Icons.view_module_outlined),
         SettingsSliderListTile(
           valueNotifier: tilesPerRow,
           text: context.t.theme_setting_asset_list_tiles_per_row_title(count: tilesPerRow.value),

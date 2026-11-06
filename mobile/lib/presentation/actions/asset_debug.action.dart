@@ -8,6 +8,7 @@ import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/presentation/actions/action.dart';
 import 'package:immich_mobile/providers/infrastructure/setting.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class AssetDebugAction extends AssetActionBuilder {
   const AssetDebugAction({required super.source});
@@ -21,7 +22,7 @@ class AssetDebugAction extends AssetActionBuilder {
     }
 
     return .new(
-      icon: Icons.help_outline_rounded,
+      icon: AppIcons.circleHelp,
       label: context.t.troubleshoot,
       onAction: () => unawaited(context.pushRoute(AssetTroubleshootRoute(asset: asset))),
     );

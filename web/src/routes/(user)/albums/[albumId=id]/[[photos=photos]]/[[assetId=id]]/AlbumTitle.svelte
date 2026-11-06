@@ -29,7 +29,7 @@
     );
   };
 
-  const textClasses = 'text-2xl lg:text-6xl text-primary';
+  const textClasses = 'font-display text-3xl lg:text-5xl text-dark';
 </script>
 
 <div class="mb-2">

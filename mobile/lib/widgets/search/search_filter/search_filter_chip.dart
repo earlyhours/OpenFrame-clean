@@ -11,33 +11,29 @@ class SearchFilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (currentFilter != null) {
-      return GestureDetector(
+    final active = currentFilter != null;
+    final scheme = context.colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: onTap,
-        child: Card(
-          elevation: 0,
-          color: context.colorScheme.secondaryContainer,
-          shape: StadiumBorder(side: BorderSide(color: context.colorScheme.secondaryContainer)),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 14.0),
-            child: Row(children: [Icon(icon, size: 18), const SizedBox(width: 4.0), currentFilter!]),
+        child: DecoratedBox(
+          decoration: ShapeDecoration(
+            color: active ? scheme.secondaryContainer : null,
+            shape: StadiumBorder(side: BorderSide(color: active ? scheme.outline : scheme.outlineVariant, width: .5)),
           ),
-        ),
-      );
-    }
-    return GestureDetector(
-      onTap: onTap,
-      child: Card(
-        elevation: 0,
-        shape: StadiumBorder(side: BorderSide(color: context.colorScheme.outline.withAlpha(15))),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 14.0),
-          child: Row(
-            children: [
-              Icon(icon, size: 18),
-              const SizedBox(width: 4.0),
-              Text(label, style: TextStyle(color: context.colorScheme.onSecondaryContainer)),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            child: Row(
+              children: [
+                Icon(icon, size: 18, color: active ? scheme.onSecondaryContainer : scheme.onSurfaceVariant),
+                const SizedBox(width: 8),
+                currentFilter ??
+                    Text(label, style: context.textTheme.labelMedium?.copyWith(color: scheme.onSurfaceVariant)),
+              ],
+            ),
           ),
         ),
       ),

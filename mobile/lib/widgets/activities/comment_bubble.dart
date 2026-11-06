@@ -15,6 +15,7 @@ import 'package:immich_mobile/providers/user.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/widgets/activities/dismissible_activity.dart';
 import 'package:immich_mobile/widgets/common/user_circle_avatar.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class CommentBubble extends ConsumerWidget {
   final Activity activity;
@@ -86,7 +87,7 @@ class CommentBubble extends ConsumerWidget {
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(color: context.colorScheme.surfaceContainer, shape: BoxShape.circle),
-                  child: Icon(Icons.thumb_up, color: context.primaryColor, size: 18),
+                  child: Icon(AppIcons.thumbsUp, color: context.primaryColor, size: 18),
                 ),
               ),
           ],
@@ -100,7 +101,7 @@ class CommentBubble extends ConsumerWidget {
       likes = Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(color: context.colorScheme.surfaceContainer, shape: BoxShape.circle),
-        child: Icon(Icons.thumb_up, color: context.primaryColor, size: 18),
+        child: Icon(AppIcons.thumbsUp, color: context.primaryColor, size: 18),
       );
     }
 

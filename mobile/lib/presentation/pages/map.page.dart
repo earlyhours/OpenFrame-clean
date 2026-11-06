@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/presentation/widgets/map/map.widget.dart';
 import 'package:immich_mobile/presentation/widgets/map/map_settings_sheet.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
 @RoutePage()
@@ -15,6 +16,7 @@ class MapPage extends StatelessWidget {
 
   Future<void> onSettingsPressed(BuildContext context) {
     return showModalBottomSheet(
+      sheetAnimationStyle: AppMotion.styleOf(context, AppMotion.sheet),
       elevation: 0.0,
       showDragHandle: true,
       isScrollControlled: true,
@@ -34,14 +36,13 @@ class MapPage extends StatelessWidget {
             left: 20,
             top: 70,
             child: IconButton.filled(
-              color: Colors.white,
               onPressed: () => ContextHelper(context).pop(),
-              icon: const Icon(Icons.arrow_back_ios_new_rounded),
+              icon: const Icon(AppIcons.chevronLeftDir),
               style: IconButton.styleFrom(
-                padding: const EdgeInsets.all(8),
-                backgroundColor: Colors.indigo,
-                shadowColor: Colors.black26,
-                elevation: 4,
+                padding: const EdgeInsets.all(ImmichSpacing.md),
+                backgroundColor: Theme.of(context).colorScheme.surface.withValues(alpha: .9),
+                foregroundColor: Theme.of(context).colorScheme.onSurface,
+                elevation: 0,
               ),
             ),
           ),
@@ -49,14 +50,13 @@ class MapPage extends StatelessWidget {
             right: 20,
             top: 70,
             child: IconButton.filled(
-              color: Colors.white,
               onPressed: () => onSettingsPressed(context),
-              icon: const Icon(Icons.more_vert_rounded),
+              icon: const Icon(AppIcons.ellipsisVertical),
               style: IconButton.styleFrom(
-                padding: const EdgeInsets.all(8),
-                backgroundColor: Colors.indigo,
-                shadowColor: Colors.black26,
-                elevation: 4,
+                padding: const EdgeInsets.all(ImmichSpacing.md),
+                backgroundColor: Theme.of(context).colorScheme.surface.withValues(alpha: .9),
+                foregroundColor: Theme.of(context).colorScheme.onSurface,
+                elevation: 0,
               ),
             ),
           ),

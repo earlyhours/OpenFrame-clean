@@ -978,7 +978,7 @@ SQL
   done
   "$ready" || fail 'Services did not become healthy.' 'Inspect: journalctl --user -u openframe -u openframe-ml'
 
-  # A small wrapper so `openframe status|logs|restart` works from any shell.
+  # A small wrapper so `openframe connect|status|logs|restart` works from any shell.
   local bin_dir="$HOME/.local/bin"
   cli_hint="$source_dir/scripts/native/openframe"
   if mkdir -p "$bin_dir" && { [[ ! -e "$bin_dir/openframe" ]] || grep -q '^# Created by the OpenFrame installer' "$bin_dir/openframe"; }; then
@@ -989,6 +989,7 @@ export OPENFRAME_CONFIG='$OPENFRAME_CONFIG' OPENFRAME_STATE='$OPENFRAME_STATE' P
 exec '$source_dir/scripts/native/openframe' "\$@"
 WRAPPER
     chmod 700 "$bin_dir/openframe"
+    if [[ ! -e "$bin_dir/openfream" && ! -L "$bin_dir/openfream" ]]; then ln -s openframe "$bin_dir/openfream"; fi
     cli_hint="$(tilde "$bin_dir/openframe")"
     case ":${PATH_BEFORE_INSTALL:-}:" in *":$bin_dir:"*) cli_hint=openframe ;; esac
   fi
@@ -1025,6 +1026,9 @@ ready_screen() {
   rail
   rail "${faint}MANAGE$off"
   local width=$((${#cli_hint} + 10)) entry
+  if [[ "$mode" == native ]]; then
+    rail "  $ink$(printf '%-*s' "$width" "$cli_hint connect")$off${mute}Connect your phone with a QR code (alias: qr)$off"
+  fi
   for entry in 'status|Check that everything is running' 'update|Get the latest version' 'logs|Follow live logs' \
     'uninstall|Remove OpenFrame, keeping or erasing your photos' 'help|All commands'; do
     rail "  $ink$(printf '%-*s' "$width" "$cli_hint ${entry%%|*}")$off$mute${entry#*|}$off"

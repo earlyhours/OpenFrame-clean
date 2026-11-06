@@ -1,7 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:immich_ui/extensions/build_context_extensions.dart';
-import 'package:immich_ui/extensions/theme_extensions.dart';
+import 'package:immich_ui/src/components/settings/settings_tile.dart';
 
+/// The switch used across settings: accent track, white thumb.
+class SettingsSwitch extends StatelessWidget {
+  const SettingsSwitch({super.key, required this.value, required this.onChanged});
+
+  final bool value;
+  final ValueChanged<bool>? onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Switch.adaptive(
+      value: value,
+      onChanged: onChanged,
+      activeTrackColor: context.primaryColor,
+      activeThumbColor: Colors.white,
+    );
+  }
+}
+
+/// A [SettingsTile] with a switch. The whole row toggles.
 class SettingsSwitchListTile extends StatelessWidget {
   final ValueNotifier<bool> valueNotifier;
   final String title;
@@ -9,9 +28,6 @@ class SettingsSwitchListTile extends StatelessWidget {
   final String? subtitle;
   final IconData? icon;
   final Function(bool)? onChanged;
-  final EdgeInsets? contentPadding;
-  final TextStyle? titleStyle;
-  final TextStyle? subtitleStyle;
 
   const SettingsSwitchListTile({
     required this.valueNotifier,
@@ -20,9 +36,6 @@ class SettingsSwitchListTile extends StatelessWidget {
     this.icon,
     this.enabled = true,
     this.onChanged,
-    this.contentPadding = const EdgeInsets.symmetric(horizontal: 20),
-    this.titleStyle,
-    this.subtitleStyle,
     super.key,
   });
 
@@ -37,34 +50,17 @@ class SettingsSwitchListTile extends StatelessWidget {
       onChanged?.call(value);
     }
 
-    return SwitchListTile.adaptive(
-      contentPadding: contentPadding,
-      selectedTileColor: enabled ? null : context.themeData.disabledColor,
-      value: valueNotifier.value,
-      onChanged: onSwitchChanged,
-      activeThumbColor: enabled ? context.primaryColor : context.themeData.disabledColor,
-      dense: true,
-      secondary: icon != null ? Icon(icon, color: valueNotifier.value ? context.primaryColor : null) : null,
-      title: Text(
-        title,
-        style:
-            titleStyle ??
-            context.textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w500,
-              color: enabled ? null : context.themeData.disabledColor,
-              height: 1.5,
-            ),
+    return ValueListenableBuilder<bool>(
+      valueListenable: valueNotifier,
+      builder: (context, value, _) => SettingsTile(
+        title: title,
+        subtitle: subtitle,
+        icon: icon,
+        enabled: enabled,
+        showChevron: false,
+        onTap: () => onSwitchChanged(!value),
+        trailing: SettingsSwitch(value: value, onChanged: enabled ? onSwitchChanged : null),
       ),
-      subtitle: subtitle != null
-          ? Text(
-              subtitle!,
-              style:
-                  subtitleStyle ??
-                  context.textTheme.bodyMedium?.copyWith(
-                    color: enabled ? context.colorScheme.onSurfaceSecondary : context.themeData.disabledColor,
-                  ),
-            )
-          : null,
     );
   }
 }

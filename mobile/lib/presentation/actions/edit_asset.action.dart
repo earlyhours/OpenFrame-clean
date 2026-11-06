@@ -18,6 +18,7 @@ import 'package:immich_mobile/providers/server_info.provider.dart';
 import 'package:immich_mobile/providers/websocket.provider.dart';
 import 'package:immich_mobile/routing/router.dart';
 import 'package:immich_mobile/utils/error_handler.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 final _stateProvider = Provider.family.autoDispose<RemoteAsset?, ActionSource>((ref, source) {
   final isSupported = ref.watch(serverInfoProvider.select((state) => state.serverVersion.supports(.syncAssetEditsV1)));
@@ -38,7 +39,7 @@ class EditAssetAction extends AssetActionBuilder {
       return null;
     }
 
-    return .new(icon: Icons.tune, label: context.t.edit, onAction: () => _edit(context, ref));
+    return .new(icon: AppIcons.slidersHorizontal, label: context.t.edit, onAction: () => _edit(context, ref));
   }
 
   Future<void> _edit(BuildContext context, WidgetRef ref) async {

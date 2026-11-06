@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/constants/colors.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
-import 'package:immich_mobile/extensions/theme_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/providers/infrastructure/settings.provider.dart';
 import 'package:immich_mobile/providers/theme.provider.dart';
 import 'package:immich_mobile/theme/color_scheme.dart';
 import 'package:immich_mobile/theme/dynamic_theme.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class PrimaryColorSetting extends HookConsumerWidget {
   const PrimaryColorSetting({super.key});
@@ -82,7 +82,7 @@ class PrimaryColorSetting extends HookConsumerWidget {
                   ),
                   child: const Padding(
                     padding: EdgeInsets.all(3),
-                    child: Icon(Icons.check_rounded, color: Colors.white, size: 25),
+                    child: Icon(AppIcons.check, color: Colors.white, size: 25),
                   ),
                 ),
               ),
@@ -141,43 +141,24 @@ class PrimaryColorSetting extends HookConsumerWidget {
       );
     }
 
-    return ListTile(
+    return SettingsTile(
       onTap: () => showModalBottomSheet(
+        sheetAnimationStyle: AppMotion.styleOf(context, AppMotion.sheet),
         context: context,
         isScrollControlled: true,
         builder: (BuildContext ctx) {
           return Padding(padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 0), child: bottomSheetContent());
         },
       ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-      title: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  context.t.theme_setting_primary_color_title,
-                  style: context.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
-                ),
-                Text(
-                  context.t.theme_setting_primary_color_subtitle,
-                  style: context.textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceSecondary),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 8.0),
-            child: buildPrimaryColorTile(
-              topColor: themeProvider.light.primary,
-              bottomColor: themeProvider.dark.primary,
-              tileSize: 42.0,
-              showSelector: false,
-            ),
-          ),
-        ],
+      title: context.t.theme_setting_primary_color_title,
+      subtitle: context.t.theme_setting_primary_color_subtitle,
+      trailing: buildPrimaryColorTile(
+        topColor: themeProvider.light.primary,
+        bottomColor: themeProvider.dark.primary,
+        tileSize: 30.0,
+        showSelector: false,
       ),
+      showChevron: true,
     );
   }
 }

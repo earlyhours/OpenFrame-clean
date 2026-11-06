@@ -8,6 +8,7 @@ import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/extensions/theme_extensions.dart';
 import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/presentation/widgets/feature_message/feature_message_placeholder.widget.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 Future<void> showFeatureMessageDialog(BuildContext context) {
   return showGeneralDialog<void>(
@@ -166,7 +167,9 @@ class _FeatureMessageDialogState extends State<_FeatureMessageDialog> with Singl
                             ),
                           ),
                           child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 200),
+                            duration: AppMotion.of(context, AppMotion.fast),
+                            switchInCurve: AppMotion.emphasized,
+                            switchOutCurve: Curves.easeInCubic,
                             child: Text(_isLast ? context.t.ok : context.t.next, key: ValueKey(_isLast)),
                           ),
                         ),
@@ -299,7 +302,8 @@ class _PageDots extends StatelessWidget {
           children: List.generate(count, (i) {
             final activeness = (1 - (page - i).abs()).clamp(0.0, 1.0);
             return AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
+              duration: AppMotion.of(context, AppMotion.fast),
+              curve: AppMotion.emphasized,
               margin: const EdgeInsets.symmetric(horizontal: 3),
               height: 7,
               width: 7 + 16 * activeness,

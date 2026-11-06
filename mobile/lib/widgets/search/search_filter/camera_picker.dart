@@ -6,6 +6,7 @@ import 'package:immich_mobile/generated/translations.g.dart';
 import 'package:immich_mobile/models/search/search_filter.model.dart';
 import 'package:immich_mobile/providers/search/search_filter.provider.dart';
 import 'package:immich_mobile/widgets/search/search_filter/common/dropdown.dart';
+import 'package:immich_ui/immich_ui.dart';
 import 'package:openapi/api.dart';
 
 class CameraPicker extends HookConsumerWidget {
@@ -39,7 +40,7 @@ class CameraPicker extends HookConsumerWidget {
       },
       label: Text(context.t.make),
       controller: makeTextController,
-      leadingIcon: const Icon(Icons.photo_camera_rounded),
+      leadingIcon: const Icon(AppIcons.camera),
       onSelected: (value) {
         if (value.toString() == selectedMake.value) {
           return;
@@ -58,7 +59,7 @@ class CameraPicker extends HookConsumerWidget {
       },
       label: Text(context.t.model),
       controller: modelTextController,
-      leadingIcon: const Icon(Icons.camera),
+      leadingIcon: const Icon(AppIcons.aperture),
       onSelected: (value) {
         selectedModel.value = value.toString();
         onSelect({'make': selectedMake.value, 'model': selectedModel.value});

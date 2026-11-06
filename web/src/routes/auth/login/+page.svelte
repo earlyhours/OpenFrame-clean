@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import AuthPageLayout from '$lib/components/layouts/AuthPageLayout.svelte';
+  import AuthShell from '$lib/components/auth/AuthShell.svelte';
   import { eventManager } from '$lib/managers/event-manager.svelte';
   import { createPreloadedQuery, MutationCancelledError } from '$lib/queries/client';
   import { getPublicConfigQuery } from '$lib/queries/config-public.query';
@@ -150,20 +150,15 @@
 </script>
 
 {#snippet divider()}
-  <div class="my-4 inline-flex w-full items-center justify-center">
-    <hr class="my-4 h-px w-3/4 border-0 bg-gray-200 dark:bg-gray-600" />
-    <span
-      class="absolute inset-s-1/2 -translate-x-1/2 bg-gray-50 px-3 font-medium text-gray-900 uppercase dark:bg-neutral-900 dark:text-white"
-    >
-      {$t('or')}
-    </span>
+  <div class="divider" role="separator">
+    <span>{$t('or')}</span>
   </div>
 {/snippet}
 
-<AuthPageLayout title={data.meta.title}>
+<AuthShell title={$t('auth_login_title')} subtitle={$t('auth_login_subtitle')}>
   <Stack gap={4}>
     {#if publicConfig.server.loginPageMessage}
-      <Alert color="primary" class="mb-6">
+      <Alert color="primary">
         <!-- eslint-disable-next-line svelte/no-at-html-tags -->
         {@html publicConfig.server.loginPageMessage}
       </Alert>
@@ -175,15 +170,15 @@
           <Alert color="danger" title={errorMessage} closable />
         {/if}
 
-        <Field label={$t('email')} required="indicator">
-          <Input id="email" name="email" type="email" autocomplete="email" bind:value={email} />
+        <Field label={$t('email')}>
+          <Input id="email" name="email" type="email" autocomplete="email" size="large" bind:value={email} />
         </Field>
 
-        <Field label={$t('password')} required="indicator">
-          <PasswordInput id="password" bind:value={password} autocomplete="current-password" />
+        <Field label={$t('password')}>
+          <PasswordInput id="password" size="large" bind:value={password} autocomplete="current-password" />
         </Field>
 
-        <Button type="submit" size="large" shape="round" fullWidth {loading} class="mt-6">{$t('to_login')}</Button>
+        <Button type="submit" size="large" shape="round" fullWidth {loading} class="mt-2">{$t('to_login')}</Button>
       </form>
     {/if}
 
@@ -202,6 +197,7 @@
         size="large"
         fullWidth
         color={publicConfig.passwordLogin.enabled ? 'secondary' : 'primary'}
+        variant={publicConfig.passwordLogin.enabled ? 'outline' : 'filled'}
         onclick={() => passkeyLogin.mutate()}
       >
         {$t('login_with_passkey')}
@@ -222,6 +218,7 @@
         size="large"
         fullWidth
         color={publicConfig.passwordLogin.enabled ? 'secondary' : 'primary'}
+        variant={publicConfig.passwordLogin.enabled ? 'outline' : 'filled'}
         onclick={handleOAuthLogin}
       >
         {publicConfig.oauth.buttonText}
@@ -232,4 +229,25 @@
       <Alert color="warning" title={$t('login_has_been_disabled')} />
     {/if}
   </Stack>
-</AuthPageLayout>
+</AuthShell>
+
+<style>
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--of-mute);
+  }
+
+  .divider::before,
+  .divider::after {
+    content: '';
+    height: 1px;
+    flex: 1;
+    background: var(--of-line-2);
+  }
+</style>

@@ -27,12 +27,10 @@
   in:fade={{ duration: 100 }}
   out:fade={{ duration: 100 }}
   id="account-info-panel"
-  class="absolute inset-e-6 top-19 z-1 w-[min(360px,100vw-50px)] rounded-3xl bg-gray-200 shadow-lg dark:border dark:border-immich-dark-gray dark:bg-immich-dark-gray"
+  class="absolute inset-e-4 top-15 z-1 w-[min(360px,100vw-50px)] rounded-xl border bg-subtle"
   use:focusTrap
 >
-  <div
-    class="mx-4 mt-4 flex flex-col items-center justify-center gap-4 rounded-t-3xl bg-white p-4 dark:bg-immich-dark-primary/10"
-  >
+  <div class="flex flex-col items-center justify-center gap-4 border-b p-6">
     <div class="relative">
       <UserAvatar user={authManager.user} size="xl" />
       <div class="absolute inset-e-0 bottom-0 size-6 rounded-full">
@@ -50,13 +48,13 @@
       </div>
     </div>
     <div>
-      <p class="text-center text-lg font-medium text-primary">
+      <p class="text-center text-lg font-semibold text-dark">
         {authManager.user.name}
       </p>
-      <p class="text-sm text-gray-500 dark:text-immich-dark-fg">{authManager.user.email}</p>
+      <p class="text-center text-sm text-muted">{authManager.user.email}</p>
     </div>
 
-    <div class="flex flex-col gap-1">
+    <div class="flex w-full flex-col gap-2">
       <Button
         href={Route.userSettings()}
         onclick={onClose}
@@ -64,7 +62,7 @@
         color="secondary"
         variant="ghost"
         shape="round"
-        class="border hover:bg-immich-primary/10 dark:border-immich-dark-gray dark:bg-gray-500 dark:text-white dark:hover:bg-immich-dark-primary/50"
+        class="w-full border"
       >
         <div class="flex place-content-center place-items-center gap-2 px-2 text-center">
           <Icon icon={mdiCog} size="18" aria-hidden />
@@ -80,7 +78,7 @@
           size="small"
           color="secondary"
           aria-current={page.url.pathname.includes('/admin') ? 'page' : undefined}
-          class="border hover:bg-immich-primary/10 dark:border-immich-dark-gray dark:bg-gray-500 dark:text-white dark:hover:bg-immich-dark-primary/50"
+          class="w-full border"
         >
           <div class="flex place-content-center place-items-center gap-2 px-2 text-center">
             <Icon icon={mdiWrench} size="18" aria-hidden />
@@ -91,18 +89,14 @@
     </div>
   </div>
 
-  <div class="mb-4 flex flex-col">
-    <Button
-      class="m-1 mx-4 rounded-none rounded-b-3xl bg-white p-3 dark:bg-immich-dark-primary/10"
-      href={Route.logout()}
-      leadingIcon={mdiLogout}
-      variant="ghost"
-      color="secondary">{$t('sign_out')}</Button
+  <div class="flex flex-col p-2">
+    <Button class="w-full justify-start" href={Route.logout()} leadingIcon={mdiLogout} variant="ghost" color="secondary"
+      >{$t('sign_out')}</Button
     >
 
     <button
       type="button"
-      class="mt-4 text-center text-xs text-primary underline"
+      class="my-3 text-center text-xs text-muted hover:text-primary"
       onclick={async () => {
         onClose?.();
         if (info) {

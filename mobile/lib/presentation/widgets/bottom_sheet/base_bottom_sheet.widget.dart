@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
-import 'package:immich_mobile/extensions/theme_extensions.dart';
 import 'package:immich_mobile/presentation/widgets/timeline/timeline.state.dart';
+import 'package:immich_ui/immich_ui.dart';
 
 class BaseBottomSheet extends ConsumerStatefulWidget {
   final List<Widget> actions;
@@ -58,8 +58,8 @@ class _BaseDraggableScrollableSheetState extends ConsumerState<BaseBottomSheet> 
         unawaited(
           _controller.animateTo(
             widget.minChildSize,
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeInOut,
+            duration: AppMotion.of(context, AppMotion.base),
+            curve: AppMotion.emphasized,
           ),
         );
       }
@@ -70,14 +70,23 @@ class _BaseDraggableScrollableSheetState extends ConsumerState<BaseBottomSheet> 
       initialChildSize: widget.initialChildSize,
       minChildSize: widget.minChildSize,
       maxChildSize: widget.maxChildSize,
-      snap: false,
+      // Snap between min / initial / max so a released drag always settles
+      // on a deliberate detent instead of stopping wherever the finger let go.
+      snap: true,
+      snapSizes: widget.initialChildSize > widget.minChildSize && widget.initialChildSize < widget.maxChildSize
+          ? [widget.initialChildSize]
+          : null,
+      snapAnimationDuration: AppMotion.of(context, AppMotion.base),
       expand: widget.expand,
       shouldCloseOnMinExtent: widget.shouldCloseOnMinExtent,
       builder: (BuildContext context, ScrollController scrollController) {
         return Card(
           color: widget.backgroundColor ?? context.colorScheme.surfaceContainer,
-          elevation: 3.0,
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(18))),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(ImmichRadius.xl)),
+            side: BorderSide(color: context.colorScheme.outlineVariant, width: .5),
+          ),
           margin: EdgeInsets.zero,
           child: Column(
             children: [
@@ -100,6 +109,7 @@ class _BaseDraggableScrollableSheetState extends ConsumerState<BaseBottomSheet> 
                         ),
                       ),
                     if (widget.slivers != null) ...widget.slivers!,
+                    SliverToBoxAdapter(child: SizedBox(height: MediaQuery.paddingOf(context).bottom + 16)),
                   ],
                 ),
               ),
@@ -118,15 +128,15 @@ class _DragHandle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 38,
+      height: 24,
       child: Center(
         child: SizedBox(
-          width: 32,
-          height: 6,
+          width: 36,
+          height: 5,
           child: DecoratedBox(
             decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(20)),
-              color: context.themeData.dividerColor.lighten(amount: 0.6),
+              borderRadius: const BorderRadius.all(Radius.circular(2.5)),
+              color: context.colorScheme.onSurfaceVariant.withValues(alpha: .4),
             ),
           ),
         ),

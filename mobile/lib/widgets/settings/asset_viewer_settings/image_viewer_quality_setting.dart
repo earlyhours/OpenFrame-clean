@@ -18,14 +18,10 @@ class ImageViewerQualitySetting extends HookConsumerWidget {
       unawaited(ref.read(settingsProvider).write(.imageLoadOriginal, isOriginal.value));
     });
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return SettingsSection(
+      title: context.t.photos,
+      footer: context.t.setting_image_viewer_help,
       children: [
-        SettingGroupTitle(
-          title: context.t.photos,
-          icon: Icons.image_outlined,
-          subtitle: context.t.setting_image_viewer_help,
-        ),
         SettingsSwitchListTile(
           valueNotifier: isOriginal,
           title: context.t.setting_image_viewer_original_title,
